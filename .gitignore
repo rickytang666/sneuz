@@ -1,3 +1,40 @@
+# env files
+.env
+.env.local
+.env*.local
+
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# next.js
+web/.next/
+web/out/
+web/build/
+web/.vercel
+
+# xcode
+ios/**/*.xcodeproj/xcuserdata/
+ios/**/*.xcworkspace/xcuserdata/
+ios/**/DerivedData/
+ios/**/*.xcuserstate
+ios/**/.DS_Store
+
+# supabase
+.supabase/
+
+# ide
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# os
+.DS_Store
+Thumbs.db
+
 # markdown
 *.md
 !README.md
