@@ -89,7 +89,7 @@ VALUES (
 
 - [ ] Query succeeds
 - [ ] `id` was auto-generated (UUID)
-- [ ] `updated_at` was auto-set to now()
+- [ ] `updated_at` was auto-set to end_time
 
 ---
 
@@ -130,7 +130,7 @@ WHERE user_id = 'YOUR_USER_ID_HERE';
 ```
 
 - [ ] `end_time` changed to 07:00
-- [ ] `updated_at` automatically updated to current timestamp (newer than created_at)
+- [ ] `updated_at` automatically updated to now()
 
 ---
 
