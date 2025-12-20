@@ -12,6 +12,7 @@
 		D42375B22EF6342E00CB4F9F /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = D42375B12EF6342E00CB4F9F /* PostgREST */; };
 		D42375B42EF6342E00CB4F9F /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = D42375B32EF6342E00CB4F9F /* Realtime */; };
 		D42375B62EF6342E00CB4F9F /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = D42375B52EF6342E00CB4F9F /* Storage */; };
+		D42375D12EF6379A00CB4F9F /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D42375D02EF6379A00CB4F9F /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 			files = (
 				D42375B22EF6342E00CB4F9F /* PostgREST in Frameworks */,
 				D42375B02EF6342E00CB4F9F /* Functions in Frameworks */,
+				D42375D12EF6379A00CB4F9F /* Supabase in Frameworks */,
 				D42375AE2EF6342E00CB4F9F /* Auth in Frameworks */,
 				D42375B62EF6342E00CB4F9F /* Storage in Frameworks */,
 				D42375B42EF6342E00CB4F9F /* Realtime in Frameworks */,
@@ -46,6 +48,7 @@
 			isa = PBXGroup;
 			children = (
 				D42375A02EF6309F00CB4F9F /* SleepTracker */,
+				D42375CF2EF6379A00CB4F9F /* Frameworks */,
 				D423759F2EF6309F00CB4F9F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,6 +59,13 @@
 				D423759E2EF6309F00CB4F9F /* SleepTracker.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		D42375CF2EF6379A00CB4F9F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -83,6 +93,7 @@
 				D42375B12EF6342E00CB4F9F /* PostgREST */,
 				D42375B32EF6342E00CB4F9F /* Realtime */,
 				D42375B52EF6342E00CB4F9F /* Storage */,
+				D42375D02EF6379A00CB4F9F /* Supabase */,
 			);
 			productName = SleepTracker;
 			productReference = D423759E2EF6309F00CB4F9F /* SleepTracker.app */;
@@ -386,6 +397,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Storage;
+		};
+		D42375D02EF6379A00CB4F9F /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

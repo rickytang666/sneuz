@@ -1,5 +1,6 @@
 import Foundation
 import Supabase
+import Combine
 
 class AuthService: ObservableObject {
     static let shared = AuthService()
