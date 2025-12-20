@@ -26,6 +26,8 @@ ios/**/*.moved-aside
 ios/**/*.xccheckout
 ios/**/*.xcscmblueprint
 
+ios/**/Config.swift
+
 # supabase
 .supabase/
 
