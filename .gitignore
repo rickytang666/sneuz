@@ -28,6 +28,7 @@ ios/**/.DS_Store
 # ide
 .vscode/
 .idea/
+.agent/
 *.swp
 *.swo
 *~
