@@ -21,6 +21,10 @@ ios/**/*.xcworkspace/xcuserdata/
 ios/**/DerivedData/
 ios/**/*.xcuserstate
 ios/**/.DS_Store
+ios/**/build/
+ios/**/*.moved-aside
+ios/**/*.xccheckout
+ios/**/*.xcscmblueprint
 
 # supabase
 .supabase/

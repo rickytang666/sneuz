@@ -6,6 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D42375AE2EF6342E00CB4F9F /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = D42375AD2EF6342E00CB4F9F /* Auth */; };
+		D42375B02EF6342E00CB4F9F /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = D42375AF2EF6342E00CB4F9F /* Functions */; };
+		D42375B22EF6342E00CB4F9F /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = D42375B12EF6342E00CB4F9F /* PostgREST */; };
+		D42375B42EF6342E00CB4F9F /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = D42375B32EF6342E00CB4F9F /* Realtime */; };
+		D42375B62EF6342E00CB4F9F /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = D42375B52EF6342E00CB4F9F /* Storage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		D423759E2EF6309F00CB4F9F /* SleepTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SleepTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +31,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D42375B22EF6342E00CB4F9F /* PostgREST in Frameworks */,
+				D42375B02EF6342E00CB4F9F /* Functions in Frameworks */,
+				D42375AE2EF6342E00CB4F9F /* Auth in Frameworks */,
+				D42375B62EF6342E00CB4F9F /* Storage in Frameworks */,
+				D42375B42EF6342E00CB4F9F /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +78,11 @@
 			);
 			name = SleepTracker;
 			packageProductDependencies = (
+				D42375AD2EF6342E00CB4F9F /* Auth */,
+				D42375AF2EF6342E00CB4F9F /* Functions */,
+				D42375B12EF6342E00CB4F9F /* PostgREST */,
+				D42375B32EF6342E00CB4F9F /* Realtime */,
+				D42375B52EF6342E00CB4F9F /* Storage */,
 			);
 			productName = SleepTracker;
 			productReference = D423759E2EF6309F00CB4F9F /* SleepTracker.app */;
@@ -94,6 +112,9 @@
 			);
 			mainGroup = D42375952EF6309F00CB4F9F;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D423759F2EF6309F00CB4F9F /* Products */;
 			projectDirPath = "";
@@ -328,6 +349,45 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D42375AD2EF6342E00CB4F9F /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		D42375AF2EF6342E00CB4F9F /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		D42375B12EF6342E00CB4F9F /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		D42375B32EF6342E00CB4F9F /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		D42375B52EF6342E00CB4F9F /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D42375962EF6309F00CB4F9F /* Project object */;
 }
