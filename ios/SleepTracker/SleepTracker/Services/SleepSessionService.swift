@@ -33,7 +33,7 @@ class SleepSessionService: ObservableObject {
             // For MVP, just insert.
             // Note: Schema might require end_time, but for active session we want it null. 
             // We assume backend allows null for end_time.
-            try await client.database
+            try await client
                 .from("sleep_sessions")
                 .insert(newSession)
                 .execute()
@@ -56,7 +56,7 @@ class SleepSessionService: ObservableObject {
         let endTime = Date()
         
         do {
-            try await client.database
+            try await client
                 .from("sleep_sessions")
                 .update(["end_time": endTime.ISO8601Format(), "updated_at": endTime.ISO8601Format()])
                 .eq("id", value: session.id)
@@ -77,7 +77,7 @@ class SleepSessionService: ObservableObject {
         defer { isLoading = false }
         
         do {
-            let response: [SleepSession] = try await client.database
+            let response: [SleepSession] = try await client
                 .from("sleep_sessions")
                 .select()
                 .order("start_time", ascending: false)

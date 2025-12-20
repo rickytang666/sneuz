@@ -7,7 +7,7 @@ struct LoginView: View {
     @State private var showingSignup = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 20) {
                 Text("Sleep Tracker")
                     .font(.largeTitle)
@@ -51,12 +51,11 @@ struct LoginView: View {
                     showingSignup = true
                 }
                 .padding(.top)
-                
-                NavigationLink(destination: SignupView(), isActive: $showingSignup) {
-                    EmptyView()
-                }
             }
             .padding()
+            .navigationDestination(isPresented: $showingSignup) {
+                SignupView()
+            }
         }
     }
     
