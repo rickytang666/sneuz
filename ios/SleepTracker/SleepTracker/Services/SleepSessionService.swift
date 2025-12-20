@@ -24,7 +24,6 @@ class SleepSessionService: ObservableObject {
             startTime: Date(),
             endTime: nil,
             source: "manual",
-            createdAt: Date(),
             updatedAt: Date()
         )
         

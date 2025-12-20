@@ -45,6 +45,14 @@ struct HomeView: View {
                 }
                 .disabled(sessionService.isLoading)
                 
+                if let error = sessionService.errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+
                 if sessionService.isLoading {
                     ProgressView()
                 }
@@ -85,7 +93,7 @@ struct HomeView: View {
                     try await sessionService.startSession()
                 }
             } catch {
-                // Error handling
+                // Error handling handled by Service publishing errorMessage
             }
         }
     }
