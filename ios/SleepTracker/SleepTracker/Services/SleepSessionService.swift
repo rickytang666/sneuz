@@ -54,11 +54,42 @@ class SleepSessionService: ObservableObject {
     @MainActor
     func stopSession() async throws {
         print(" widget: SleepSessionService - stopSession called")
-        guard let session = activeSession else {
-            print(" widget: SleepSessionService - Abort: No activeSession found locally")
+        
+        var targetSessionId: UUID?
+        
+        if let session = activeSession {
+            targetSessionId = session.id
+        } else {
+             print(" widget: No local activeSession. Attempting to fetch from DB...")
+             // Fetch the open session from DB
+             do {
+                 let sessions: [SleepSession] = try await client
+                     .from("sleep_sessions")
+                     .select()
+                     .is("end_time", value: nil)
+                     .order("start_time", ascending: false)
+                     .limit(1)
+                     .execute()
+                     .value
+                 
+                 if let found = sessions.first {
+                     print(" widget: Found open session in DB: \(found.id)")
+                     targetSessionId = found.id
+                     self.activeSession = found // Update local state while we are at it
+                 }
+             } catch {
+                 print(" widget: Failed to fetch open session: \(error)")
+             }
+        }
+        
+        guard let sessionId = targetSessionId else {
+            print(" widget: SleepSessionService - Abort: No active session found locally or remotely.")
+            // Even if we fail, if SharedData says we are tracking, we should probably clear it to fix sync
+            SharedData.shared.isTracking = false
             return
         }
-        print(" widget: SleepSessionService - User \(session.userId) stopping session \(session.id)")
+        
+        print(" widget: SleepSessionService - Stopping session \(sessionId)")
         
         isLoading = true
         defer { isLoading = false }
@@ -69,7 +100,7 @@ class SleepSessionService: ObservableObject {
             try await client
                 .from("sleep_sessions")
                 .update(["end_time": endTime.ISO8601Format(), "updated_at": endTime.ISO8601Format()])
-                .eq("id", value: session.id)
+                .eq("id", value: sessionId)
                 .execute()
             
             print(" widget: SleepSessionService - DB update success")
