@@ -3,6 +3,7 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var sessionService = SleepSessionService.shared
     @StateObject private var auth = AuthService.shared
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         NavigationView {
@@ -77,6 +78,13 @@ struct HomeView: View {
             }
             .navigationBarHidden(true)
             .onAppear {
+                Task {
+                    await sessionService.fetchSessions()
+                }
+            }
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            if newPhase == .active {
                 Task {
                     await sessionService.fetchSessions()
                 }

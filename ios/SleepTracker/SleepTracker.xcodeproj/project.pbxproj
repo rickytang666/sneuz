@@ -13,16 +13,82 @@
 		D42375B42EF6342E00CB4F9F /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = D42375B32EF6342E00CB4F9F /* Realtime */; };
 		D42375B62EF6342E00CB4F9F /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = D42375B52EF6342E00CB4F9F /* Storage */; };
 		D42375D12EF6379A00CB4F9F /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D42375D02EF6379A00CB4F9F /* Supabase */; };
+		D47DBD312EF7B584005D6449 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D47DBD302EF7B584005D6449 /* WidgetKit.framework */; };
+		D47DBD332EF7B584005D6449 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D47DBD322EF7B584005D6449 /* SwiftUI.framework */; };
+		D47DBD422EF7B585005D6449 /* SleepTrackerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D47DBD2F2EF7B584005D6449 /* SleepTrackerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D47DBD592EF7BB47005D6449 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D47DBD582EF7BB47005D6449 /* Supabase */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D47DBD402EF7B585005D6449 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D42375962EF6309F00CB4F9F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D47DBD2E2EF7B584005D6449;
+			remoteInfo = SleepTrackerWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D47DBD432EF7B585005D6449 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D47DBD422EF7B585005D6449 /* SleepTrackerWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		D423759E2EF6309F00CB4F9F /* SleepTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SleepTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D47DBD2F2EF7B584005D6449 /* SleepTrackerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SleepTrackerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D47DBD302EF7B584005D6449 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		D47DBD322EF7B584005D6449 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		D47DBD492EF7B68B005D6449 /* SleepTrackerWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SleepTrackerWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D47DBD462EF7B585005D6449 /* Exceptions for "SleepTrackerWidget" folder in "SleepTrackerWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */;
+		};
+		D47DBD572EF7BA8C005D6449 /* Exceptions for "SleepTracker" folder in "SleepTrackerWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Config.swift,
+				Models/SleepSession.swift,
+				Services/AuthService.swift,
+				Services/SharedData.swift,
+				Services/SleepSessionService.swift,
+				Services/SupabaseClient.swift,
+				Services/ToggleTrackingIntent.swift,
+			);
+			target = D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D42375A02EF6309F00CB4F9F /* SleepTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D47DBD572EF7BA8C005D6449 /* Exceptions for "SleepTracker" folder in "SleepTrackerWidgetExtension" target */,
+			);
 			path = SleepTracker;
+			sourceTree = "<group>";
+		};
+		D47DBD342EF7B584005D6449 /* SleepTrackerWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D47DBD462EF7B585005D6449 /* Exceptions for "SleepTrackerWidget" folder in "SleepTrackerWidgetExtension" target */,
+			);
+			path = SleepTrackerWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -41,13 +107,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D47DBD2C2EF7B584005D6449 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D47DBD332EF7B584005D6449 /* SwiftUI.framework in Frameworks */,
+				D47DBD312EF7B584005D6449 /* WidgetKit.framework in Frameworks */,
+				D47DBD592EF7BB47005D6449 /* Supabase in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		D42375952EF6309F00CB4F9F = {
 			isa = PBXGroup;
 			children = (
+				D47DBD492EF7B68B005D6449 /* SleepTrackerWidgetExtension.entitlements */,
 				D42375A02EF6309F00CB4F9F /* SleepTracker */,
+				D47DBD342EF7B584005D6449 /* SleepTrackerWidget */,
 				D42375CF2EF6379A00CB4F9F /* Frameworks */,
 				D423759F2EF6309F00CB4F9F /* Products */,
 			);
@@ -57,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				D423759E2EF6309F00CB4F9F /* SleepTracker.app */,
+				D47DBD2F2EF7B584005D6449 /* SleepTrackerWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -64,6 +143,8 @@
 		D42375CF2EF6379A00CB4F9F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D47DBD302EF7B584005D6449 /* WidgetKit.framework */,
+				D47DBD322EF7B584005D6449 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -78,10 +159,12 @@
 				D423759A2EF6309F00CB4F9F /* Sources */,
 				D423759B2EF6309F00CB4F9F /* Frameworks */,
 				D423759C2EF6309F00CB4F9F /* Resources */,
+				D47DBD432EF7B585005D6449 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D47DBD412EF7B585005D6449 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D42375A02EF6309F00CB4F9F /* SleepTracker */,
@@ -99,6 +182,29 @@
 			productReference = D423759E2EF6309F00CB4F9F /* SleepTracker.app */;
 			productType = "com.apple.product-type.application";
 		};
+		D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D47DBD472EF7B585005D6449 /* Build configuration list for PBXNativeTarget "SleepTrackerWidgetExtension" */;
+			buildPhases = (
+				D47DBD2B2EF7B584005D6449 /* Sources */,
+				D47DBD2C2EF7B584005D6449 /* Frameworks */,
+				D47DBD2D2EF7B584005D6449 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D47DBD342EF7B584005D6449 /* SleepTrackerWidget */,
+			);
+			name = SleepTrackerWidgetExtension;
+			packageProductDependencies = (
+				D47DBD582EF7BB47005D6449 /* Supabase */,
+			);
+			productName = SleepTrackerWidgetExtension;
+			productReference = D47DBD2F2EF7B584005D6449 /* SleepTrackerWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -110,6 +216,9 @@
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					D423759D2EF6309F00CB4F9F = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					D47DBD2E2EF7B584005D6449 = {
 						CreatedOnToolsVersion = 26.2;
 					};
 				};
@@ -132,12 +241,20 @@
 			projectRoot = "";
 			targets = (
 				D423759D2EF6309F00CB4F9F /* SleepTracker */,
+				D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		D423759C2EF6309F00CB4F9F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D47DBD2D2EF7B584005D6449 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -154,7 +271,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D47DBD2B2EF7B584005D6449 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D47DBD412EF7B585005D6449 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */;
+			targetProxy = D47DBD402EF7B585005D6449 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		D42375A72EF630A000CB4F9F /* Debug */ = {
@@ -281,8 +413,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SleepTracker/SleepTracker.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CDR9NLT4PB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -290,6 +425,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -297,6 +433,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.SleepTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -312,8 +449,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SleepTracker/SleepTracker.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CDR9NLT4PB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -321,6 +461,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -328,9 +469,78 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.SleepTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D47DBD442EF7B585005D6449 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = SleepTrackerWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CDR9NLT4PB;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SleepTrackerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SleepTrackerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.SleepTracker.SleepTrackerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D47DBD452EF7B585005D6449 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = SleepTrackerWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CDR9NLT4PB;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SleepTrackerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SleepTrackerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.SleepTracker.SleepTrackerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -355,6 +565,15 @@
 			buildConfigurations = (
 				D42375AA2EF630A000CB4F9F /* Debug */,
 				D42375AB2EF630A000CB4F9F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D47DBD472EF7B585005D6449 /* Build configuration list for PBXNativeTarget "SleepTrackerWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D47DBD442EF7B585005D6449 /* Debug */,
+				D47DBD452EF7B585005D6449 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -399,6 +618,11 @@
 			productName = Storage;
 		};
 		D42375D02EF6379A00CB4F9F /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		D47DBD582EF7BB47005D6449 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;

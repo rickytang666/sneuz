@@ -15,29 +15,57 @@ class SleepSessionService: ObservableObject {
     @MainActor
     func startSession() async throws {
         guard let user = AuthService.shared.user else { return }
+        
+        // Check local state
+        if activeSession != nil {
+            print(" widget: startSession - Already tracking locally. Ignoring.")
+            return
+        }
+        
         isLoading = true
         defer { isLoading = false }
         
-        let newSession = SleepSession(
-            id: UUID(),
-            userId: user.id,
-            startTime: Date(),
-            endTime: nil,
-            source: "manual",
-            updatedAt: Date()
-        )
-        
         do {
-            // Check for existing active session first?
-            // For MVP, just insert.
-            // Note: Schema might require end_time, but for active session we want it null. 
-            // We assume backend allows null for end_time.
+            // Check for existing active session remotely (Race condition / Fresh state check)
+            let existingSessions: [SleepSession] = try await client
+                .from("sleep_sessions")
+                .select()
+                .is("end_time", value: nil)
+                .limit(1)
+                .execute()
+                .value
+            
+            if let existing = existingSessions.first {
+                print(" widget: startSession - Found existing remote session. Resuming.")
+                self.activeSession = existing
+                
+                // Update SharedData
+                SharedData.shared.isTracking = true
+                SharedData.shared.startTime = existing.startTime
+                return
+            }
+            
+            // Proceed to create new session
+            let newSession = SleepSession(
+                id: UUID(),
+                userId: user.id,
+                startTime: Date(),
+                endTime: nil,
+                source: "manual",
+                updatedAt: Date()
+            )
+            
             try await client
                 .from("sleep_sessions")
                 .insert(newSession)
                 .execute()
             
             self.activeSession = newSession
+            
+            // Update SharedData
+            SharedData.shared.isTracking = true
+            SharedData.shared.startTime = newSession.startTime
+            
             await fetchSessions()
         } catch {
             self.errorMessage = error.localizedDescription
@@ -48,7 +76,44 @@ class SleepSessionService: ObservableObject {
     // Stop the active session
     @MainActor
     func stopSession() async throws {
-        guard let session = activeSession else { return }
+        print(" widget: SleepSessionService - stopSession called")
+        
+        var targetSessionId: UUID?
+        
+        if let session = activeSession {
+            targetSessionId = session.id
+        } else {
+             print(" widget: No local activeSession. Attempting to fetch from DB...")
+             // Fetch the open session from DB
+             do {
+                 let sessions: [SleepSession] = try await client
+                     .from("sleep_sessions")
+                     .select()
+                     .is("end_time", value: nil)
+                     .order("start_time", ascending: false)
+                     .limit(1)
+                     .execute()
+                     .value
+                 
+                 if let found = sessions.first {
+                     print(" widget: Found open session in DB: \(found.id)")
+                     targetSessionId = found.id
+                     self.activeSession = found // Update local state while we are at it
+                 }
+             } catch {
+                 print(" widget: Failed to fetch open session: \(error)")
+             }
+        }
+        
+        guard let sessionId = targetSessionId else {
+            print(" widget: SleepSessionService - Abort: No active session found locally or remotely.")
+            // Even if we fail, if SharedData says we are tracking, we should probably clear it to fix sync
+            SharedData.shared.isTracking = false
+            return
+        }
+        
+        print(" widget: SleepSessionService - Stopping session \(sessionId)")
+        
         isLoading = true
         defer { isLoading = false }
         
@@ -58,12 +123,20 @@ class SleepSessionService: ObservableObject {
             try await client
                 .from("sleep_sessions")
                 .update(["end_time": endTime.ISO8601Format(), "updated_at": endTime.ISO8601Format()])
-                .eq("id", value: session.id)
+                .eq("id", value: sessionId)
                 .execute()
             
+            print(" widget: SleepSessionService - DB update success")
+            
             self.activeSession = nil
+            
+            // Update SharedData
+            SharedData.shared.isTracking = false
+            SharedData.shared.startTime = nil
+            
             await fetchSessions()
         } catch {
+            print(" widget: SleepSessionService - Stop Error: \(error)")
             self.errorMessage = error.localizedDescription
             throw error
         }
@@ -89,8 +162,20 @@ class SleepSessionService: ObservableObject {
             // Determine if there is an active session (latest one has no end_time)
             if let first = response.first, first.endTime == nil {
                 self.activeSession = first
+                
+                // Sync SharedData
+                if !SharedData.shared.isTracking {
+                    SharedData.shared.isTracking = true
+                    SharedData.shared.startTime = first.startTime
+                }
             } else {
                 self.activeSession = nil
+                
+                // Sync SharedData just in case
+                if SharedData.shared.isTracking {
+                    SharedData.shared.isTracking = false
+                    SharedData.shared.startTime = nil
+                }
             }
             
         } catch {
