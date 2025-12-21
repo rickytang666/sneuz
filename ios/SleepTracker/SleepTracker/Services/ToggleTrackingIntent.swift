@@ -8,19 +8,19 @@ struct ToggleTrackingIntent: AppIntent {
         // We need to use the shared service. 
         // Note: This assumes AuthService and SleepSessionService are available in the Widget Target.
         
-        // Ensure auth session is loaded (from Keychain)
-        // refreshSession() is @MainActor, so we await it.
-        await AuthService.shared.refreshSession()
-        
-        // Access shared data (thread-safe interactions via UserDefaults/unchecked Sendable)
-        let currentlyTracking = SharedData.shared.isTracking
-        
-        if currentlyTracking {
-            // Stop Session (MainActor)
-            try? await SleepSessionService.shared.stopSession()
-        } else {
-            // Start Session (MainActor)
-            try? await SleepSessionService.shared.startSession()
+        // Run on MainActor to ensure safe access to UI-related services and avoid async warnings
+        try await MainActor.run {
+            // Ensure auth session is loaded
+            await AuthService.shared.refreshSession()
+            
+            // Access shared data
+            let currentlyTracking = SharedData.shared.isTracking
+            
+            if currentlyTracking {
+                try await SleepSessionService.shared.stopSession()
+            } else {
+                try await SleepSessionService.shared.startSession()
+            }
         }
         
         return .result()
