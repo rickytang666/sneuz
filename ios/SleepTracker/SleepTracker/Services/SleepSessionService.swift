@@ -15,23 +15,46 @@ class SleepSessionService: ObservableObject {
     @MainActor
     func startSession() async throws {
         guard let user = AuthService.shared.user else { return }
+        
+        // Check local state
+        if activeSession != nil {
+            print(" widget: startSession - Already tracking locally. Ignoring.")
+            return
+        }
+        
         isLoading = true
         defer { isLoading = false }
         
-        let newSession = SleepSession(
-            id: UUID(),
-            userId: user.id,
-            startTime: Date(),
-            endTime: nil,
-            source: "manual",
-            updatedAt: Date()
-        )
-        
         do {
-            // Check for existing active session first?
-            // For MVP, just insert.
-            // Note: Schema might require end_time, but for active session we want it null. 
-            // We assume backend allows null for end_time.
+            // Check for existing active session remotely (Race condition / Fresh state check)
+            let existingSessions: [SleepSession] = try await client
+                .from("sleep_sessions")
+                .select()
+                .is("end_time", value: nil)
+                .limit(1)
+                .execute()
+                .value
+            
+            if let existing = existingSessions.first {
+                print(" widget: startSession - Found existing remote session. Resuming.")
+                self.activeSession = existing
+                
+                // Update SharedData
+                SharedData.shared.isTracking = true
+                SharedData.shared.startTime = existing.startTime
+                return
+            }
+            
+            // Proceed to create new session
+            let newSession = SleepSession(
+                id: UUID(),
+                userId: user.id,
+                startTime: Date(),
+                endTime: nil,
+                source: "manual",
+                updatedAt: Date()
+            )
+            
             try await client
                 .from("sleep_sessions")
                 .insert(newSession)
