@@ -83,7 +83,7 @@ struct HomeView: View {
                 }
             }
         }
-        .onChange(of: scenePhase) { newPhase in
+        .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .active {
                 Task {
                     await sessionService.fetchSessions()

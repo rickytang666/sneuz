@@ -18,7 +18,9 @@ struct Supabase {
 // Using App Shared UserDefaults to ensure Widget can access the session.
 // Note: For higher security, migrate to Shared Keychain (kSecAttrAccessGroup) in production.
 struct SharedUserDefaultsStorage: AuthLocalStorage {
-    private let userDefaults = UserDefaults(suiteName: "group.io.sleeptracker.shared")
+    private var userDefaults: UserDefaults? {
+        UserDefaults(suiteName: "group.io.sleeptracker.shared")
+    }
     
     func store(key: String, value: Data) throws {
         userDefaults?.set(value, forKey: key)
