@@ -38,6 +38,11 @@ class SleepSessionService: ObservableObject {
                 .execute()
             
             self.activeSession = newSession
+            
+            // Update SharedData
+            SharedData.shared.isTracking = true
+            SharedData.shared.startTime = newSession.startTime
+            
             await fetchSessions()
         } catch {
             self.errorMessage = error.localizedDescription
@@ -62,6 +67,12 @@ class SleepSessionService: ObservableObject {
                 .execute()
             
             self.activeSession = nil
+            
+            // Update SharedData
+            SharedData.shared.isTracking = false
+            SharedData.shared.startTime = nil
+            
+            await fetchSessions()
             await fetchSessions()
         } catch {
             self.errorMessage = error.localizedDescription
@@ -89,8 +100,20 @@ class SleepSessionService: ObservableObject {
             // Determine if there is an active session (latest one has no end_time)
             if let first = response.first, first.endTime == nil {
                 self.activeSession = first
+                
+                // Sync SharedData
+                if !SharedData.shared.isTracking {
+                    SharedData.shared.isTracking = true
+                    SharedData.shared.startTime = first.startTime
+                }
             } else {
                 self.activeSession = nil
+                
+                // Sync SharedData just in case
+                if SharedData.shared.isTracking {
+                    SharedData.shared.isTracking = false
+                    SharedData.shared.startTime = nil
+                }
             }
             
         } catch {

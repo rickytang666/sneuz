@@ -1,46 +1,37 @@
-//
-//  SleepTrackerWidget.swift
-//  SleepTrackerWidget
-//
-//  Created by Ricky Tang on 2025-12-20.
-//
-
 import WidgetKit
 import SwiftUI
+import AppIntents
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), emoji: "😀")
+        SimpleEntry(date: Date(), isTracking: false, startTime: nil)
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), emoji: "😀")
+    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
+        let isTracking = SharedData.shared.isTracking
+        let startTime = SharedData.shared.startTime
+        let entry = SimpleEntry(date: Date(), isTracking: isTracking, startTime: startTime)
         completion(entry)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
+    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+        let isTracking = SharedData.shared.isTracking
+        let startTime = SharedData.shared.startTime
+        
+        // Create an entry for right now
+        let entry = SimpleEntry(date: Date(), isTracking: isTracking, startTime: startTime)
 
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, emoji: "😀")
-            entries.append(entry)
-        }
-
-        let timeline = Timeline(entries: entries, policy: .atEnd)
+        // Refresh timeline whenever shared data changes or every 15 mins
+        // Note: WidgetCenter.reloadAllTimelines() from Main App is the primary trigger.
+        let timeline = Timeline(entries: [entry], policy: .never)
         completion(timeline)
     }
-
-//    func relevances() async -> WidgetRelevances<Void> {
-//        // Generate a list containing the contexts this widget is relevant in.
-//    }
 }
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let emoji: String
+    let isTracking: Bool
+    let startTime: Date?
 }
 
 struct SleepTrackerWidgetEntryView : View {
@@ -48,37 +39,58 @@ struct SleepTrackerWidgetEntryView : View {
 
     var body: some View {
         VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-
-            Text("Emoji:")
-            Text(entry.emoji)
+            if entry.isTracking {
+                VStack(spacing: 4) {
+                    Image(systemName: "moon.stars.fill")
+                        .font(.title)
+                        .foregroundColor(.indigo)
+                    Text("Sleeping")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    if let startTime = entry.startTime {
+                        Text(startTime, style: .timer)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+            } else {
+                VStack(spacing: 4) {
+                    Image(systemName: "sun.max.fill")
+                        .font(.title)
+                        .foregroundColor(.orange)
+                    Text("Awake")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                }
+            }
+            
+            Spacer().frame(height: 12)
+            
+            Button(intent: ToggleTrackingIntent()) {
+                Text(entry.isTracking ? "Wake Up" : "Sleep")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.2))
+                    .cornerRadius(12)
+            }
+            .buttonStyle(.plain) // Important for Widgets
         }
+        .containerBackground(Color(red: 0.1, green: 0.1, blue: 0.12), for: .widget)
     }
 }
 
+@main
 struct SleepTrackerWidget: Widget {
     let kind: String = "SleepTrackerWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            if #available(iOS 17.0, *) {
-                SleepTrackerWidgetEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
-            } else {
-                SleepTrackerWidgetEntryView(entry: entry)
-                    .padding()
-                    .background()
-            }
+            SleepTrackerWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("Sleep Tracker")
+        .description("Quickly start or stop sleep tracking.")
+        .supportedFamilies([.systemSmall, .systemMedium])
     }
-}
-
-#Preview(as: .systemSmall) {
-    SleepTrackerWidget()
-} timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
 }

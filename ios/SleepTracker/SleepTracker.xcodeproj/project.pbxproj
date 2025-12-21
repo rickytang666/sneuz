@@ -16,6 +16,7 @@
 		D47DBD312EF7B584005D6449 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D47DBD302EF7B584005D6449 /* WidgetKit.framework */; };
 		D47DBD332EF7B584005D6449 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D47DBD322EF7B584005D6449 /* SwiftUI.framework */; };
 		D47DBD422EF7B585005D6449 /* SleepTrackerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D47DBD2F2EF7B584005D6449 /* SleepTrackerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D47DBD592EF7BB47005D6449 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D47DBD582EF7BB47005D6449 /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,11 +59,27 @@
 			);
 			target = D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */;
 		};
+		D47DBD572EF7BA8C005D6449 /* Exceptions for "SleepTracker" folder in "SleepTrackerWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Config.swift,
+				Models/SleepSession.swift,
+				Services/AuthService.swift,
+				Services/SharedData.swift,
+				Services/SleepSessionService.swift,
+				Services/SupabaseClient.swift,
+				Services/ToggleTrackingIntent.swift,
+			);
+			target = D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D42375A02EF6309F00CB4F9F /* SleepTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D47DBD572EF7BA8C005D6449 /* Exceptions for "SleepTracker" folder in "SleepTrackerWidgetExtension" target */,
+			);
 			path = SleepTracker;
 			sourceTree = "<group>";
 		};
@@ -96,6 +113,7 @@
 			files = (
 				D47DBD332EF7B584005D6449 /* SwiftUI.framework in Frameworks */,
 				D47DBD312EF7B584005D6449 /* WidgetKit.framework in Frameworks */,
+				D47DBD592EF7BB47005D6449 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,6 +199,7 @@
 			);
 			name = SleepTrackerWidgetExtension;
 			packageProductDependencies = (
+				D47DBD582EF7BB47005D6449 /* Supabase */,
 			);
 			productName = SleepTrackerWidgetExtension;
 			productReference = D47DBD2F2EF7B584005D6449 /* SleepTrackerWidgetExtension.appex */;
@@ -406,6 +425,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -441,6 +461,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -473,6 +494,7 @@
 				INFOPLIST_FILE = SleepTrackerWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SleepTrackerWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -506,6 +528,7 @@
 				INFOPLIST_FILE = SleepTrackerWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SleepTrackerWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -595,6 +618,11 @@
 			productName = Storage;
 		};
 		D42375D02EF6379A00CB4F9F /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		D47DBD582EF7BB47005D6449 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D42375AC2EF6342E00CB4F9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
