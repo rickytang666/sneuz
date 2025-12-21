@@ -53,7 +53,13 @@ class SleepSessionService: ObservableObject {
     // Stop the active session
     @MainActor
     func stopSession() async throws {
-        guard let session = activeSession else { return }
+        print(" widget: SleepSessionService - stopSession called")
+        guard let session = activeSession else {
+            print(" widget: SleepSessionService - Abort: No activeSession found locally")
+            return
+        }
+        print(" widget: SleepSessionService - User \(session.userId) stopping session \(session.id)")
+        
         isLoading = true
         defer { isLoading = false }
         
@@ -66,6 +72,8 @@ class SleepSessionService: ObservableObject {
                 .eq("id", value: session.id)
                 .execute()
             
+            print(" widget: SleepSessionService - DB update success")
+            
             self.activeSession = nil
             
             // Update SharedData
@@ -73,8 +81,8 @@ class SleepSessionService: ObservableObject {
             SharedData.shared.startTime = nil
             
             await fetchSessions()
-            await fetchSessions()
         } catch {
+            print(" widget: SleepSessionService - Stop Error: \(error)")
             self.errorMessage = error.localizedDescription
             throw error
         }
