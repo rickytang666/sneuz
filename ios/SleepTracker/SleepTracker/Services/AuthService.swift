@@ -23,8 +23,10 @@ class AuthService: ObservableObject {
         do {
             self.session = try await client.auth.session
             self.user = try await client.auth.user()
+            SharedData.shared.isLoggedIn = true
         } catch {
             print("Session refresh error: \(error)")
+            SharedData.shared.isLoggedIn = false
         }
     }
     
@@ -38,6 +40,7 @@ class AuthService: ObservableObject {
             let response = try await client.auth.signUp(email: email, password: password)
             self.session = response.session
             self.user = response.user
+            SharedData.shared.isLoggedIn = true
         } catch {
             self.errorMessage = error.localizedDescription
             throw error
@@ -54,6 +57,7 @@ class AuthService: ObservableObject {
             let session = try await client.auth.signIn(email: email, password: password)
             self.session = session
             self.user = session.user
+            SharedData.shared.isLoggedIn = true
         } catch {
             self.errorMessage = error.localizedDescription
             throw error
@@ -70,6 +74,7 @@ class AuthService: ObservableObject {
             try await client.auth.signOut()
             self.session = nil
             self.user = nil
+            SharedData.shared.isLoggedIn = false
         } catch {
             self.errorMessage = error.localizedDescription
             throw error

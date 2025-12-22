@@ -11,11 +11,20 @@ final class SharedData: @unchecked Sendable {
     
     private let kIsTracking = "isTracking"
     private let kStartTime = "startTime"
+    private let kIsLoggedIn = "isLoggedIn"
     
     var isTracking: Bool {
         get { userDefaults?.bool(forKey: kIsTracking) ?? false }
         set {
             userDefaults?.set(newValue, forKey: kIsTracking)
+            reloadWidget()
+        }
+    }
+    
+    var isLoggedIn: Bool {
+        get { userDefaults?.bool(forKey: kIsLoggedIn) ?? false }
+        set {
+            userDefaults?.set(newValue, forKey: kIsLoggedIn)
             reloadWidget()
         }
     }
