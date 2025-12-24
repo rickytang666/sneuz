@@ -69,6 +69,7 @@ struct StatsView: View {
                         chartView
                             .frame(width: CGFloat(selectedRange.days) * 24) // ~24pt per day for scrolling
                             .padding(.horizontal)
+                            .padding(.trailing, 20) // Extra trailing padding for labels
                             .id("chartContent")
                     }
                     .frame(height: 300)
@@ -81,6 +82,7 @@ struct StatsView: View {
                 chartView
                     .frame(height: 300)
                     .padding(.horizontal)
+                    .padding(.trailing, 20) // Extra trailing padding for labels
             }
             
             Spacer()
@@ -139,7 +141,7 @@ struct StatsView: View {
                         Text("Target Bed")
                             .font(.caption2)
                             .foregroundStyle(.green)
-                            .padding(.leading, 4)
+                            .padding(.leading, 1)
                     }
                 
                 RuleMark(y: .value("Target Wake", wakeTarget))
@@ -149,7 +151,7 @@ struct StatsView: View {
                         Text("Target Wake")
                             .font(.caption2)
                             .foregroundStyle(.green)
-                            .padding(.leading, 4)
+                            .padding(.leading, 1)
                     }
             }
         }
