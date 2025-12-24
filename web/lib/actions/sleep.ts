@@ -148,17 +148,19 @@ export async function getUserSettings() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     
-    if (!user) return { target_hours: 8 }
+    // Default: Bedtime 11pm, Wake 7am
+    const defaultSettings = { target_bedtime: '23:00', target_wake_time: '07:00' }
+    
+    if (!user) return defaultSettings
 
     const { data, error } = await supabase
         .from('user_settings')
-        .select('target_hours')
+        .select('target_bedtime, target_wake_time')
         .eq('user_id', user.id)
         .single()
     
     if (error || !data) {
-        // Return default if no settings found
-        return { target_hours: 8 }
+        return defaultSettings
     }
 
     return data

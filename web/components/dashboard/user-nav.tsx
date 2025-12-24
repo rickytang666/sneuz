@@ -15,28 +15,29 @@ import { signout } from "@/app/auth/actions";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export function UserNav() {
+export function UserNav({ user }: { user: any }) {
   const router = useRouter();
 
-  // We can fetch user data here or pass it in.
-  // For now simplistic placeholder.
+  const name = user?.full_name || user?.email || "User"
+  const email = user?.email || ""
+  const initials = name.slice(0, 2).toUpperCase()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/avatars/01.png" alt="@shadcn" />
-            <AvatarFallback>SC</AvatarFallback>
+            <AvatarImage src={user?.avatar_url} alt={name} />
+            <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">shadcn</p>
+            <p className="text-sm font-medium leading-none">{name}</p>
             <p className="text-muted-foreground text-xs leading-none">
-              m@example.com
+              {email}
             </p>
           </div>
         </DropdownMenuLabel>

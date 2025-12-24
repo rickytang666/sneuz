@@ -2,6 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { getProfile } from "@/lib/actions/user"
 
 export default async function DashboardLayout({
   children,
@@ -15,9 +16,11 @@ export default async function DashboardLayout({
     redirect('/login?next=/dashboard')
   }
 
+  const profile = await getProfile()
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar user={profile} />
       <main className="w-full">
         <div className="flex items-center p-4">
              <SidebarTrigger />

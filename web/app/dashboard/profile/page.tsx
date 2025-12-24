@@ -1,18 +1,47 @@
-export default function ProfilePage() {
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { getProfile, updateProfile } from "@/lib/actions/user"
+
+export default async function ProfilePage() {
+  const profile = await getProfile()
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">Profile</h3>
-        <p className="text-sm text-muted-foreground">
-          Manage your public profile and account details.
-        </p>
-      </div>
-      <div className="grid gap-6">
-         <div className="p-4 border rounded-md">
-            <h4 className="font-semibold mb-2">User Profile</h4>
-            <p className="text-sm text-muted-foreground mb-4">Name, Email, Password, Avatar</p>
-            {/* TODO: Add Profile Management Form */}
-         </div>
+    <div className="space-y-6 max-w-2xl">
+      <div className="border rounded-md p-6">
+         <form action={async (formData) => {
+             "use server"
+             await updateProfile(formData)
+         }} className="space-y-4">
+             <h4 className="font-semibold">User Profile</h4>
+            
+            <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input 
+                    id="email" 
+                    value={profile?.email || ''} 
+                    disabled 
+                    className="bg-muted"
+                />
+                <p className="text-[0.8rem] text-muted-foreground">
+                    Email cannot be changed securely from this dashboard yet.
+                </p>
+            </div>
+
+            <div className="grid gap-2">
+                <Label htmlFor="full_name">Full Name</Label>
+                <Input 
+                    id="full_name" 
+                    name="full_name" 
+                    defaultValue={profile?.full_name || ''} 
+                    placeholder="Enter your name"
+                />
+            </div>
+
+            <div className="pt-2">
+                <Button type="submit">Update Profile</Button>
+            </div>
+         </form>
       </div>
     </div>
   )

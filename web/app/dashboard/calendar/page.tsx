@@ -6,8 +6,15 @@ export default async function CalendarPage() {
   const settings = await getUserSettings()
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-      <SleepCalendar sessions={sessions || []} goal={Number(settings.target_hours)} />
+    <div className="space-y-6">
+       <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold tracking-tight">Calendar</h1>
+       </div>
+       <SleepCalendar 
+            sessions={sessions} 
+            targetBedtime={settings?.target_bedtime} 
+            targetWakeTime={settings?.target_wake_time} 
+       />
     </div>
   )
 }

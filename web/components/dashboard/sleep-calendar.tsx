@@ -35,7 +35,8 @@ interface SleepSession {
 
 interface SleepCalendarProps {
   sessions: SleepSession[]
-  goal?: number
+  targetBedtime?: string
+  targetWakeTime?: string
 }
 
 function SleepRing({ percentage, color }: { percentage: number, color: string }) {
@@ -49,8 +50,14 @@ function SleepRing({ percentage, color }: { percentage: number, color: string })
     )
 }
 
-export function SleepCalendar({ sessions, goal = 8 }: SleepCalendarProps) {
+export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTime = '07:00' }: SleepCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
+
+  // Calculate goal hours
+  const bed = new Date(`2000-01-01T${targetBedtime}`)
+  const wake = new Date(`2000-01-01T${targetWakeTime}`)
+  if (wake < bed) wake.setDate(wake.getDate() + 1)
+  const goal = (wake.getTime() - bed.getTime()) / (1000 * 60 * 60)
 
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1))
   const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1))

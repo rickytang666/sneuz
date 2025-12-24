@@ -48,7 +48,7 @@ const items = [
   },
 ]
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: any }) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -82,7 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                  <ModeToggle />
             </div>
             <div className="flex items-center justify-between gap-2">
-                 <UserNav />
+                 <UserNav user={user} />
             </div>
          </div>
       </SidebarFooter>
