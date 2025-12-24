@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
+import { differenceInMinutes } from "date-fns"
 
 export async function getSleepSessions() {
   const supabase = await createClient()
@@ -9,32 +10,57 @@ export async function getSleepSessions() {
   const { data, error } = await supabase
     .from('sleep_sessions')
     .select('*')
-    .order('bedtime', { ascending: false })
+    .order('start_time', { ascending: false })
 
   if (error) {
     console.error('Error fetching sleep sessions:', error)
     return []
   }
 
-  return data
+  // Map DB columns to UI model
+  return data.map(session => {
+    const start = new Date(session.start_time)
+    const end = session.end_time ? new Date(session.end_time) : null
+    const duration = end ? differenceInMinutes(end, start) : null
+
+    return {
+        id: session.id,
+        bedtime: session.start_time,
+        wake_time: session.end_time,
+        duration_minutes: duration,
+        created_at: session.created_at // actually updated_at in schema, but standardizing
+    }
+  })
 }
 
 export async function getSleepStats() {
     const supabase = await createClient()
     
-    // In a real app we might do more complex aggregation in SQL
-    // For now we'll fetch and aggregate or just fetch totals
     const { data, error } = await supabase
       .from('sleep_sessions')
-      .select('duration_minutes')
+      .select('start_time, end_time')
 
     if (error) {
         console.error('Error fetching stats:', error)
         return { total_hours: 0, avg_hours: 0 }
     }
 
-    const totalMinutes = data.reduce((acc, session) => acc + (session.duration_minutes || 0), 0)
-    const avgMinutes = data.length > 0 ? totalMinutes / data.length : 0
+    let totalMinutes = 0
+    let validSessions = 0
+
+    data.forEach(session => {
+        if (session.end_time) {
+            const start = new Date(session.start_time)
+            const end = new Date(session.end_time)
+            const duration = differenceInMinutes(end, start)
+            if (duration > 0) {
+                totalMinutes += duration
+                validSessions++
+            }
+        }
+    })
+
+    const avgMinutes = validSessions > 0 ? totalMinutes / validSessions : 0
 
     return {
         total_hours: Math.round(totalMinutes / 60),
@@ -45,42 +71,50 @@ export async function getSleepStats() {
 export async function createSleepSession(formData: FormData) {
   const supabase = await createClient()
 
-  // TODO: Add proper Zod validation
-  const bedtime = formData.get('bedtime') as string
-  const wake_time = formData.get('wake_time') as string
-  // Calculate duration? Or let DB trigger handle it? 
-  // For now assuming app calculates or we just send start/end.
+  const start_time = formData.get('bedtime') as string
+  const end_time = formData.get('wake_time') as string // Can be empty string
   
+  const payload: any = {
+      start_time: new Date(start_time).toISOString(),
+  }
+  if (end_time) {
+      payload.end_time = new Date(end_time).toISOString()
+  }
+
   const { error } = await supabase
     .from('sleep_sessions')
-    .insert({
-      bedtime,
-      wake_time,
-    })
+    .insert(payload)
 
   if (error) {
     return { error: error.message }
   }
 
-  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/data')
 }
 
 export async function updateSleepSession(id: string, formData: FormData) {
     const supabase = await createClient()
 
-    const bedtime = formData.get('bedtime') as string
-    const wake_time = formData.get('wake_time') as string
+    const start_time = formData.get('bedtime') as string
+    const end_time = formData.get('wake_time') as string
+
+    const payload: any = {
+        start_time: new Date(start_time).toISOString(),
+    }
+    if (end_time) {
+        payload.end_time = new Date(end_time).toISOString()
+    }
 
     const { error } = await supabase
         .from('sleep_sessions')
-        .update({ bedtime, wake_time })
+        .update(payload)
         .eq('id', id)
     
     if (error) {
         return { error: error.message }
     }
 
-    revalidatePath('/dashboard')
+    revalidatePath('/dashboard/data')
 }
 
 export async function deleteSleepSession(id: string) {
@@ -95,5 +129,5 @@ export async function deleteSleepSession(id: string) {
         return { error: error.message }
     }
 
-    revalidatePath('/dashboard')
+    revalidatePath('/dashboard/data')
 }

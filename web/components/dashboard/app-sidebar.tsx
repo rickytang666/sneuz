@@ -3,7 +3,7 @@
 import * as React from "react"
 import {
   IconCalendar,
-  IconChartBar,
+  IconDatabase,
   IconSettings,
   IconMoon,
   IconUser,
@@ -32,9 +32,9 @@ const items = [
     icon: IconCalendar,
   },
   {
-    title: "Stats",
-    url: "/dashboard/stats",
-    icon: IconChartBar,
+    title: "Data",
+    url: "/dashboard/data",
+    icon: IconDatabase,
   },
   {
     title: "Profile",
