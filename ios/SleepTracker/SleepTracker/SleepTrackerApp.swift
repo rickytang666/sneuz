@@ -9,9 +9,17 @@ import SwiftUI
 
 @main
 struct SleepTrackerApp: App {
+    @StateObject var authService = AuthService.shared
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if authService.isAuthenticated {
+                MainTabView()
+                    .environmentObject(authService)
+            } else {
+                LoginView()
+                    .environmentObject(authService)
+            }
         }
     }
 }
