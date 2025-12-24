@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SleepSessionDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var sessionService: SleepSessionService
+    @ObservedObject var sessionService = SleepSessionService.shared
     
     // If nil, we are creating a new session
     var session: SleepSession?
@@ -51,7 +51,9 @@ struct SleepSessionDetailView: View {
     }
     
     private func saveSession() {
+        print("🔍 DetailView: saveSession called")
         guard endTime >= startTime else {
+            print("🔍 DetailView: Validation failed - End time before start time")
             error = "End time must be after start time"
             return
         }
@@ -60,14 +62,25 @@ struct SleepSessionDetailView: View {
         error = nil
         
         Task {
+            print("🔍 DetailView: Starting Task")
             do {
                 if let session = session {
+                    print("🔍 DetailView: Calling updateSession")
                     try await sessionService.updateSession(id: session.id, start: startTime, end: endTime)
+                    print("🔍 DetailView: updateSession returned")
                 } else {
+                    print("🔍 DetailView: Calling createSession")
                     try await sessionService.createSession(start: startTime, end: endTime)
+                    print("🔍 DetailView: createSession returned")
                 }
-                dismiss()
+                
+                print("🔍 DetailView: Attempting dismiss")
+                await MainActor.run {
+                    dismiss()
+                    print("🔍 DetailView: Dismiss called")
+                }
             } catch {
+                print("🔍 DetailView: Catch block - \(error)")
                 self.error = error.localizedDescription
             }
             isLoading = false

@@ -188,28 +188,43 @@ class SleepSessionService: ObservableObject {
     
     @MainActor
     func createSession(start: Date, end: Date) async throws {
-        guard let user = AuthService.shared.user else { return }
+        print("🔍 Service: createSession started")
+        guard let user = AuthService.shared.user else {
+            print("🔍 Service: No user found in AuthService")
+            return
+        }
         
         isLoading = true
         defer { isLoading = false }
         
-        let newSession = SleepSession(
-            id: UUID(),
-            userId: user.id,
-            startTime: start,
-            endTime: end,
+        struct CreateSessionParams: Encodable {
+            let user_id: UUID
+            let start_time: String
+            let end_time: String
+            let source: String
+            let updated_at: String
+        }
+        
+        print("🔍 Service: Creating params struct with Strings")
+        let newSession = CreateSessionParams(
+            user_id: user.id,
+            start_time: start.ISO8601Format(),
+            end_time: end.ISO8601Format(),
             source: "manual",
-            updatedAt: Date()
+            updated_at: Date().ISO8601Format()
         )
         
         do {
+            print("🔍 Service: Executing Supabase insert")
             try await client
                 .from("sleep_sessions")
                 .insert(newSession)
                 .execute()
+            print("🔍 Service: Insert success")
             
             await fetchSessions()
         } catch {
+            print("🔍 Service: Insert Error - \(error)")
             self.errorMessage = error.localizedDescription
             throw error
         }
@@ -217,30 +232,34 @@ class SleepSessionService: ObservableObject {
     
     @MainActor
     func updateSession(id: UUID, start: Date, end: Date) async throws {
+        print("🔍 Service: updateSession started")
         isLoading = true
         defer { isLoading = false }
         
         struct UpdateSessionParams: Encodable {
-            let start_time: Date
-            let end_time: Date
-            let updated_at: Date
+            let start_time: String
+            let end_time: String
+            let updated_at: String
         }
         
         let updates = UpdateSessionParams(
-            start_time: start,
-            end_time: end,
-            updated_at: Date()
+            start_time: start.ISO8601Format(),
+            end_time: end.ISO8601Format(),
+            updated_at: Date().ISO8601Format()
         )
         
         do {
+            print("🔍 Service: Executing Supabase update")
             try await client
                 .from("sleep_sessions")
                 .update(updates)
                 .eq("id", value: id)
                 .execute()
+            print("🔍 Service: Update success")
             
             await fetchSessions()
         } catch {
+            print("🔍 Service: Update Error - \(error)")
             self.errorMessage = error.localizedDescription
             throw error
         }

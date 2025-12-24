@@ -37,6 +37,7 @@ struct HistoryListView: View {
             }
             .onDelete(perform: deleteSession)
         }
+        .environmentObject(sessionService)
         .navigationTitle("History")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -49,6 +50,7 @@ struct HistoryListView: View {
             NavigationStack {
                 SleepSessionDetailView()
             }
+            .environmentObject(sessionService)
         }
         .refreshable {
             await sessionService.fetchSessions()
