@@ -60,21 +60,6 @@ struct HomeView: View {
                 
                 Spacer()
                 
-                // Navigation to History
-                NavigationLink(destination: HistoryListView()) {
-                    Text("View History")
-                        .foregroundColor(.blue)
-                }
-                .padding(.bottom, 20)
-                
-                // Sign Out (Temporary, for testing)
-                Button("Sign Out") {
-                    Task {
-                        try? await auth.signOut()
-                    }
-                }
-                .foregroundColor(.red)
-                .padding(.bottom, 20)
             }
             .navigationBarHidden(true)
             .onAppear {
