@@ -22,9 +22,10 @@ interface SleepChartProps {
   days: number
   targetBedtime: string
   targetWakeTime: string
+  showTrend?: boolean
 }
 
-export function SleepChart({ sessions, days, targetBedtime, targetWakeTime }: SleepChartProps) {
+export function SleepChart({ sessions, days, targetBedtime, targetWakeTime, showTrend = true }: SleepChartProps) {
   const now = new Date()
   const startDate = startOfDay(subDays(now, days - 1))
   
@@ -233,26 +234,30 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime }: Sl
              ))}
           </Bar>
 
-          <Line
-             type="monotone"
-             dataKey="bedtime"
-             stroke="#f59e0b" // amber-500
-             strokeWidth={2}
-             dot={{ r: 3, fill: "#f59e0b", strokeWidth: 0 }}
-             activeDot={{ r: 5 }}
-             connectNulls={true}
-             isAnimationActive={false}
-          />
-          <Line
-             type="monotone"
-             dataKey="wakeMinutes"
-             stroke="#b546d3ff"
-             strokeWidth={2}
-             dot={{ r: 3, fill: "#b546d3ff", strokeWidth: 0 }}
-             activeDot={{ r: 5 }}
-             connectNulls={true}
-             isAnimationActive={false}
-          />
+          {showTrend && (
+            <>
+              <Line
+                 type="monotone"
+                 dataKey="bedtime"
+                 stroke="#f59e0b" // amber-500
+                 strokeWidth={2}
+                 dot={{ r: 3, fill: "#f59e0b", strokeWidth: 0 }}
+                 activeDot={{ r: 5 }}
+                 connectNulls={true}
+                 isAnimationActive={false}
+              />
+              <Line
+                 type="monotone"
+                 dataKey="wakeMinutes"
+                 stroke="#b546d3ff"
+                 strokeWidth={2}
+                 dot={{ r: 3, fill: "#b546d3ff", strokeWidth: 0 }}
+                 activeDot={{ r: 5 }}
+                 connectNulls={true}
+                 isAnimationActive={false}
+              />
+            </>
+          )}
         </ComposedChart>
       </ResponsiveContainer>
     </div>

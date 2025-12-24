@@ -14,7 +14,7 @@ import {
   subMonths,
   parseISO
 } from "date-fns"
-import { IconChevronLeft, IconChevronRight, IconChartBar, IconCalendarMonth, IconAlertCircle } from "@tabler/icons-react"
+import { IconChevronLeft, IconChevronRight, IconChartBar, IconCalendarMonth, IconAlertCircle, IconTrendingUp } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { SleepChart } from "./sleep-chart"
@@ -56,6 +56,7 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [view, setView] = useState<'grid' | 'chart'>('grid')
   const [chartDays, setChartDays] = useState<7 | 30>(7)
+  const [showTrend, setShowTrend] = useState(true)
 
   // Calculate goal hours
   const bed = new Date(`2000-01-01T${targetBedtime}`)
@@ -150,29 +151,47 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
         </div>
 
         {view === 'chart' && (
-          <div className="flex items-center p-1 bg-muted rounded-lg w-fit border border-border/50">
-            <button
-              onClick={() => setChartDays(7)}
-              className={cn(
-                "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 min-w-[80px]",
-                chartDays === 7 
-                   ? "bg-background text-foreground shadow-sm" 
-                   : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              7 Days
-            </button>
-            <button
-              onClick={() => setChartDays(30)}
-              className={cn(
-                "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 min-w-[80px]",
-                chartDays === 30 
-                   ? "bg-background text-foreground shadow-sm" 
-                   : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              30 Days
-            </button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center p-1 bg-muted rounded-lg w-fit border border-border/50">
+                <button
+                onClick={() => setChartDays(7)}
+                className={cn(
+                    "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 min-w-[80px]",
+                    chartDays === 7 
+                    ? "bg-background text-foreground shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+                >
+                7 Days
+                </button>
+                <button
+                onClick={() => setChartDays(30)}
+                className={cn(
+                    "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 min-w-[80px]",
+                    chartDays === 30 
+                    ? "bg-background text-foreground shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+                >
+                30 Days
+                </button>
+            </div>
+
+             {/* Trend Toggle */}
+            <div className="flex items-center p-1 bg-muted rounded-lg w-fit border border-border/50">
+                 <button
+                    onClick={() => setShowTrend(!showTrend)}
+                    className={cn(
+                        "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
+                        showTrend
+                        ? "bg-background text-amber-500 shadow-sm" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                 >
+                    <IconTrendingUp className="h-4 w-4" />
+                    Trend
+                 </button>
+            </div>
           </div>
         )}
 
@@ -286,6 +305,7 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
                 days={chartDays} 
                 targetBedtime={targetBedtime} 
                 targetWakeTime={targetWakeTime} 
+                showTrend={showTrend}
             />
         </div>
       )}
