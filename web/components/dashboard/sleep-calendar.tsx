@@ -14,9 +14,11 @@ import {
   subMonths,
   parseISO
 } from "date-fns"
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
+import { IconChevronLeft, IconChevronRight, IconChartBar, IconCalendarMonth, IconAlertCircle } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { SleepChart } from "./sleep-chart"
+import { isLateBedtime } from "@/lib/utils/sleep-utils"
 import {
   Tooltip,
   TooltipContent,
@@ -52,6 +54,8 @@ function SleepRing({ percentage, color }: { percentage: number, color: string })
 
 export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTime = '07:00' }: SleepCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [view, setView] = useState<'grid' | 'chart'>('grid')
+  const [chartDays, setChartDays] = useState<7 | 30>(7)
 
   // Calculate goal hours
   const bed = new Date(`2000-01-01T${targetBedtime}`)
@@ -113,63 +117,119 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-lg">
-          {format(currentMonth, "MMMM yyyy")}
-        </h2>
-        <div className="flex items-center gap-2">
-            <div className="mr-4 text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">{goal}h</span> Goal
-            </div>
-            <Button variant="outline" size="sm" onClick={() => setCurrentMonth(new Date())} className="mr-1">
-                Today
-            </Button>
-            <Button variant="outline" size="icon" onClick={prevMonth}>
-                <IconChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" onClick={nextMonth}>
-                <IconChevronRight className="h-4 w-4" />
-            </Button>
+      {/* View Toggle & Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center p-1 bg-muted rounded-lg w-fit">
+          <Button 
+            variant={view === 'grid' ? 'secondary' : 'ghost'} 
+            size="sm" 
+            onClick={() => setView('grid')}
+            className="gap-2"
+          >
+            <IconCalendarMonth className="h-4 w-4" />
+            Calendar
+          </Button>
+          <Button 
+            variant={view === 'chart' ? 'secondary' : 'ghost'} 
+            size="sm" 
+            onClick={() => setView('chart')}
+            className="gap-2"
+          >
+            <IconChartBar className="h-4 w-4" />
+            Analytics
+          </Button>
         </div>
+
+        {view === 'chart' && (
+          <div className="flex items-center p-1 bg-muted rounded-lg w-fit">
+            <Button 
+              variant={chartDays === 7 ? 'secondary' : 'ghost'} 
+              size="sm" 
+              onClick={() => setChartDays(7)}
+            >
+              7 Days
+            </Button>
+            <Button 
+              variant={chartDays === 30 ? 'secondary' : 'ghost'} 
+              size="sm" 
+              onClick={() => setChartDays(30)}
+            >
+              30 Days
+            </Button>
+          </div>
+        )}
+
+        {view === 'grid' && (
+          <div className="flex items-center gap-2">
+              <div className="mr-4 text-sm text-muted-foreground hidden md:block">
+                  <span className="font-medium text-foreground">{goal.toFixed(1)}h</span> Goal
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setCurrentMonth(new Date())}>
+                  Today
+              </Button>
+              <div className="flex items-center gap-1 ml-2">
+                <Button variant="outline" size="icon" className="h-8 w-8" onClick={prevMonth}>
+                    <IconChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon" className="h-8 w-8" onClick={nextMonth}>
+                    <IconChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+          </div>
+        )}
       </div>
 
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-px bg-muted/20 border rounded-lg overflow-hidden shadow-sm">
-        {/* Weekday Headers */}
-        {weekDays.map((day) => (
-          <div
-            key={day}
-            className="bg-muted/50 p-2 text-center text-xs font-medium text-muted-foreground uppercase tracking-widest"
-          >
-            {day}
-          </div>
-        ))}
+      {view === 'grid' ? (
+        <div className="space-y-4">
+          <h2 className="font-semibold text-lg">
+            {format(currentMonth, "MMMM yyyy")}
+          </h2>
+          
+          <div className="grid grid-cols-7 gap-px bg-muted/20 border rounded-lg overflow-hidden shadow-sm">
+            {weekDays.map((day) => (
+              <div
+                key={day}
+                className="bg-muted/50 p-2 text-center text-xs font-medium text-muted-foreground uppercase tracking-widest"
+              >
+                {day}
+              </div>
+            ))}
 
-        {/* Days */}
-        {calendarDays.map((day) => {
-            const session = getSessionForDay(day)
-            const isCurrentMonth = isSameMonth(day, monthStart)
-            const { percent, color } = getSleepStats(session?.duration_minutes || null)
-            
-            return (
-                <div
-                    key={day.toString()}
-                    className={cn(
-                        "min-h-[120px] bg-background p-2 transition-colors relative border sm:border-0 flex flex-col items-center justify-between group",
-                        !isCurrentMonth && "bg-muted/10 text-muted-foreground opacity-50"
-                    )}
-                >
-                    <div className="w-full flex justify-start">
-                         <span className={cn(
-                             "text-xs font-medium h-6 w-6 flex items-center justify-center rounded-full transition-colors",
-                             isSameDay(day, new Date()) ? "bg-primary text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
-                         )}>
-                             {format(day, "d")}
-                         </span>
-                    </div>
-
-                    {session && session.duration_minutes ? (
+            {calendarDays.map((day) => {
+                const session = getSessionForDay(day)
+                const isCurrentMonth = isSameMonth(day, monthStart)
+                const { percent, color } = getSleepStats(session?.duration_minutes || null)
+                const isLate = session ? isLateBedtime(session.bedtime, targetBedtime) : false
+                
+                return (
+                    <div
+                        key={day.toString()}
+                        className={cn(
+                            "min-h-[120px] bg-background p-2 transition-colors relative border sm:border-0 flex flex-col items-center justify-between group",
+                            !isCurrentMonth && "bg-muted/10 text-muted-foreground opacity-50"
+                        )}
+                    >
+                        <div className="w-full flex justify-between items-start">
+                             <span className={cn(
+                                 "text-xs font-medium h-6 w-6 flex items-center justify-center rounded-full transition-colors",
+                                 isSameDay(day, new Date()) ? "bg-primary text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+                             )}>
+                                 {format(day, "d")}
+                             </span>
+                             {isLate && (
+                                <TooltipProvider>
+                                    <Tooltip delayDuration={0}>
+                                        <TooltipTrigger>
+                                            <IconAlertCircle className="h-4 w-4 text-amber-500" />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p className="text-xs">Stayed up late</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                             )}
+                        </div>
+                     {session && session.duration_minutes ? (
                          <TooltipProvider>
                             <Tooltip delayDuration={0}>
                                 <TooltipTrigger asChild>
@@ -198,6 +258,21 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
             )
         })}
       </div>
+     </div>
+      ) : (
+        <div className="border rounded-lg p-6 bg-background shadow-sm">
+            <div className="mb-4">
+                <h2 className="font-semibold text-lg">Sleep Activity</h2>
+                <p className="text-sm text-muted-foreground">Sleep windows over the past {chartDays} days.</p>
+            </div>
+            <SleepChart 
+                sessions={sessions} 
+                days={chartDays} 
+                targetBedtime={targetBedtime} 
+                targetWakeTime={targetWakeTime} 
+            />
+        </div>
+      )}
     </div>
   )
 }
