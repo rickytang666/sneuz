@@ -183,4 +183,92 @@ class SleepSessionService: ObservableObject {
             self.errorMessage = error.localizedDescription
         }
     }
+
+    // MARK: - CRUD Operations
+    
+    @MainActor
+    func createSession(start: Date, end: Date) async throws {
+        guard let user = AuthService.shared.user else { return }
+        
+        isLoading = true
+        defer { isLoading = false }
+        
+        let newSession = SleepSession(
+            id: UUID(),
+            userId: user.id,
+            startTime: start,
+            endTime: end,
+            source: "manual",
+            updatedAt: Date()
+        )
+        
+        do {
+            try await client
+                .from("sleep_sessions")
+                .insert(newSession)
+                .execute()
+            
+            await fetchSessions()
+        } catch {
+            self.errorMessage = error.localizedDescription
+            throw error
+        }
+    }
+    
+    @MainActor
+    func updateSession(id: UUID, start: Date, end: Date) async throws {
+        isLoading = true
+        defer { isLoading = false }
+        
+        struct UpdateSessionParams: Encodable {
+            let start_time: Date
+            let end_time: Date
+            let updated_at: Date
+        }
+        
+        let updates = UpdateSessionParams(
+            start_time: start,
+            end_time: end,
+            updated_at: Date()
+        )
+        
+        do {
+            try await client
+                .from("sleep_sessions")
+                .update(updates)
+                .eq("id", value: id)
+                .execute()
+            
+            await fetchSessions()
+        } catch {
+            self.errorMessage = error.localizedDescription
+            throw error
+        }
+    }
+    
+    @MainActor
+    func deleteSession(id: UUID) async throws {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            try await client
+                .from("sleep_sessions")
+                .delete()
+                .eq("id", value: id)
+                .execute()
+            
+            // If we deleted the active session, clear local state
+            if activeSession?.id == id {
+                activeSession = nil
+                SharedData.shared.isTracking = false
+                SharedData.shared.startTime = nil
+            }
+            
+            await fetchSessions()
+        } catch {
+            self.errorMessage = error.localizedDescription
+            throw error
+        }
+    }
 }
