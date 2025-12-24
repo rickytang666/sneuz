@@ -11,6 +11,20 @@ enum StatsRange: String, CaseIterable {
         case .month: return 30
         }
     }
+    
+    var barWidth: CGFloat {
+        switch self {
+        case .week: return 20
+        case .month: return 12
+        }
+    }
+    
+    var cornerRadius: CGFloat {
+        switch self {
+        case .week: return 5
+        case .month: return 2
+        }
+    }
 }
 
 struct StatsView: View {
@@ -18,81 +32,55 @@ struct StatsView: View {
     @StateObject private var settingsService = UserSettingsService.shared
     @State private var selectedRange: StatsRange = .week
     
-    // Header Stats
+    private let calendar = Calendar.current
+    
+    // MARK: - Computed Properties
+    
     private var avgTimeInBed: String {
-        let sessions = filteredSessions
-        guard !sessions.isEmpty else { return "-- hr -- min" }
+        guard !filteredSessions.isEmpty else { return "-- hr -- min" }
         
-        let totalInterval = sessions.reduce(0) { sum, session in
+        let totalInterval = filteredSessions.reduce(0) { sum, session in
             guard let end = session.endTime else { return sum }
             return sum + end.timeIntervalSince(session.startTime)
         }
-        let avgSeconds = totalInterval / Double(sessions.count)
+        let avgSeconds = totalInterval / Double(filteredSessions.count)
         let hours = Int(avgSeconds) / 3600
         let minutes = (Int(avgSeconds) % 3600) / 60
         return "\(hours)hr \(minutes)min"
     }
+    
+    private var chartStart: Date {
+        let today = calendar.startOfDay(for: Date())
+        return calendar.date(byAdding: .day, value: -(selectedRange.days - 1), to: today)!
+    }
+    
+    private var chartEnd: Date {
+        let today = calendar.startOfDay(for: Date())
+        return calendar.date(byAdding: .day, value: 1, to: today)!
+    }
+    
+    private var filteredSessions: [SleepSession] {
+        sessionService.sessions
+            .filter { session in
+                guard let end = session.endTime else { return false }
+                return end >= chartStart
+            }
+            .sorted { $0.startTime > $1.startTime }
+    }
 
+    // MARK: - Body
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            
-            // Picker
-            Picker("Range", selection: $selectedRange) {
-                ForEach(StatsRange.allCases, id: \.self) { range in
-                    Text(range.rawValue).tag(range)
-                }
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
-            
-            // Header
-            VStack(alignment: .leading, spacing: 4) {
-                Text("AVG. TIME IN BED")
-                    .font(.caption)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.secondary)
-                
-                Text(avgTimeInBed)
-                    .font(.system(size: 32, weight: .semibold, design: .default))
-                    .foregroundStyle(.primary)
-                
-                Text(selectedRange == .week ? "Last 7 Days" : "Last 30 Days")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            .padding(.leading)
-
-            // Chart area - wrapped in ScrollView for month view
-            if selectedRange == .month {
-                ScrollViewReader { proxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        chartView
-                            .frame(width: CGFloat(selectedRange.days) * 24) // ~24pt per day for scrolling
-                            .padding(.horizontal)
-                            .padding(.trailing, 20) // Extra trailing padding for labels
-                            .id("chartContent")
-                    }
-                    .frame(height: 300)
-                    .onAppear {
-                        // Scroll to the right (most recent data) on appear
-                        proxy.scrollTo("chartContent", anchor: .trailing)
-                    }
-                }
-            } else {
-                chartView
-                    .frame(height: 300)
-                    .padding(.horizontal)
-                    .padding(.trailing, 20) // Extra trailing padding for labels
-            }
-            
+            rangePicker
+            statsHeader
+            chartContainer
             Spacer()
         }
-        .navigationTitle("Sleep")
+        .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            Task {
-                await settingsService.fetchData()
-            }
+            Task { await settingsService.fetchData() }
         }
         .refreshable {
             await sessionService.fetchSessions()
@@ -100,64 +88,75 @@ struct StatsView: View {
         }
     }
     
-    // MARK: - Chart View
+    // MARK: - View Components
+    
+    private var rangePicker: some View {
+        Picker("Range", selection: $selectedRange) {
+            ForEach(StatsRange.allCases, id: \.self) { range in
+                Text(range.rawValue).tag(range)
+            }
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal)
+    }
+    
+    private var statsHeader: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("AVG. TIME IN BED")
+                .font(.caption)
+                .fontWeight(.bold)
+                .foregroundStyle(.secondary)
+            
+            Text(avgTimeInBed)
+                .font(.system(size: 32, weight: .semibold, design: .default))
+                .foregroundStyle(.primary)
+            
+            Text(selectedRange == .week ? "Last 7 Days" : "Last 30 Days")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.leading)
+    }
+    
+    private var chartContainer: some View {
+        Group {
+            if selectedRange == .month {
+                ScrollViewReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        chartView
+                            .frame(width: CGFloat(selectedRange.days) * 24)
+                            .padding(.horizontal)
+                            .padding(.trailing, 20)
+                            .id("chartContent")
+                    }
+                    .frame(height: 300)
+                    .onAppear {
+                        proxy.scrollTo("chartContent", anchor: .trailing)
+                    }
+                }
+            } else {
+                chartView
+                    .frame(height: 300)
+                    .padding(.horizontal)
+                    .padding(.trailing, 20)
+            }
+        }
+    }
+    
+    // MARK: - Chart
     
     private var chartView: some View {
         let chartData = prepareChartData()
         let domain = calculateYDomain(data: chartData)
-        let yMidpoint = (domain.min + domain.max) / 2.0 // Midpoint for inversion
+        let yMidpoint = (domain.min + domain.max) / 2.0
         
-        return chartViewContent(chartData: chartData, domain: domain, yMidpoint: yMidpoint)
-    }
-    
-    private func chartViewContent(chartData: [ChartDataPoint], domain: (min: Double, max: Double), yMidpoint: Double) -> some View {
-        Chart {
+        return Chart {
             ForEach(chartData) { dataPoint in
-                if let start = dataPoint.startOffset, let end = dataPoint.endOffset {
-                    BarMark(
-                        x: .value("Day", dataPoint.day, unit: .day),
-                        yStart: .value("Bedtime", invertY(start, midpoint: yMidpoint)),
-                        yEnd: .value("Wake Up", invertY(end, midpoint: yMidpoint)),
-                        width: selectedRange == .week ? .fixed(20) : .fixed(12)
-                    )
-                    .foregroundStyle(Color.cyan)
-                    .cornerRadius(selectedRange == .week ? 5 : 2)
-                } else {
-                    // Invisible placeholder to ensure X axis exists
-                    BarMark(
-                        x: .value("Day", dataPoint.day, unit: .day),
-                        yStart: .value("Placeholder", domain.min),
-                        yEnd: .value("Placeholder", domain.min),
-                        width: selectedRange == .week ? .fixed(20) : .fixed(12)
-                    )
-                    .foregroundStyle(.clear)
-                }
+                createBarMark(for: dataPoint, domain: domain, yMidpoint: yMidpoint)
             }
             
-            // Add Goal Lines
             if let settings = settingsService.settings {
-                let bedTarget = normalizeTimeString(settings.targetBedtime)
-                let wakeTarget = normalizeTimeString(settings.targetWakeTime)
-                
-                RuleMark(y: .value("Target Bed", invertY(bedTarget, midpoint: yMidpoint)))
-                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
-                    .foregroundStyle(.green)
-                    .annotation(position: .trailing, alignment: .leading) {
-                        Text("Target Bed")
-                            .font(.caption2)
-                            .foregroundStyle(.green)
-                            .padding(.leading, 1)
-                    }
-                
-                RuleMark(y: .value("Target Wake", invertY(wakeTarget, midpoint: yMidpoint)))
-                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
-                    .foregroundStyle(.green)
-                    .annotation(position: .trailing, alignment: .leading) {
-                        Text("Target Wake")
-                            .font(.caption2)
-                            .foregroundStyle(.green)
-                            .padding(.leading, 1)
-                    }
+                createTargetLines(settings: settings, yMidpoint: yMidpoint)
             }
         }
         .chartYScale(domain: domain.min...domain.max)
@@ -167,7 +166,6 @@ struct StatsView: View {
                 AxisTick()
                 AxisValueLabel {
                     if let doubleValue = value.as(Double.self) {
-                        // Invert back to get the actual time value for display
                         let actualValue = invertY(doubleValue, midpoint: yMidpoint)
                         Text(formatYLabel(actualValue))
                             .font(.caption2)
@@ -177,13 +175,12 @@ struct StatsView: View {
             }
         }
         .chartXAxis {
-            AxisMarks(values: .stride(by: .day)) { value in
+            AxisMarks(values: .stride(by: .day)) { _ in
                 if selectedRange == .week {
                     AxisGridLine()
                     AxisTick()
                     AxisValueLabel(format: .dateTime.weekday(.narrow), centered: true)
                 } else {
-                    // For month view, show day numbers
                     AxisValueLabel(format: .dateTime.day(), centered: true)
                 }
             }
@@ -191,124 +188,119 @@ struct StatsView: View {
         .chartXScale(domain: chartStart...chartEnd)
     }
     
-    // MARK: - Data Logic
-    
-    // Calculate the start of the chart (e.g. 7 days ago)
-    private var chartStart: Date {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        return calendar.date(byAdding: .day, value: -(selectedRange.days - 1), to: today)!
-    }
-    
-    // Calculate end of chart (end of today for proper domain)
-    private var chartEnd: Date {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        // Add 1 day to include today fully in the domain
-        return calendar.date(byAdding: .day, value: 1, to: today)!
-    }
-    
-    private var filteredSessions: [SleepSession] {
-        let sorted = sessionService.sessions.sorted { $0.startTime > $1.startTime }
-        let cutoff = chartStart
-        return sorted.filter { session in
-            guard let end = session.endTime else { return false }
-            return end >= cutoff
+    @ChartContentBuilder
+    private func createBarMark(for dataPoint: ChartDataPoint, domain: (min: Double, max: Double), yMidpoint: Double) -> some ChartContent {
+        if let start = dataPoint.startOffset, let end = dataPoint.endOffset {
+            BarMark(
+                x: .value("Day", dataPoint.day, unit: .day),
+                yStart: .value("Bedtime", invertY(start, midpoint: yMidpoint)),
+                yEnd: .value("Wake Up", invertY(end, midpoint: yMidpoint)),
+                width: .fixed(selectedRange.barWidth)
+            )
+            .foregroundStyle(Color.cyan)
+            .cornerRadius(selectedRange.cornerRadius)
+        } else {
+            // Invisible placeholder
+            BarMark(
+                x: .value("Day", dataPoint.day, unit: .day),
+                yStart: .value("Placeholder", domain.min),
+                yEnd: .value("Placeholder", domain.min),
+                width: .fixed(selectedRange.barWidth)
+            )
+            .foregroundStyle(.clear)
         }
     }
+    
+    @ChartContentBuilder
+    private func createTargetLines(settings: UserSettings, yMidpoint: Double) -> some ChartContent {
+        let bedTarget = normalizeTime(settings.targetBedtime)
+        let wakeTarget = normalizeTime(settings.targetWakeTime)
+        
+        RuleMark(y: .value("Target Bed", invertY(bedTarget, midpoint: yMidpoint)))
+            .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
+            .foregroundStyle(.green)
+            .annotation(position: .trailing, alignment: .leading) {
+                Text("Target Bed")
+                    .font(.caption2)
+                    .foregroundStyle(.green)
+                    .padding(.leading, 1)
+            }
+        
+        RuleMark(y: .value("Target Wake", invertY(wakeTarget, midpoint: yMidpoint)))
+            .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
+            .foregroundStyle(.green)
+            .annotation(position: .trailing, alignment: .leading) {
+                Text("Target Wake")
+                    .font(.caption2)
+                    .foregroundStyle(.green)
+                    .padding(.leading, 1)
+            }
+    }
+    
+    // MARK: - Data Preparation
     
     struct ChartDataPoint: Identifiable {
         let id = UUID()
         let day: Date
-        let startOffset: Double? // Nullable for empty days
+        let startOffset: Double?
         let endOffset: Double?
     }
     
     private func prepareChartData() -> [ChartDataPoint] {
-        var points: [ChartDataPoint] = []
-        let calendar = Calendar.current
-        
-        // Iterate from start date to end date
-        for i in 0..<selectedRange.days {
-            guard let dayDate = calendar.date(byAdding: .day, value: i, to: chartStart) else { continue }
+        (0..<selectedRange.days).compactMap { i in
+            guard let dayDate = calendar.date(byAdding: .day, value: i, to: chartStart) else { return nil }
             
-            // Find session for this day (based on Wake Time belonging to this day)
-            // We match sessions where the wake-up time (endTime) falls on this specific day
-            let match = filteredSessions.first { session in
+            let session = filteredSessions.first { session in
                 guard let end = session.endTime else { return false }
-                // Get start of day for the wake time
-                let endDay = calendar.startOfDay(for: end)
-                // Compare with the current day we're processing
-                return endDay == dayDate
+                return calendar.startOfDay(for: end) == dayDate
             }
             
-            if let session = match, let end = session.endTime {
-                let startH = normalizeHour(date: session.startTime)
-                let endH = normalizeHour(date: end)
-                
-                points.append(ChartDataPoint(day: dayDate, startOffset: startH, endOffset: endH))
+            if let session = session, let end = session.endTime {
+                return ChartDataPoint(
+                    day: dayDate,
+                    startOffset: normalizeTime(session.startTime),
+                    endOffset: normalizeTime(end)
+                )
             } else {
-                // Empty point
-                points.append(ChartDataPoint(day: dayDate, startOffset: nil, endOffset: nil))
+                return ChartDataPoint(day: dayDate, startOffset: nil, endOffset: nil)
             }
         }
-        return points
     }
     
     private func calculateYDomain(data: [ChartDataPoint]) -> (min: Double, max: Double) {
-        // Collect all Y values
-        let validPoints = data.compactMap { $0.startOffset } + data.compactMap { $0.endOffset }
-        var values = validPoints
+        var values = data.compactMap { $0.startOffset } + data.compactMap { $0.endOffset }
         
-        // Include targets
         if let settings = settingsService.settings {
-            values.append(normalizeTimeString(settings.targetBedtime))
-            values.append(normalizeTimeString(settings.targetWakeTime))
+            values.append(normalizeTime(settings.targetBedtime))
+            values.append(normalizeTime(settings.targetWakeTime))
         }
         
         guard let dataMin = values.min(), let dataMax = values.max() else {
             return (18, 34) // Default fallback
         }
         
-        // Add padding (e.g. 1 hour)
-        let paddedMin = floor(dataMin - 1)
-        let paddedMax = ceil(dataMax + 1)
-        
-        return (paddedMin, paddedMax)
+        return (floor(dataMin - 1), ceil(dataMax + 1))
     }
     
-    // Helper function to invert Y values for intuitive display
-    // (bedtime at top, wake-up at bottom)
+    // MARK: - Helper Functions
+    
     private func invertY(_ value: Double, midpoint: Double) -> Double {
-        // Mirror the value around the midpoint
-        return 2 * midpoint - value
+        2 * midpoint - value
     }
     
-    private func normalizeHour(date: Date) -> Double {
-        let calendar = Calendar.current
+    private func normalizeTime(_ date: Date) -> Double {
         let hour = Double(calendar.component(.hour, from: date))
         let minute = Double(calendar.component(.minute, from: date)) / 60.0
         let value = hour + minute
-        
-        if value < 15.0 {
-            return value + 24.0
-        }
-        return value
+        return value < 15.0 ? value + 24.0 : value
     }
     
-    private func normalizeTimeString(_ timeStr: String) -> Double {
-        // Format "HH:mm:ss"
+    private func normalizeTime(_ timeStr: String) -> Double {
         let parts = timeStr.split(separator: ":").compactMap { Double($0) }
-        guard parts.count >= 2 else { return 23.0 } // Default
+        guard parts.count >= 2 else { return 23.0 }
         
-        let hour = parts[0]
-        let minute = parts[1] / 60.0
-        let value = hour + minute
-        
-        if value < 15.0 {
-            return value + 24.0
-        }
-        return value
+        let value = parts[0] + parts[1] / 60.0
+        return value < 15.0 ? value + 24.0 : value
     }
     
     private func formatYLabel(_ value: Double) -> String {
