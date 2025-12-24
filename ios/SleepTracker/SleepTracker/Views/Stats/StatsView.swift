@@ -31,6 +31,8 @@ struct StatsView: View {
     @StateObject private var sessionService = SleepSessionService.shared
     @StateObject private var settingsService = UserSettingsService.shared
     @State private var selectedRange: StatsRange = .week
+    @State private var selectedDate: Date?
+    @State private var rawSelectedDate: Date?
     
     private let calendar = Calendar.current
     
@@ -71,20 +73,29 @@ struct StatsView: View {
     // MARK: - Body
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            rangePicker
-            statsHeader
-            chartContainer
-            Spacer()
-        }
-        .navigationTitle("Stats")
-        .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            Task { await settingsService.fetchData() }
-        }
-        .refreshable {
-            await sessionService.fetchSessions()
-            await settingsService.fetchData()
+        ZStack {
+            VStack(alignment: .leading, spacing: 20) {
+                rangePicker
+                statsHeader
+                chartContainer
+                Spacer()
+            }
+            .navigationTitle("Stats")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                Task { await settingsService.fetchData() }
+            }
+            .refreshable {
+                await sessionService.fetchSessions()
+                await settingsService.fetchData()
+            }
+            
+            // Detail overlay
+            if let selectedDate = selectedDate,
+               let dataPoint = prepareChartData().first(where: { calendar.isDate($0.day, inSameDayAs: selectedDate) }),
+               dataPoint.startOffset != nil {
+                detailOverlay(for: dataPoint)
+            }
         }
     }
     
@@ -143,6 +154,64 @@ struct StatsView: View {
         }
     }
     
+    private func detailOverlay(for dataPoint: ChartDataPoint) -> some View {
+        GeometryReader { geometry in
+            // Find the session for this data point
+            if let session = filteredSessions.first(where: { session in
+                guard let end = session.endTime else { return false }
+                return calendar.startOfDay(for: end) == dataPoint.day
+            }) {
+                VStack(spacing: 0) {
+                    // Detail card above the line
+                    VStack(spacing: 8) {
+                        Text(formatDate(dataPoint.day))
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                        
+                        HStack(spacing: 16) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Bedtime")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                Text(formatTime(session.startTime))
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Wake")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                Text(formatTime(session.endTime!))
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Duration")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                Text(formatDuration(from: session.startTime, to: session.endTime!))
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.blue)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color(uiColor: .systemBackground))
+                    .cornerRadius(8)
+                    .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.bottom, 8)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .padding(.bottom, 20)
+            }
+        }
+    }
+    
     // MARK: - Chart
     
     private var chartView: some View {
@@ -155,8 +224,16 @@ struct StatsView: View {
                 createBarMark(for: dataPoint, domain: domain, yMidpoint: yMidpoint)
             }
             
+            
             if let settings = settingsService.settings {
                 createTargetLines(settings: settings, yMidpoint: yMidpoint)
+            }
+            
+            // Vertical line for selected date
+            if let selectedDate = selectedDate {
+                RuleMark(x: .value("Selected", selectedDate, unit: .day))
+                    .foregroundStyle(.gray.opacity(0.5))
+                    .lineStyle(StrokeStyle(lineWidth: 2))
             }
         }
         .chartYScale(domain: domain.min...domain.max)
@@ -186,6 +263,19 @@ struct StatsView: View {
             }
         }
         .chartXScale(domain: chartStart...chartEnd)
+        .chartXSelection(value: $rawSelectedDate)
+        .onChange(of: rawSelectedDate) { oldValue, newValue in
+            if let newValue = newValue {
+                // Toggle: if tapping same date, deselect; otherwise select new date
+                if selectedDate == newValue {
+                    selectedDate = nil
+                } else {
+                    selectedDate = newValue
+                }
+            }
+            // Reset raw selection to allow re-tapping
+            rawSelectedDate = nil
+        }
     }
     
     @ChartContentBuilder
@@ -221,7 +311,7 @@ struct StatsView: View {
             .foregroundStyle(.green)
             .annotation(position: .trailing, alignment: .leading) {
                 Text("Target Bed")
-                    .font(.caption2)
+                    .font(.system(size: 9))
                     .foregroundStyle(.green)
                     .padding(.leading, 1)
             }
@@ -231,7 +321,7 @@ struct StatsView: View {
             .foregroundStyle(.green)
             .annotation(position: .trailing, alignment: .leading) {
                 Text("Target Wake")
-                    .font(.caption2)
+                    .font(.system(size: 9))
                     .foregroundStyle(.green)
                     .padding(.leading, 1)
             }
@@ -308,5 +398,24 @@ struct StatsView: View {
         let isPM = normalized >= 12
         let hour12 = normalized > 12 ? normalized - 12 : (normalized == 0 ? 12 : normalized)
         return "\(hour12) \(isPM ? "PM" : "AM")"
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy"
+        return formatter.string(from: date)
+    }
+    
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        return formatter.string(from: date)
+    }
+    
+    private func formatDuration(from start: Date, to end: Date) -> String {
+        let interval = end.timeIntervalSince(start)
+        let hours = Int(interval) / 3600
+        let minutes = (Int(interval) % 3600) / 60
+        return "\(hours)hr \(minutes)min"
     }
 }
