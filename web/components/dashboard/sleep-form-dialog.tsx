@@ -57,6 +57,14 @@ export function SleepFormDialog({ children, session, open, onOpenChange }: Sleep
         })
     }
 
+    function toLocalISOString(dateString: string) {
+        const date = new Date(dateString)
+        const offset = date.getTimezoneOffset()
+        // Adjust the date to local time by subtracting the offset (in minutes)
+        const localDate = new Date(date.getTime() - (offset * 60 * 1000))
+        return localDate.toISOString().slice(0, 16)
+    }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {children && <DialogTrigger asChild>{children}</DialogTrigger>}
@@ -78,7 +86,7 @@ export function SleepFormDialog({ children, session, open, onOpenChange }: Sleep
                     name="bedtime"
                     type="datetime-local"
                     className="col-span-3"
-                    defaultValue={session?.bedtime ? new Date(session.bedtime).toISOString().slice(0, 16) : ''}
+                    defaultValue={session?.bedtime ? toLocalISOString(session.bedtime) : ''}
                     required
                 />
             </div>
@@ -91,7 +99,7 @@ export function SleepFormDialog({ children, session, open, onOpenChange }: Sleep
                     name="wake_time"
                     type="datetime-local"
                     className="col-span-3"
-                    defaultValue={session?.wake_time ? new Date(session.wake_time).toISOString().slice(0, 16) : ''}
+                    defaultValue={session?.wake_time ? toLocalISOString(session.wake_time) : ''}
                 />
             </div>
             </div>

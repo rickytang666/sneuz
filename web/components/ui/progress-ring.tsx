@@ -49,8 +49,8 @@ const ProgressRing: React.FC<ProgressRingProps> = ({
           strokeDasharray={circumference}
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
           variants={{
-            rest: { strokeDashoffset: circumference },
-            hover: { strokeDashoffset: offset },
+            rest: { strokeDashoffset: offset },
+            hover: { strokeDashoffset: [circumference, offset] },
           }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
         />
