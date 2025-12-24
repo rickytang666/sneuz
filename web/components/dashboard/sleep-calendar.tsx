@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import ProgressRing from '@/components/ui/progress-ring';
 
 interface SleepSession {
     id: string
@@ -38,46 +39,18 @@ interface SleepCalendarProps {
 }
 
 function SleepRing({ percentage, colorClass }: { percentage: number, colorClass: string }) {
-    const radius = 18
-    const circumference = 2 * Math.PI * radius
-    const strokeDashoffset = circumference - (percentage / 100) * circumference
-    
-    // Map Tailwind color classes to actual stroke colors for the SVG
-    let strokeColor = "stroke-emerald-500"
-    if (colorClass.includes("rose")) strokeColor = "stroke-rose-500"
-    else if (colorClass.includes("amber")) strokeColor = "stroke-amber-500"
+
+    // Map Tailwind color classes to hex codes
+    let pathColor = "#10b981"; // emerald-500
+    if (colorClass.includes("rose")) pathColor = "#f43f5e"; // rose-500
+    else if (colorClass.includes("amber")) pathColor = "#f59e0b"; // amber-500
+    else if (colorClass.includes("muted")) pathColor = "#e5e7eb"; // gray-200
 
     return (
-        <div className="relative flex items-center justify-center h-12 w-12">
-            <svg className="h-full w-full -rotate-90 transform" viewBox="0 0 48 48">
-                {/* Background Ring */}
-                <circle
-                    className="stroke-muted"
-                    strokeWidth="4"
-                    fill="transparent"
-                    r={radius}
-                    cx="24"
-                    cy="24"
-                />
-                {/* Progress Ring */}
-                <circle
-                    className={strokeColor}
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    fill="transparent"
-                    r={radius}
-                    cx="24"
-                    cy="24"
-                    style={{
-                        strokeDasharray: circumference,
-                        strokeDashoffset: strokeDashoffset,
-                        transition: "stroke-dashoffset 0.5s ease-in-out"
-                    }}
-                />
-            </svg>
-            <div className="absolute text-[10px] font-bold">
-               {percentage > 100 ? '100%+' : `${Math.round(percentage)}%`}
-            </div>
+        <div className="group h-12 w-12 hover:cursor-pointer">
+             <ProgressRing
+                val={percentage}
+            />
         </div>
     )
 }
@@ -110,7 +83,6 @@ export function SleepCalendar({ sessions, goal = 8 }: SleepCalendarProps) {
     })
   }
 
-  // Color coding based on duration
   const getSleepStats = (minutes: number | null) => {
       if (!minutes) return { percent: 0, color: "text-muted-foreground" }
       const hours = minutes / 60
@@ -123,7 +95,8 @@ export function SleepCalendar({ sessions, goal = 8 }: SleepCalendarProps) {
       return { percent, color }
   }
 
-  const formatDuration = (minutes: number) => {
+  const formatDuration = (minutes: number | null) => {
+      if (!minutes) return "0h 0m"
       const hrs = Math.floor(minutes / 60)
       const mins = minutes % 60
       return `${hrs}h ${mins}m`
@@ -162,7 +135,7 @@ export function SleepCalendar({ sessions, goal = 8 }: SleepCalendarProps) {
         ))}
 
         {/* Days */}
-        {calendarDays.map((day, dayIdx) => {
+        {calendarDays.map((day) => {
             const session = getSessionForDay(day)
             const isCurrentMonth = isSameMonth(day, monthStart)
             const { percent, color } = getSleepStats(session?.duration_minutes || null)
@@ -171,14 +144,14 @@ export function SleepCalendar({ sessions, goal = 8 }: SleepCalendarProps) {
                 <div
                     key={day.toString()}
                     className={cn(
-                        "min-h-[100px] bg-background p-2 transition-colors relative border sm:border-0 flex flex-col items-center justify-between",
+                        "min-h-[120px] bg-background p-2 transition-colors relative border sm:border-0 flex flex-col items-center justify-between group",
                         !isCurrentMonth && "bg-muted/10 text-muted-foreground opacity-50"
                     )}
                 >
                     <div className="w-full flex justify-start">
                          <span className={cn(
-                             "text-xs font-medium h-6 w-6 flex items-center justify-center rounded-full",
-                             isSameDay(day, new Date()) && "bg-primary text-primary-foreground"
+                             "text-xs font-medium h-6 w-6 flex items-center justify-center rounded-full transition-colors",
+                             isSameDay(day, new Date()) ? "bg-primary text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
                          )}>
                              {format(day, "d")}
                          </span>
@@ -186,18 +159,22 @@ export function SleepCalendar({ sessions, goal = 8 }: SleepCalendarProps) {
 
                     {session && session.duration_minutes ? (
                          <TooltipProvider>
-                            <Tooltip>
+                            <Tooltip delayDuration={0}>
                                 <TooltipTrigger asChild>
-                                    <div className="cursor-default">
+                                    <div className="cursor-pointer">
                                         <SleepRing percentage={percent} colorClass={color} />
                                     </div>
                                 </TooltipTrigger>
-                                <TooltipContent>
-                                    <div className="text-center">
-                                        <p className="font-bold">{formatDuration(session.duration_minutes)}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {format(parseISO(session.bedtime), "h:mm a")} - {format(parseISO(session.wake_time!), "h:mm a")}
+                                <TooltipContent side="top" className="p-3 bg-popover border shadow-lg rounded-xl">
+                                    <div className="space-y-1 text-center min-w-[120px]">
+                                        <p className="font-bold text-lg text-foreground">
+                                            {formatDuration(session.duration_minutes)}
                                         </p>
+                                        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                                            <span>{format(parseISO(session.bedtime), "h:mm a")}</span>
+                                            <span>→</span>
+                                            <span>{format(parseISO(session.wake_time!), "h:mm a")}</span>
+                                        </div>
                                     </div>
                                 </TooltipContent>
                             </Tooltip>
