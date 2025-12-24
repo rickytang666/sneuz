@@ -5,8 +5,8 @@ import {
   IconCalendar,
   IconChartBar,
   IconSettings,
-  IconLayoutDashboard,
   IconMoon,
+  IconUser,
 } from "@tabler/icons-react"
 import {
   Sidebar,
@@ -35,6 +35,11 @@ const items = [
     title: "Stats",
     url: "/dashboard/stats",
     icon: IconChartBar,
+  },
+  {
+    title: "Profile",
+    url: "/dashboard/profile",
+    icon: IconUser,
   },
   {
     title: "Settings",

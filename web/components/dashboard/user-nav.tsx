@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { signout } from "@/app/auth/actions";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function UserNav() {
   const router = useRouter();
@@ -41,8 +42,16 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard/profile" className="cursor-pointer">
+              Profile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard/settings" className="cursor-pointer">
+              Settings
+            </Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
