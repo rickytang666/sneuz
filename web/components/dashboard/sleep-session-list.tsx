@@ -22,6 +22,13 @@ interface SleepSession {
     created_at: string
 }
 
+function formatDuration(minutes: number | null) {
+    if (!minutes) return '-'
+    const hrs = Math.floor(minutes / 60)
+    const mins = minutes % 60
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
+}
+
 export function SleepSessionList({ sessions }: { sessions: SleepSession[] }) {
     const [isPending, startTransition] = useTransition()
 
@@ -32,7 +39,7 @@ export function SleepSessionList({ sessions }: { sessions: SleepSession[] }) {
               <TableRow>
                 <TableHead>Bedtime</TableHead>
                 <TableHead>Wake Time</TableHead>
-                <TableHead>Duration (min)</TableHead>
+                <TableHead>Duration</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -48,7 +55,7 @@ export function SleepSessionList({ sessions }: { sessions: SleepSession[] }) {
                     <TableRow key={session.id}>
                       <TableCell>{new Date(session.bedtime).toLocaleString()}</TableCell>
                       <TableCell>{session.wake_time ? new Date(session.wake_time).toLocaleString() : '-'}</TableCell>
-                      <TableCell>{session.duration_minutes || '-'}</TableCell>
+                      <TableCell>{formatDuration(session.duration_minutes)}</TableCell>
                       <TableCell className="text-right flex justify-end gap-2">
                          <SleepFormDialog session={session}>
                             <Button variant="ghost" size="icon">

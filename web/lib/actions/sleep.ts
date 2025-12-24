@@ -21,14 +21,19 @@ export async function getSleepSessions() {
   return data.map(session => {
     const start = new Date(session.start_time)
     const end = session.end_time ? new Date(session.end_time) : null
-    const duration = end ? differenceInMinutes(end, start) : null
+    
+    let duration = null
+    if (end) {
+        const diffMs = end.getTime() - start.getTime()
+        duration = Math.ceil(diffMs / (1000 * 60))
+    }
 
     return {
         id: session.id,
         bedtime: session.start_time,
         wake_time: session.end_time,
         duration_minutes: duration,
-        created_at: session.created_at // actually updated_at in schema, but standardizing
+        created_at: session.created_at
     }
   })
 }
