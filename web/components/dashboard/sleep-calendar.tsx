@@ -38,18 +38,12 @@ interface SleepCalendarProps {
   goal?: number
 }
 
-function SleepRing({ percentage, colorClass }: { percentage: number, colorClass: string }) {
-
-    // Map Tailwind color classes to hex codes
-    let pathColor = "#10b981"; // emerald-500
-    if (colorClass.includes("rose")) pathColor = "#f43f5e"; // rose-500
-    else if (colorClass.includes("amber")) pathColor = "#f59e0b"; // amber-500
-    else if (colorClass.includes("muted")) pathColor = "#e5e7eb"; // gray-200
-
+function SleepRing({ percentage, color }: { percentage: number, color: string }) {
     return (
         <div className="group h-12 w-12 hover:cursor-pointer">
              <ProgressRing
-                val={percentage}
+                val={Math.ceil(percentage)}
+                color={color}
             />
         </div>
     )
@@ -83,16 +77,24 @@ export function SleepCalendar({ sessions, goal = 8 }: SleepCalendarProps) {
     })
   }
 
+  // Continuous color mapping: <= 50% = Red (0), > 50% maps 50..100 to 0..120
+  const getPercentageColor = (percentage: number) => {
+      if (percentage <= 50) return `hsl(0, 70%, 45%)`
+      
+      // Clamp at 100
+      const effective = Math.min(percentage, 100)
+      // Map 50..100 to 0..120
+      // (val - 50) / 50 * 120 = (val - 50) * 2.4
+      const hue = (effective - 50) * 2.4
+      return `hsl(${hue}, 70%, 45%)`
+  }
+
   const getSleepStats = (minutes: number | null) => {
-      if (!minutes) return { percent: 0, color: "text-muted-foreground" }
+      if (!minutes) return { percent: 0, color: "hsl(0, 0%, 80%)" } // Gray for empty
       const hours = minutes / 60
       const percent = Math.min((hours / goal) * 100, 100)
       
-      let color = "rose" // Red
-      if (hours >= goal) color = "emerald" // Green
-      else if (hours >= goal * 0.75) color = "amber" // Yellow
-      
-      return { percent, color }
+      return { percent, color: getPercentageColor(percent) }
   }
 
   const formatDuration = (minutes: number | null) => {
@@ -113,6 +115,9 @@ export function SleepCalendar({ sessions, goal = 8 }: SleepCalendarProps) {
             <div className="mr-4 text-sm text-muted-foreground">
                 <span className="font-medium text-foreground">{goal}h</span> Goal
             </div>
+            <Button variant="outline" size="sm" onClick={() => setCurrentMonth(new Date())} className="mr-1">
+                Today
+            </Button>
             <Button variant="outline" size="icon" onClick={prevMonth}>
                 <IconChevronLeft className="h-4 w-4" />
             </Button>
@@ -162,7 +167,7 @@ export function SleepCalendar({ sessions, goal = 8 }: SleepCalendarProps) {
                             <Tooltip delayDuration={0}>
                                 <TooltipTrigger asChild>
                                     <div className="cursor-pointer">
-                                        <SleepRing percentage={percent} colorClass={color} />
+                                        <SleepRing percentage={percent} color={color} />
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="p-3 bg-popover border shadow-lg rounded-xl">

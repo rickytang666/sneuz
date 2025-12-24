@@ -32,7 +32,7 @@ const ProgressRing: React.FC<ProgressRingProps> = ({
           cy={size / 2}
           r={radius}
           stroke={color}
-          strokeOpacity={0.7}
+          strokeOpacity={0.4}
           strokeWidth={strokeWidth}
           fill="none"
         />

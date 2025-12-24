@@ -76,10 +76,17 @@ export async function getSleepStats() {
 export async function createSleepSession(formData: FormData) {
   const supabase = await createClient()
 
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+      return { error: 'Unauthorized' }
+  }
+
   const start_time = formData.get('bedtime') as string
   const end_time = formData.get('wake_time') as string // Can be empty string
   
   const payload: any = {
+      user_id: user.id,
       start_time: new Date(start_time).toISOString(),
   }
   if (end_time) {
