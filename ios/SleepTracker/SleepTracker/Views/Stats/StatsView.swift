@@ -105,14 +105,19 @@ struct StatsView: View {
     private var chartView: some View {
         let chartData = prepareChartData()
         let domain = calculateYDomain(data: chartData)
+        let yMidpoint = (domain.min + domain.max) / 2.0 // Midpoint for inversion
         
-        return Chart {
+        return chartViewContent(chartData: chartData, domain: domain, yMidpoint: yMidpoint)
+    }
+    
+    private func chartViewContent(chartData: [ChartDataPoint], domain: (min: Double, max: Double), yMidpoint: Double) -> some View {
+        Chart {
             ForEach(chartData) { dataPoint in
                 if let start = dataPoint.startOffset, let end = dataPoint.endOffset {
                     BarMark(
                         x: .value("Day", dataPoint.day, unit: .day),
-                        yStart: .value("Bedtime", start),
-                        yEnd: .value("Wake Up", end),
+                        yStart: .value("Bedtime", invertY(start, midpoint: yMidpoint)),
+                        yEnd: .value("Wake Up", invertY(end, midpoint: yMidpoint)),
                         width: selectedRange == .week ? .fixed(20) : .fixed(12)
                     )
                     .foregroundStyle(Color.cyan)
@@ -134,7 +139,7 @@ struct StatsView: View {
                 let bedTarget = normalizeTimeString(settings.targetBedtime)
                 let wakeTarget = normalizeTimeString(settings.targetWakeTime)
                 
-                RuleMark(y: .value("Target Bed", bedTarget))
+                RuleMark(y: .value("Target Bed", invertY(bedTarget, midpoint: yMidpoint)))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
                     .foregroundStyle(.green)
                     .annotation(position: .trailing, alignment: .leading) {
@@ -144,7 +149,7 @@ struct StatsView: View {
                             .padding(.leading, 1)
                     }
                 
-                RuleMark(y: .value("Target Wake", wakeTarget))
+                RuleMark(y: .value("Target Wake", invertY(wakeTarget, midpoint: yMidpoint)))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
                     .foregroundStyle(.green)
                     .annotation(position: .trailing, alignment: .leading) {
@@ -162,7 +167,9 @@ struct StatsView: View {
                 AxisTick()
                 AxisValueLabel {
                     if let doubleValue = value.as(Double.self) {
-                        Text(formatYLabel(doubleValue))
+                        // Invert back to get the actual time value for display
+                        let actualValue = invertY(doubleValue, midpoint: yMidpoint)
+                        Text(formatYLabel(actualValue))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
@@ -268,6 +275,13 @@ struct StatsView: View {
         let paddedMax = ceil(dataMax + 1)
         
         return (paddedMin, paddedMax)
+    }
+    
+    // Helper function to invert Y values for intuitive display
+    // (bedtime at top, wake-up at bottom)
+    private func invertY(_ value: Double, midpoint: Double) -> Double {
+        // Mirror the value around the midpoint
+        return 2 * midpoint - value
     }
     
     private func normalizeHour(date: Date) -> Double {
