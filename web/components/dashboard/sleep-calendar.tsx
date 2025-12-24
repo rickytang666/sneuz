@@ -118,44 +118,61 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
   return (
     <div className="space-y-4">
       {/* View Toggle & Header */}
+      {/* View Toggle & Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center p-1 bg-muted rounded-lg w-fit">
-          <Button 
-            variant={view === 'grid' ? 'secondary' : 'ghost'} 
-            size="sm" 
+        
+        {/* Main View Toggle */}
+        <div className="flex items-center p-1 bg-muted rounded-lg w-fit border border-border/50">
+          <button
             onClick={() => setView('grid')}
-            className="gap-2"
+            className={cn(
+              "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
+              view === 'grid' 
+                ? "bg-background text-foreground shadow-sm" 
+                : "text-muted-foreground hover:text-foreground"
+            )}
           >
             <IconCalendarMonth className="h-4 w-4" />
             Calendar
-          </Button>
-          <Button 
-            variant={view === 'chart' ? 'secondary' : 'ghost'} 
-            size="sm" 
+          </button>
+          <button
             onClick={() => setView('chart')}
-            className="gap-2"
+            className={cn(
+              "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
+              view === 'chart' 
+                ? "bg-background text-foreground shadow-sm" 
+                : "text-muted-foreground hover:text-foreground"
+            )}
           >
             <IconChartBar className="h-4 w-4" />
             Analytics
-          </Button>
+          </button>
         </div>
 
         {view === 'chart' && (
-          <div className="flex items-center p-1 bg-muted rounded-lg w-fit">
-            <Button 
-              variant={chartDays === 7 ? 'secondary' : 'ghost'} 
-              size="sm" 
+          <div className="flex items-center p-1 bg-muted rounded-lg w-fit border border-border/50">
+            <button
               onClick={() => setChartDays(7)}
+              className={cn(
+                "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 min-w-[80px]",
+                chartDays === 7 
+                   ? "bg-background text-foreground shadow-sm" 
+                   : "text-muted-foreground hover:text-foreground"
+              )}
             >
               7 Days
-            </Button>
-            <Button 
-              variant={chartDays === 30 ? 'secondary' : 'ghost'} 
-              size="sm" 
+            </button>
+            <button
               onClick={() => setChartDays(30)}
+              className={cn(
+                "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 min-w-[80px]",
+                chartDays === 30 
+                   ? "bg-background text-foreground shadow-sm" 
+                   : "text-muted-foreground hover:text-foreground"
+              )}
             >
               30 Days
-            </Button>
+            </button>
           </div>
         )}
 
@@ -263,7 +280,6 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
         <div className="border rounded-lg p-6 bg-background shadow-sm">
             <div className="mb-4">
                 <h2 className="font-semibold text-lg">Sleep Activity</h2>
-                <p className="text-sm text-muted-foreground">Sleep windows over the past {chartDays} days.</p>
             </div>
             <SleepChart 
                 sessions={sessions} 

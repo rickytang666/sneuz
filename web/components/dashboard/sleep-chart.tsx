@@ -2,7 +2,8 @@
 
 import React from "react"
 import {
-  BarChart,
+  ComposedChart,
+  Line,
   Bar,
   XAxis,
   YAxis,
@@ -96,7 +97,8 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime }: Sl
       duration: wakeLinear - bedLinear,
       displayBed: format(parseISO(session.bedtime), "h:mm a"),
       displayWake: format(parseISO(session.wake_time!), "h:mm a"),
-      rawDuration: session.duration_minutes || 0
+      rawDuration: session.duration_minutes || 0,
+      wakeMinutes: wakeLinear
     }
   })
 
@@ -137,7 +139,7 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime }: Sl
   return (
     <div className="h-[400px] w-full mt-4">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart
+        <ComposedChart
           data={chartData}
           margin={{ top: 10, right: 100, left: 0, bottom: 0 }}
           barGap={0}
@@ -166,14 +168,14 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime }: Sl
           <Tooltip 
             cursor={{ fill: 'transparent' }} // Remove hover bg
             animationDuration={0}
-            contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
+            contentStyle={{ backgroundColor: '#22c55e', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
                 const data = payload[0].payload
                 if (data.bedtime === null) return null
                 return (
                   <div className="bg-popover border border-border p-3 rounded-md shadow-md text-xs min-w-[140px]">
-                    <p className="font-semibold mb-2 text-foreground text-sm">{data.fullDate}</p>
+                    <p className="flex justify-center font-semibold mb-2 text-foreground text-sm">{data.fullDate}</p>
                     <div className="space-y-1">
                         <div className="flex justify-between gap-4 text-muted-foreground">
                             <span>Start</span>
@@ -183,8 +185,7 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime }: Sl
                             <span>End</span>
                             <span className="text-foreground font-mono">{data.displayWake}</span>
                         </div>
-                        <div className="flex justify-between gap-4 font-bold text-blue-500 pt-1 mt-1 border-t">
-                            <span>Duration</span>
+                        <div className="flex justify-center gap-4 font-bold text-blue-500 pt-1 mt-1 border-t">
                             <span>{formatDuration(data.rawDuration)}</span>
                         </div>
                     </div>
@@ -215,6 +216,7 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime }: Sl
             stackId="sleep" 
             fill="transparent" 
             isAnimationActive={false}
+            tooltipType="none"
           />
           <Bar 
             dataKey="duration" 
@@ -230,7 +232,28 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime }: Sl
                 />
              ))}
           </Bar>
-        </BarChart>
+
+          <Line
+             type="monotone"
+             dataKey="bedtime"
+             stroke="#f59e0b" // amber-500
+             strokeWidth={2}
+             dot={{ r: 3, fill: "#f59e0b", strokeWidth: 0 }}
+             activeDot={{ r: 5 }}
+             connectNulls={true}
+             isAnimationActive={false}
+          />
+          <Line
+             type="monotone"
+             dataKey="wakeMinutes"
+             stroke="#b546d3ff"
+             strokeWidth={2}
+             dot={{ r: 3, fill: "#b546d3ff", strokeWidth: 0 }}
+             activeDot={{ r: 5 }}
+             connectNulls={true}
+             isAnimationActive={false}
+          />
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   )
