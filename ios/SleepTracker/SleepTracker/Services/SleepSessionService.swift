@@ -153,7 +153,7 @@ class SleepSessionService: ObservableObject {
                 .from("sleep_sessions")
                 .select()
                 .order("start_time", ascending: false)
-                .limit(20)
+                .limit(60)
                 .execute()
                 .value
             
