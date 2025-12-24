@@ -1,11 +1,13 @@
-export default function CalendarPage() {
+import { getSleepSessions, getUserSettings } from "@/lib/actions/sleep"
+import { SleepCalendar } from "@/components/dashboard/sleep-calendar"
+
+export default async function CalendarPage() {
+  const sessions = await getSleepSessions()
+  const settings = await getUserSettings()
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-      <div className="grid auto-rows-min gap-4 md:grid-cols-1">
-        <div className="min-h-[500px] rounded-xl bg-muted/50 flex items-center justify-center">
-            <span className="text-muted-foreground">Calendar View Placeholder</span>
-        </div>
-      </div>
+      <SleepCalendar sessions={sessions || []} goal={Number(settings.target_hours)} />
     </div>
   )
 }

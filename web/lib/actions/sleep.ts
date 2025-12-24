@@ -136,3 +136,23 @@ export async function deleteSleepSession(id: string) {
 
     revalidatePath('/dashboard/data')
 }
+
+export async function getUserSettings() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) return { target_hours: 8 }
+
+    const { data, error } = await supabase
+        .from('user_settings')
+        .select('target_hours')
+        .eq('user_id', user.id)
+        .single()
+    
+    if (error || !data) {
+        // Return default if no settings found
+        return { target_hours: 8 }
+    }
+
+    return data
+}
