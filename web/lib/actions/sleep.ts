@@ -85,7 +85,7 @@ export async function createSleepSession(formData: FormData) {
   const start_time = formData.get('bedtime') as string
   const end_time = formData.get('wake_time') as string // Can be empty string
   
-  const payload: any = {
+  const payload: Record<string, string> = {
       user_id: user.id,
       start_time: new Date(start_time).toISOString(),
   }
@@ -110,7 +110,7 @@ export async function updateSleepSession(id: string, formData: FormData) {
     const start_time = formData.get('bedtime') as string
     const end_time = formData.get('wake_time') as string
 
-    const payload: any = {
+    const payload: Record<string, string> = {
         start_time: new Date(start_time).toISOString(),
     }
     if (end_time) {

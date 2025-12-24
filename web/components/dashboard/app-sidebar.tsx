@@ -14,7 +14,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/sidebar"
 import { ModeToggle } from "@/components/mode-toggle"
 import { UserNav } from "@/components/dashboard/user-nav"
+import { UserProfile } from "@/lib/types"
 
 // Menu items.
 const items = [
@@ -48,7 +48,7 @@ const items = [
   },
 ]
 
-export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: any }) {
+export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: UserProfile | null }) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

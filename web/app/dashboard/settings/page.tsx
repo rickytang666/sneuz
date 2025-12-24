@@ -14,14 +14,7 @@ export default async function SettingsPage() {
   const duration = (wake.getTime() - bed.getTime()) / (1000 * 60 * 60)
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <div>
-        <h3 className="text-lg font-medium">Settings</h3>
-        <p className="text-sm text-muted-foreground">
-          Manage your sleep goals and application preferences.
-        </p>
-      </div>
-      
+    <div className="space-y-6 max-w-2xl">  
       <div className="border rounded-md p-6">
          <form action={async (formData) => {
             "use server"

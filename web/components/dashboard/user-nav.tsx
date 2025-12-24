@@ -12,11 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signout } from "@/app/auth/actions";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { UserProfile } from "@/lib/types";
 
-export function UserNav({ user }: { user: any }) {
-  const router = useRouter();
+export function UserNav({ user }: { user: UserProfile | null }) {
 
   const name = user?.full_name || user?.email || "User"
   const email = user?.email || ""

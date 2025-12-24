@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createSleepSession, updateSleepSession } from "@/lib/actions/sleep"
 import { useState, useTransition } from "react"
-import { useRouter } from "next/navigation"
 
 interface SleepFormDialogProps {
   children?: React.ReactNode
@@ -30,7 +29,6 @@ interface SleepFormDialogProps {
 export function SleepFormDialog({ children, session, open, onOpenChange }: SleepFormDialogProps) {
     const [isPending, startTransition] = useTransition()
     const [internalOpen, setInternalOpen] = useState(false)
-    const router = useRouter() // Though actions handle revalidation, router.refresh is sometimes safer
 
     // If controlled, use props, otherwise use internal state
     const isControlled = open !== undefined
