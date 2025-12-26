@@ -4,6 +4,7 @@ struct HomeView: View {
     @StateObject private var sessionService = SleepSessionService.shared
     @StateObject private var auth = AuthService.shared
     @Environment(\.scenePhase) var scenePhase
+    @State private var showAutomationTutorial = false
     
     var body: some View {
         NavigationView {
@@ -61,7 +62,18 @@ struct HomeView: View {
                 Spacer()
                 
             }
-            .navigationBarHidden(true)
+            .navigationBarHidden(false) // Changed to false to show toolbar
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showAutomationTutorial = true }) {
+                        Image(systemName: "bolt.badge.automatic")
+                            .foregroundColor(.indigo)
+                    }
+                }
+            }
+            .sheet(isPresented: $showAutomationTutorial) {
+                AutomationTutorialView()
+            }
             .onAppear {
                 Task {
                     await sessionService.fetchSessions()
