@@ -6,40 +6,48 @@ struct AutomationTutorialView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 32) {
                     
                     // Header
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Automate Sleep Tracking")
-                            .font(.largeTitle)
+                    VStack(alignment: .center, spacing: 16) {
+                        Image(systemName: "powersleep")
+                            .font(.system(size: 60))
+                            .foregroundStyle(LinearGradient(colors: [.indigo, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            .padding(.bottom, 8)
+                        
+                        Text("Automate Your Sleep")
+                            .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                         
-                        Text("Have the app automatically track your sleep when you turn on Sleep Focus.")
+                        Text("Automatically start tracking when you turn on Sleep Focus, or any other focus mode you prefer.")
                             .font(.body)
+                            .multilineTextAlignment(.center)
                             .foregroundColor(.gray)
+                            .padding(.horizontal)
                     }
-                    .padding(.bottom, 12)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 16)
                     
                     // Step 1
                     TutorialStep(
                         number: 1,
                         title: "Open Shortcuts App",
-                        description: "Go to the 'Automation' tab at the bottom."
+                        description: "Go to the 'Automation' tab at the bottom of the Shortcuts app."
                     )
                     
                     // Step 2
                     TutorialStep(
                         number: 2,
-                        title: "Create Automation",
-                        description: "Tap '+' and choose 'Sleep' under Personal Automation."
+                        title: "Create Personal Automation",
+                        description: "Tap '+' and choose a Trigger. You can use 'Sleep' focus, 'Do Not Disturb', or any other focus mode you prefer."
                     )
                     
                     // Step 3
                     TutorialStep(
                         number: 3,
-                        title: "Configure Triggers",
-                        description: "Select 'When turning on' -> Run Immediately. Add action 'Start Sleep Tracking'. Do the same for 'When turning off' -> 'Stop Sleep Tracking'."
+                        title: "Add Actions",
+                        description: "Set 'When Turning On' to 'Start Sleep Tracking'.\nSet 'When Turning Off' to 'Stop Sleep Tracking'."
                     )
                     
                     Spacer()
@@ -50,19 +58,21 @@ struct AutomationTutorialView: View {
                         Link(destination: URL(string: "shortcuts://")!) {
                             HStack {
                                 Image(systemName: "square.stack.3d.up.fill")
-                                Text("Open Shortcuts App")
+                                Text("Open Shortcuts & Create")
                             }
-                            .fontWeight(.bold)
+                            .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.indigo)
                             .foregroundColor(.white)
-                            .cornerRadius(12)
+                            .cornerRadius(16)
+                            .shadow(color: .indigo.opacity(0.4), radius: 8, x: 0, y: 4)
                         }
                         
-                        Button("I'll do it later") {
+                        Button("Maybe Later") {
                             dismiss()
                         }
+                        .font(.subheadline)
                         .foregroundColor(.gray)
                     }
                 }
