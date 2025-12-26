@@ -19,6 +19,11 @@ struct StartTrackingIntent: AppIntent {
             return .result() // Or throw an error
         }
         
+        if SharedData.shared.isTracking {
+            print(" StartTrackingIntent: Already tracking. Ignoring.")
+            throw IntentError.alreadyTracking
+        }
+        
         do {
             try await SleepSessionService.shared.startSession()
             WidgetCenter.shared.reloadAllTimelines()
@@ -26,6 +31,18 @@ struct StartTrackingIntent: AppIntent {
         } catch {
             print(" StartTrackingIntent failed: \(error)")
             throw error
+        }
+    }
+}
+
+enum IntentError: Swift.Error, CustomLocalizedStringResourceConvertible {
+    case alreadyTracking
+    case notTracking
+    
+    var localizedStringResource: LocalizedStringResource {
+        switch self {
+        case .alreadyTracking: return "You are already sleeping."
+        case .notTracking: return "You are not currently sleeping."
         }
     }
 }
@@ -43,6 +60,11 @@ struct StopTrackingIntent: AppIntent {
         guard AuthService.shared.user != nil else {
             print(" StopTrackingIntent: No user logged in")
             return .result()
+        }
+        
+        if !SharedData.shared.isTracking {
+            print(" StopTrackingIntent: Not tracking. Ignoring.")
+            throw IntentError.notTracking
         }
         
         do {
