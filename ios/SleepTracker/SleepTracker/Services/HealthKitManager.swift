@@ -27,13 +27,28 @@ class HealthKitManager: ObservableObject {
         
         let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
         
-        // healthkit expects distinct samples for "in bed", "asleep", etc.
-        // for this simple integration, we'll map the whole session to 'asleep'
-        
+        // metadata
         let metadata: [String: Any] = [
             HKMetadataKeyExternalUUID: id.uuidString
         ]
         
+        // check for existing samples with this UUID
+        let predicate = HKQuery.predicateForObjects(withMetadataKey: HKMetadataKeyExternalUUID, allowedValues: [id.uuidString])
+        
+        // HKSampleQueryDescriptor for ios 16+
+        let descriptor = HKSampleQueryDescriptor(
+            predicates: [.sample(type: sleepType, predicate: predicate)],
+            sortDescriptors: [],
+            limit: nil
+        )
+        
+        let existingSamples = try await descriptor.result(for: healthStore)
+        
+        if !existingSamples.isEmpty {
+            try await healthStore.delete(existingSamples)
+        }
+        
+        // create new sample
         let sample = HKCategorySample(
             type: sleepType,
             value: HKCategoryValueSleepAnalysis.inBed.rawValue,
