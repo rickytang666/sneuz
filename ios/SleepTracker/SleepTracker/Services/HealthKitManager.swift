@@ -1,5 +1,6 @@
 import Foundation
 import HealthKit
+import Combine
 
 class HealthKitManager: ObservableObject {
     static let shared = HealthKitManager()
