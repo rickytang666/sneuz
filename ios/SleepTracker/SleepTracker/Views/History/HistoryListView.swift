@@ -3,6 +3,25 @@ import SwiftUI
 struct HistoryListView: View {
     @StateObject private var sessionService = SleepSessionService.shared
     @State private var showingAddSheet = false
+    @State private var showingExportAlert = false
+    @State private var exportMessage = ""
+    
+    // ...
+    
+    private func exportToHealth() {
+        Task {
+            do {
+                try await HealthKitManager.shared.requestAuthorization()
+                // Assuming sessionService.sessions is populated
+                try await HealthKitManager.shared.saveSessions(sessionService.sessions)
+                exportMessage = "Successfully exported sleep sessions to Apple Health."
+                showingExportAlert = true
+            } catch {
+                exportMessage = "Failed to export: \(error.localizedDescription)"
+                showingExportAlert = true
+            }
+        }
+    }
     
     var body: some View {
         List {
@@ -41,10 +60,21 @@ struct HistoryListView: View {
         .navigationTitle("History")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button(action: { showingAddSheet = true }) {
-                    Image(systemName: "plus")
+                HStack {
+                    Button(action: exportToHealth) {
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(.pink)
+                    }
+                    Button(action: { showingAddSheet = true }) {
+                        Image(systemName: "plus")
+                    }
                 }
             }
+        }
+        .alert("Export to Health", isPresented: $showingExportAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(exportMessage)
         }
         .sheet(isPresented: $showingAddSheet) {
             NavigationStack {
