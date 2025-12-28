@@ -15,7 +15,7 @@
 		D42375D12EF6379A00CB4F9F /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D42375D02EF6379A00CB4F9F /* Supabase */; };
 		D47DBD312EF7B584005D6449 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D47DBD302EF7B584005D6449 /* WidgetKit.framework */; };
 		D47DBD332EF7B584005D6449 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D47DBD322EF7B584005D6449 /* SwiftUI.framework */; };
-		D47DBD422EF7B585005D6449 /* SleepTrackerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D47DBD2F2EF7B584005D6449 /* SleepTrackerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D47DBD422EF7B585005D6449 /* SneuzWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D47DBD2F2EF7B584005D6449 /* SneuzWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D47DBD592EF7BB47005D6449 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D47DBD582EF7BB47005D6449 /* Supabase */; };
 /* End PBXBuildFile section */
 
@@ -36,7 +36,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				D47DBD422EF7B585005D6449 /* SleepTrackerWidgetExtension.appex in Embed Foundation Extensions */,
+				D47DBD422EF7B585005D6449 /* SneuzWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -44,22 +44,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D423759E2EF6309F00CB4F9F /* SleepTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SleepTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D47DBD2F2EF7B584005D6449 /* SleepTrackerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SleepTrackerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D423759E2EF6309F00CB4F9F /* Sneuz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sneuz.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D47DBD2F2EF7B584005D6449 /* SneuzWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SneuzWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D47DBD302EF7B584005D6449 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D47DBD322EF7B584005D6449 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		D47DBD492EF7B68B005D6449 /* SleepTrackerWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SleepTrackerWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		D47DBD462EF7B585005D6449 /* Exceptions for "SleepTrackerWidget" folder in "SleepTrackerWidgetExtension" target */ = {
+		D47DBD462EF7B585005D6449 /* Exceptions for "SleepTrackerWidget" folder in "SneuzWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */;
+			target = D47DBD2E2EF7B584005D6449 /* SneuzWidgetExtension */;
 		};
-		D47DBD572EF7BA8C005D6449 /* Exceptions for "SleepTracker" folder in "SleepTrackerWidgetExtension" target */ = {
+		D47DBD572EF7BA8C005D6449 /* Exceptions for "SleepTracker" folder in "SneuzWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Config.swift,
@@ -70,7 +70,7 @@
 				Services/SupabaseClient.swift,
 				Services/ToggleTrackingIntent.swift,
 			);
-			target = D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */;
+			target = D47DBD2E2EF7B584005D6449 /* SneuzWidgetExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -78,7 +78,7 @@
 		D42375A02EF6309F00CB4F9F /* SleepTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				D47DBD572EF7BA8C005D6449 /* Exceptions for "SleepTracker" folder in "SleepTrackerWidgetExtension" target */,
+				D47DBD572EF7BA8C005D6449 /* Exceptions for "SleepTracker" folder in "SneuzWidgetExtension" target */,
 			);
 			path = SleepTracker;
 			sourceTree = "<group>";
@@ -86,7 +86,7 @@
 		D47DBD342EF7B584005D6449 /* SleepTrackerWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				D47DBD462EF7B585005D6449 /* Exceptions for "SleepTrackerWidget" folder in "SleepTrackerWidgetExtension" target */,
+				D47DBD462EF7B585005D6449 /* Exceptions for "SleepTrackerWidget" folder in "SneuzWidgetExtension" target */,
 			);
 			path = SleepTrackerWidget;
 			sourceTree = "<group>";
@@ -134,8 +134,8 @@
 		D423759F2EF6309F00CB4F9F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D423759E2EF6309F00CB4F9F /* SleepTracker.app */,
-				D47DBD2F2EF7B584005D6449 /* SleepTrackerWidgetExtension.appex */,
+				D423759E2EF6309F00CB4F9F /* Sneuz.app */,
+				D47DBD2F2EF7B584005D6449 /* SneuzWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -152,9 +152,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D423759D2EF6309F00CB4F9F /* SleepTracker */ = {
+		D423759D2EF6309F00CB4F9F /* Sneuz */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D42375A92EF630A000CB4F9F /* Build configuration list for PBXNativeTarget "SleepTracker" */;
+			buildConfigurationList = D42375A92EF630A000CB4F9F /* Build configuration list for PBXNativeTarget "Sneuz" */;
 			buildPhases = (
 				D423759A2EF6309F00CB4F9F /* Sources */,
 				D423759B2EF6309F00CB4F9F /* Frameworks */,
@@ -169,7 +169,7 @@
 			fileSystemSynchronizedGroups = (
 				D42375A02EF6309F00CB4F9F /* SleepTracker */,
 			);
-			name = SleepTracker;
+			name = Sneuz;
 			packageProductDependencies = (
 				D42375AD2EF6342E00CB4F9F /* Auth */,
 				D42375AF2EF6342E00CB4F9F /* Functions */,
@@ -179,12 +179,12 @@
 				D42375D02EF6379A00CB4F9F /* Supabase */,
 			);
 			productName = SleepTracker;
-			productReference = D423759E2EF6309F00CB4F9F /* SleepTracker.app */;
+			productReference = D423759E2EF6309F00CB4F9F /* Sneuz.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */ = {
+		D47DBD2E2EF7B584005D6449 /* SneuzWidgetExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D47DBD472EF7B585005D6449 /* Build configuration list for PBXNativeTarget "SleepTrackerWidgetExtension" */;
+			buildConfigurationList = D47DBD472EF7B585005D6449 /* Build configuration list for PBXNativeTarget "SneuzWidgetExtension" */;
 			buildPhases = (
 				D47DBD2B2EF7B584005D6449 /* Sources */,
 				D47DBD2C2EF7B584005D6449 /* Frameworks */,
@@ -197,12 +197,12 @@
 			fileSystemSynchronizedGroups = (
 				D47DBD342EF7B584005D6449 /* SleepTrackerWidget */,
 			);
-			name = SleepTrackerWidgetExtension;
+			name = SneuzWidgetExtension;
 			packageProductDependencies = (
 				D47DBD582EF7BB47005D6449 /* Supabase */,
 			);
 			productName = SleepTrackerWidgetExtension;
-			productReference = D47DBD2F2EF7B584005D6449 /* SleepTrackerWidgetExtension.appex */;
+			productReference = D47DBD2F2EF7B584005D6449 /* SneuzWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -223,7 +223,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D42375992EF6309F00CB4F9F /* Build configuration list for PBXProject "SleepTracker" */;
+			buildConfigurationList = D42375992EF6309F00CB4F9F /* Build configuration list for PBXProject "Sneuz" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -240,8 +240,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D423759D2EF6309F00CB4F9F /* SleepTracker */,
-				D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */,
+				D423759D2EF6309F00CB4F9F /* Sneuz */,
+				D47DBD2E2EF7B584005D6449 /* SneuzWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -283,7 +283,7 @@
 /* Begin PBXTargetDependency section */
 		D47DBD412EF7B585005D6449 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D47DBD2E2EF7B584005D6449 /* SleepTrackerWidgetExtension */;
+			target = D47DBD2E2EF7B584005D6449 /* SneuzWidgetExtension */;
 			targetProxy = D47DBD402EF7B585005D6449 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -555,7 +555,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D42375992EF6309F00CB4F9F /* Build configuration list for PBXProject "SleepTracker" */ = {
+		D42375992EF6309F00CB4F9F /* Build configuration list for PBXProject "Sneuz" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D42375A72EF630A000CB4F9F /* Debug */,
@@ -564,7 +564,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D42375A92EF630A000CB4F9F /* Build configuration list for PBXNativeTarget "SleepTracker" */ = {
+		D42375A92EF630A000CB4F9F /* Build configuration list for PBXNativeTarget "Sneuz" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D42375AA2EF630A000CB4F9F /* Debug */,
@@ -573,7 +573,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D47DBD472EF7B585005D6449 /* Build configuration list for PBXNativeTarget "SleepTrackerWidgetExtension" */ = {
+		D47DBD472EF7B585005D6449 /* Build configuration list for PBXNativeTarget "SneuzWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D47DBD442EF7B585005D6449 /* Debug */,

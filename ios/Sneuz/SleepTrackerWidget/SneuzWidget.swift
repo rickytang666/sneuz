@@ -37,7 +37,7 @@ struct SimpleEntry: TimelineEntry {
     let isLoggedIn: Bool
 }
 
-struct SleepTrackerWidgetEntryView : View {
+struct SneuzWidgetEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
@@ -96,14 +96,14 @@ struct SleepTrackerWidgetEntryView : View {
 }
 
 @main
-struct SleepTrackerWidget: Widget {
-    let kind: String = "SleepTrackerWidget"
+struct SneuzWidget: Widget {
+    let kind: String = "SneuzWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            SleepTrackerWidgetEntryView(entry: entry)
+            SneuzWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("Sleep Tracker")
+        .configurationDisplayName("Sneuz")
         .description("Quickly start or stop sleep tracking.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }

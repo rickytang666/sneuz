@@ -1,6 +1,6 @@
 import AppIntents
 
-struct SleepTrackerShortcuts: AppShortcutsProvider {
+struct SneuzShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: StartTrackingIntent(),
