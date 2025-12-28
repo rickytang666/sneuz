@@ -114,7 +114,7 @@ export default function Home() {
         
         <p className="flex items-center mt-5 text-lg text-muted-foreground font-medium tracking-wider">
           <IconBrandAppleFilled className="inline mr-1" />
-          iOS App Coming Soon
+          iOS App: Coming Soon
         </p>
       </div>
     </div>

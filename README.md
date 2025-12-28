@@ -30,9 +30,11 @@ Set it up once, runs automatically.
 - **Web**: Next.js, Tailwind, Supabase SSR
 - **Backend**: Supabase (Postgres + Auth + RLS)
 
-## Try it
+## iOS App Status
 
-iOS app coming soon.
+Fully built. Can verify and tested out via Xcode & simulator.
+
+May or may not be shipped to App Store.
 
 ## Dev Setup
 
