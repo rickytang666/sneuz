@@ -48,18 +48,18 @@
 		D47DBD2F2EF7B584005D6449 /* SneuzWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SneuzWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D47DBD302EF7B584005D6449 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D47DBD322EF7B584005D6449 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		D47DBD492EF7B68B005D6449 /* SleepTrackerWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SleepTrackerWidgetExtension.entitlements; sourceTree = "<group>"; };
+		D47DBD492EF7B68B005D6449 /* SneuzWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SneuzWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		D47DBD462EF7B585005D6449 /* Exceptions for "SleepTrackerWidget" folder in "SneuzWidgetExtension" target */ = {
+		D49F01742F00ED9D00134B48 /* Exceptions for "SneuzWidget" folder in "SneuzWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = D47DBD2E2EF7B584005D6449 /* SneuzWidgetExtension */;
 		};
-		D47DBD572EF7BA8C005D6449 /* Exceptions for "SleepTracker" folder in "SneuzWidgetExtension" target */ = {
+		D49F01762F00EE1B00134B48 /* Exceptions for "Sneuz" folder in "SneuzWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Config.swift,
@@ -75,20 +75,20 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D42375A02EF6309F00CB4F9F /* SleepTracker */ = {
+		D42375A02EF6309F00CB4F9F /* Sneuz */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				D47DBD572EF7BA8C005D6449 /* Exceptions for "SleepTracker" folder in "SneuzWidgetExtension" target */,
+				D49F01762F00EE1B00134B48 /* Exceptions for "Sneuz" folder in "SneuzWidgetExtension" target */,
 			);
-			path = SleepTracker;
+			path = Sneuz;
 			sourceTree = "<group>";
 		};
-		D47DBD342EF7B584005D6449 /* SleepTrackerWidget */ = {
+		D47DBD342EF7B584005D6449 /* SneuzWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				D47DBD462EF7B585005D6449 /* Exceptions for "SleepTrackerWidget" folder in "SneuzWidgetExtension" target */,
+				D49F01742F00ED9D00134B48 /* Exceptions for "SneuzWidget" folder in "SneuzWidgetExtension" target */,
 			);
-			path = SleepTrackerWidget;
+			path = SneuzWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -124,8 +124,8 @@
 			isa = PBXGroup;
 			children = (
 				D47DBD492EF7B68B005D6449 /* SleepTrackerWidgetExtension.entitlements */,
-				D42375A02EF6309F00CB4F9F /* SleepTracker */,
-				D47DBD342EF7B584005D6449 /* SleepTrackerWidget */,
+				D42375A02EF6309F00CB4F9F /* Sneuz */,
+				D47DBD342EF7B584005D6449 /* SneuzWidget */,
 				D42375CF2EF6379A00CB4F9F /* Frameworks */,
 				D423759F2EF6309F00CB4F9F /* Products */,
 			);
@@ -167,7 +167,7 @@
 				D47DBD412EF7B585005D6449 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D42375A02EF6309F00CB4F9F /* SleepTracker */,
+				D42375A02EF6309F00CB4F9F /* Sneuz */,
 			);
 			name = Sneuz;
 			packageProductDependencies = (
@@ -195,7 +195,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D47DBD342EF7B584005D6449 /* SleepTrackerWidget */,
+				D47DBD342EF7B584005D6449 /* SneuzWidget */,
 			);
 			name = SneuzWidgetExtension;
 			packageProductDependencies = (
@@ -413,7 +413,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = SleepTracker/SleepTracker.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Sneuz/Sneuz.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -433,7 +433,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.SleepTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.Sneuz;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -451,7 +451,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = SleepTracker/SleepTracker.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Sneuz/Sneuz.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -471,7 +471,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.SleepTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.Sneuz;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -489,14 +489,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = SleepTrackerWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SneuzWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = CDR9NLT4PB;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SleepTrackerWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SleepTrackerWidget;
+				INFOPLIST_FILE = SneuzWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SneuzWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -505,7 +505,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.SleepTracker.SleepTrackerWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.Sneuz.SneuzWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -523,14 +523,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = SleepTrackerWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SneuzWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = CDR9NLT4PB;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SleepTrackerWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SleepTrackerWidget;
+				INFOPLIST_FILE = SneuzWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SneuzWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -539,7 +539,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.SleepTracker.SleepTrackerWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = ricfinity.Sneuz.SneuzWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;

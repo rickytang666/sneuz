@@ -7,7 +7,7 @@ final class SharedData: @unchecked Sendable {
     static let shared = SharedData()
     
     // Suite name must match the App Group identifier
-    private let userDefaults = UserDefaults(suiteName: "group.io.sleeptracker.shared")
+    private let userDefaults = UserDefaults(suiteName: "group.io.sneuz.shared")
     
     private let kIsTracking = "isTracking"
     private let kStartTime = "startTime"

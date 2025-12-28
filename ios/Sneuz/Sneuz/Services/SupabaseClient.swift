@@ -19,7 +19,7 @@ struct Supabase {
 // Note: For higher security, migrate to Shared Keychain (kSecAttrAccessGroup) in production.
 struct SharedUserDefaultsStorage: AuthLocalStorage {
     private var userDefaults: UserDefaults? {
-        UserDefaults(suiteName: "group.io.sleeptracker.shared")
+        UserDefaults(suiteName: "group.io.sneuz.shared")
     }
     
     func store(key: String, value: Data) throws {

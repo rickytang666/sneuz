@@ -1,5 +1,5 @@
 //
-//  SleepTrackerApp.swift
+//  SneuzApp.swift
 //  Sneuz
 //
 //  Created by Ricky Tang on 2025-12-19.
