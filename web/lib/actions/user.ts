@@ -8,31 +8,47 @@ export async function getProfile(): Promise<UserProfile | null> {
   
   if (!user) return null
 
-  // Use user_metadata for profile info to avoid schema dependency issues
+  // Fetch from 'profiles' table
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name') // Removed avatar_url (column missing)
+    .eq('id', user.id)
+    .maybeSingle()
+
   return {
     id: user.id,
     email: user.email,
-    full_name: user.user_metadata?.full_name || '',
-    avatar_url: user.user_metadata?.avatar_url || '',
+    full_name: profile?.full_name ?? user.user_metadata?.full_name ?? '',
+    avatar_url: user.user_metadata?.avatar_url ?? '',
   }
 }
 
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return { error: "Unauthorized" }
   
   const full_name = formData.get('full_name') as string
 
-  // Update user metadata instead of profiles table
-  const { error } = await supabase.auth.updateUser({
+  // 1. Update profiles table
+  const { error: profileError } = await supabase
+    .from('profiles')
+    .upsert({ 
+        id: user.id,
+        full_name,
+        updated_at: new Date().toISOString()
+    })
+
+  if (profileError) {
+      console.error("Profile update error:", profileError)
+      return { error: profileError.message }
+  }
+
+  // 2. Sync with Auth Metadata (Optional but good for consistency)
+  await supabase.auth.updateUser({
     data: { full_name }
   })
-
-  // We can also update the profiles table if it exists/has columns, but for now metadata is safer
-  // straightforwardly given the schema mismatch.
-  
-  if (error) {
-    return { error: error.message }
-  }
 
   revalidatePath('/dashboard/profile')
   revalidatePath('/dashboard', 'layout') 
