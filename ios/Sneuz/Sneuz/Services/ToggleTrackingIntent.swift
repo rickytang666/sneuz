@@ -2,6 +2,9 @@ import Foundation
 import AppIntents
 import WidgetKit
 import Auth
+import os
+
+let logger = Logger(subsystem: "ricfinity.Sneuz", category: "AppIntents")
 
 struct StartTrackingIntent: AppIntent {
     static var title: LocalizedStringResource = "Start Sleep Tracking"
@@ -9,27 +12,28 @@ struct StartTrackingIntent: AppIntent {
     
     @MainActor
     func perform() async throws -> some IntentResult {
-        print(" StartTrackingIntent started")
+        logger.info("🟢 StartTrackingIntent: perform() called")
         
         // Ensure auth session is loaded
         await AuthService.shared.refreshSession()
         
         guard AuthService.shared.user != nil else {
-            print(" StartTrackingIntent: No user logged in")
-            return .result() // Or throw an error
+            logger.error("🔴 StartTrackingIntent: No user logged in")
+            return .result()
         }
         
         if SharedData.shared.isTracking {
-            print(" StartTrackingIntent: Already tracking. Ignoring.")
+            logger.warning("🟡 StartTrackingIntent: Already tracking. Ignoring.")
             throw IntentError.alreadyTracking
         }
         
         do {
             try await SleepSessionService.shared.startSession()
+            logger.info("✅ StartTrackingIntent: Session started successfully")
             WidgetCenter.shared.reloadAllTimelines()
             return .result()
         } catch {
-            print(" StartTrackingIntent failed: \(error)")
+            logger.error("🔴 StartTrackingIntent failed: \(error.localizedDescription)")
             throw error
         }
     }
@@ -53,26 +57,27 @@ struct StopTrackingIntent: AppIntent {
     
     @MainActor
     func perform() async throws -> some IntentResult {
-        print(" StopTrackingIntent started")
+        logger.info("🛑 StopTrackingIntent: perform() called")
         
         await AuthService.shared.refreshSession()
         
         guard AuthService.shared.user != nil else {
-            print(" StopTrackingIntent: No user logged in")
+            logger.error("🔴 StopTrackingIntent: No user logged in")
             return .result()
         }
         
         if !SharedData.shared.isTracking {
-            print(" StopTrackingIntent: Not tracking. Ignoring.")
+            logger.warning("🟡 StopTrackingIntent: Not tracking. Ignoring.")
             throw IntentError.notTracking
         }
         
         do {
             try await SleepSessionService.shared.stopSession()
+            logger.info("✅ StopTrackingIntent: Session stopped successfully")
             WidgetCenter.shared.reloadAllTimelines()
             return .result()
         } catch {
-            print(" StopTrackingIntent failed: \(error)")
+            logger.error("🔴 StopTrackingIntent failed: \(error.localizedDescription)")
             throw error
         }
     }
@@ -83,28 +88,31 @@ struct ToggleTrackingIntent: AppIntent {
     
     @MainActor
     func perform() async throws -> some IntentResult {
-        print(" ToggleTrackingIntent started")
+        logger.info("🔄 ToggleTrackingIntent: perform() called")
         
         await AuthService.shared.refreshSession()
         
         if let user = AuthService.shared.user {
-             print(" User found: \(user.id)")
+             logger.info("👤 User authenticated: \(user.id)")
         } else {
-             print(" NO USER FOUND")
+             logger.error("🔴 ToggleTrackingIntent: NO USER FOUND")
         }
         
         let currentlyTracking = SharedData.shared.isTracking
+        logger.info("📊 Current tracking state: \(currentlyTracking)")
         
         do {
             if currentlyTracking {
+                logger.info("➡️ Action: Stopping session")
                 try await SleepSessionService.shared.stopSession()
             } else {
+                logger.info("➡️ Action: Starting session")
                 try await SleepSessionService.shared.startSession()
             }
             WidgetCenter.shared.reloadAllTimelines()
             return .result()
         } catch {
-            print(" ToggleTrackingIntent failed: \(error)")
+            logger.error("🔴 ToggleTrackingIntent failed: \(error.localizedDescription)")
             throw error
         }
     }
