@@ -152,7 +152,7 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime, show
                         <span>End</span>
                         <span className="text-foreground font-mono">{data.displayWake}</span>
                       </div>
-                      <div className="flex justify-center gap-4 font-bold text-blue-500 pt-1 mt-1 border-t">
+                      <div className="flex justify-center gap-4 font-bold text-primary pt-1 mt-1 border-t">
                         <span>{formatDuration(data.rawDuration)}</span>
                       </div>
                     </div>
@@ -205,9 +205,9 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime, show
               <Line
                 type="monotone"
                 dataKey="bedtime"
-                stroke="#f293cbff"
+                stroke="#a485e7ff"
                 strokeWidth={2}
-                dot={{ r: 3, fill: "#f293cbff", strokeWidth: 0 }}
+                dot={{ r: 3, fill: "#a485e7ff", strokeWidth: 0 }}
                 activeDot={{ r: 5 }}
                 connectNulls={true}
                 isAnimationActive={false}
@@ -215,9 +215,9 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime, show
               <Line
                 type="monotone"
                 dataKey="wakeMinutes"
-                stroke="#f293cbff"
+                stroke="#a485e7ff"
                 strokeWidth={2}
-                dot={{ r: 3, fill: "#f293cbff", strokeWidth: 0 }}
+                dot={{ r: 3, fill: "#a485e7ff", strokeWidth: 0 }}
                 activeDot={{ r: 5 }}
                 connectNulls={true}
                 isAnimationActive={false}

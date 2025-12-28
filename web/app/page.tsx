@@ -104,7 +104,7 @@ export default function Home() {
         </div>
 
         <div className="flex gap-4 mt-5">
-          <Button asChild size="lg" className="rounded-full px-8 h-12 text-base font-medium bg-primary/70 hover:bg-primary text-primary-foreground border-2 border-transparent">
+          <Button asChild size="lg" className="rounded-full px-8 h-12 text-base font-medium bg-primary/80 hover:bg-primary hover:drop-shadow-md hover:drop-shadow-primary text-primary-foreground border-2 border-transparent">
             <Link href="/login">Enter</Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="rounded-full px-8 h-12 text-base font-medium bg-background/50 backdrop-blur-sm border-2 border-primary/40 text-foreground hover:bg-background/80 hover:border-primary transition-all duration-300">
