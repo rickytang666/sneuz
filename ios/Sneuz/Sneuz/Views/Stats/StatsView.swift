@@ -194,7 +194,7 @@ struct StatsView: View {
                                 Text(formatDuration(from: session.startTime, to: session.endTime!))
                                     .font(.caption)
                                     .fontWeight(.semibold)
-                                    .foregroundStyle(Color.accentColor)
+                                    .foregroundStyle(Color.brandPurple)
                             }
                         }
                     }
@@ -287,7 +287,7 @@ struct StatsView: View {
                 yEnd: .value("Wake Up", invertY(end, midpoint: yMidpoint)),
                 width: .fixed(selectedRange.barWidth)
             )
-            .foregroundStyle(Color.accentColor)
+            .foregroundStyle(Color.brandPurple)
             .cornerRadius(selectedRange.cornerRadius)
         } else {
             // Invisible placeholder

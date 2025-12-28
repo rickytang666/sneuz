@@ -49,31 +49,31 @@ struct SneuzWidgetEntryView : View {
                         .foregroundColor(.red)
                     Text("Log in bruh")
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                 }
             } else {
                 if entry.isTracking {
                     VStack(spacing: 4) {
                         Image(systemName: "moon.stars.fill")
                             .font(.title)
-                            .foregroundColor(.indigo)
+                            .foregroundColor(.brandPurple)
                         Text("Sleeping")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(.primary)
                         if let startTime = entry.startTime {
                             Text(startTime, style: .timer)
                                 .font(.caption)
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondary)
                         }
                     }
                 } else {
                     VStack(spacing: 4) {
                         Image(systemName: "sun.max.fill")
                             .font(.title)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.brandPink)
                         Text("Awake")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(.primary)
                     }
                 }
                 
@@ -85,13 +85,15 @@ struct SneuzWidgetEntryView : View {
                         .fontWeight(.bold)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color.white.opacity(0.2))
+                        .background(Color.brandPurple.opacity(0.1))
                         .cornerRadius(12)
                 }
-                .buttonStyle(.plain) // Important for Widgets
+                .buttonStyle(.plain)
             }
         }
-        .containerBackground(Color(red: 0.1, green: 0.1, blue: 0.12), for: .widget)
+        .containerBackground(for: .widget) {
+            Color(uiColor: .systemBackground)
+        }
     }
 }
 

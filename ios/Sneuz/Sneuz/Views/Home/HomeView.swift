@@ -31,7 +31,7 @@ struct HomeView: View {
                 Button(action: toggleSession) {
                     ZStack {
                         Circle()
-                            .fill(sessionService.activeSession != nil ? Color(red: 1.0, green: 0.6, blue: 0.7) : Color.accentColor)
+                            .fill(sessionService.activeSession != nil ? Color.brandPink : Color.brandPurple)
                             .frame(width: 200, height: 200)
                             .shadow(radius: 10)
                         
@@ -72,7 +72,7 @@ struct HomeView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showAutomationTutorial = true }) {
                         Image(systemName: "bolt.badge.automatic")
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(.brandPurple)
                     }
                 }
             }

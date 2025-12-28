@@ -12,18 +12,18 @@ struct AutomationTutorialView: View {
                     VStack(alignment: .center, spacing: 16) {
                         Image(systemName: "bolt.badge.automatic")
                             .font(.system(size: 60))
-                            .foregroundStyle(LinearGradient(colors: [.accentColor, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            .foregroundStyle(LinearGradient(colors: [.brandPurple, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
                             .padding(.bottom, 8)
                         
                         Text("Automate Your Sleep")
                             .font(.title)
                             .fontWeight(.bold)
-                            .foregroundColor(.white)
+                            .foregroundColor(.primary)
                         
                         Text("Automatically start tracking when you turn on Sleep Focus, or any other focus mode you prefer.")
                             .font(.body)
                             .multilineTextAlignment(.center)
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondary)
                             .padding(.horizontal)
                     }
                     .frame(maxWidth: .infinity)
@@ -63,10 +63,10 @@ struct AutomationTutorialView: View {
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.accentColor)
+                            .background(Color.brandPurple)
                             .foregroundColor(.white)
                             .cornerRadius(16)
-                            .shadow(color: Color.accentColor.opacity(0.4), radius: 8, x: 0, y: 4)
+                            .shadow(color: Color.brandPurple.opacity(0.4), radius: 8, x: 0, y: 4)
                         }
                         
                         Button("Maybe Later") {
@@ -78,7 +78,7 @@ struct AutomationTutorialView: View {
                 }
                 .padding(24)
             }
-            .background(Color(red: 0.1, green: 0.1, blue: 0.12).ignoresSafeArea())
+            // Removed hardcoded dark background .background(...)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -100,22 +100,22 @@ struct TutorialStep: View {
         HStack(alignment: .top, spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(Color.accentColor.opacity(0.2))
+                    .fill(Color.brandPurple.opacity(0.2))
                     .frame(width: 32, height: 32)
                 
                 Text("\(number)")
                     .fontWeight(.bold)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.brandPurple)
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                 
                 Text(description)
                     .font(.subheadline)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

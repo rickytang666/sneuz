@@ -41,3 +41,10 @@ final class SharedData: @unchecked Sendable {
         WidgetCenter.shared.reloadAllTimelines()
     }
 }
+
+import SwiftUI
+
+extension Color {
+    static let brandPurple = Color(red: 0.6941, green: 0.2980, blue: 0.8275)
+    static let brandPink = Color(red: 1.0, green: 0.6, blue: 0.7)
+}
