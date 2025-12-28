@@ -12,11 +12,11 @@ Apple removed iPhone auto sleep tracking. We brought it back, with extras.
 
 iOS 18 removed automatic sleep tracking on iPhone.
 
-Sneuz brings it back with Shortcuts automation: track sleep/wake times, view on iPhone or web, and export to Apple Health.
+Sneuz brings it back with Shortcuts automation: track sleep/wake times, view sleep patterns on iPhone or web, and export data to Apple Health at any time.
 
 Set it up once, runs automatically.
 
-## Key Features
+## Features
 
 - **Shortcuts automation**: Hooks into Sleep Focus mode - tracking starts/stops automatically
 - **Home screen widget**: Glanceable status and quick actions without opening the app
@@ -30,7 +30,7 @@ Set it up once, runs automatically.
 - **Web**: Next.js, Tailwind, Supabase SSR
 - **Backend**: Supabase (Postgres + Auth + RLS)
 
-## Try it out
+## Try it
 
 iOS app coming soon.
 
