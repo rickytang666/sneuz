@@ -105,7 +105,7 @@ struct TutorialStep: View {
                 
                 Text("\(number)")
                     .fontWeight(.bold)
-                    .foregroundColor(.indigo)
+                    .foregroundColor(.accentColor)
             }
             
             VStack(alignment: .leading, spacing: 4) {

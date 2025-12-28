@@ -67,7 +67,7 @@ struct HomeView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showAutomationTutorial = true }) {
                         Image(systemName: "bolt.badge.automatic")
-                            .foregroundColor(.indigo)
+                            .foregroundColor(.accentColor)
                     }
                 }
             }

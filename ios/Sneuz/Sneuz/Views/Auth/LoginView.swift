@@ -39,7 +39,7 @@ struct LoginView: View {
                         Text("Sign In")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.blue)
+                            .background(Color.accentColor)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
@@ -47,7 +47,7 @@ struct LoginView: View {
                 .disabled(auth.isLoading)
                 .padding(.horizontal)
                 
-                Button("Don't have an account? Sign Up") {
+                Button("Create Account") {
                     showingSignup = true
                 }
                 .padding(.top)
