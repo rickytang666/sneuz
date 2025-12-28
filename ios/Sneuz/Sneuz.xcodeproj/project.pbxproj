@@ -25,7 +25,7 @@
 			containerPortal = D42375962EF6309F00CB4F9F /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D47DBD2E2EF7B584005D6449;
-			remoteInfo = SleepTrackerWidgetExtension;
+			remoteInfo = SneuzWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -178,7 +178,7 @@
 				D42375B52EF6342E00CB4F9F /* Storage */,
 				D42375D02EF6379A00CB4F9F /* Supabase */,
 			);
-			productName = SleepTracker;
+			productName = Sneuz;
 			productReference = D423759E2EF6309F00CB4F9F /* Sneuz.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -201,7 +201,7 @@
 			packageProductDependencies = (
 				D47DBD582EF7BB47005D6449 /* Supabase */,
 			);
-			productName = SleepTrackerWidgetExtension;
+			productName = SneuzWidgetExtension;
 			productReference = D47DBD2F2EF7B584005D6449 /* SneuzWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};

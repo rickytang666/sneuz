@@ -11,7 +11,7 @@ swiftui-based ios application for tracking sleep sessions and viewing statistics
 
 ## setup and running
 
-1. open `ios/SleepTracker/SleepTracker.xcodeproj` in xcode
+1. open `ios/Sneuz/Sneuz.xcodeproj` in xcode
 2. select a simulator or real device
 3. press `cmd + r` to run
 

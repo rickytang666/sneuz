@@ -9,7 +9,7 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                Text("Sleep Tracker")
+                Text("Sneuz")
                     .font(.largeTitle)
                     .bold()
                 
