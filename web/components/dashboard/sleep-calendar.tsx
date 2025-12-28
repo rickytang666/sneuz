@@ -127,9 +127,9 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
           <button
             onClick={() => setView('grid')}
             className={cn(
-              "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
+              "flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200",
               view === 'grid' 
-                ? "bg-background text-foreground shadow-sm" 
+                ? "bg-primary/10 text-primary shadow-sm" 
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -139,9 +139,9 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
           <button
             onClick={() => setView('chart')}
             className={cn(
-              "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
+              "flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200",
               view === 'chart' 
-                ? "bg-background text-foreground shadow-sm" 
+                ? "bg-primary/10 text-primary shadow-sm" 
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -156,9 +156,9 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
                 <button
                 onClick={() => setChartDays(7)}
                 className={cn(
-                    "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 min-w-[80px]",
+                    "px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200 min-w-[80px]",
                     chartDays === 7 
-                    ? "bg-background text-foreground shadow-sm" 
+                    ? "bg-primary/10 text-primary shadow-sm" 
                     : "text-muted-foreground hover:text-foreground"
                 )}
                 >
@@ -167,9 +167,9 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
                 <button
                 onClick={() => setChartDays(30)}
                 className={cn(
-                    "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 min-w-[80px]",
+                    "px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200 min-w-[80px]",
                     chartDays === 30 
-                    ? "bg-background text-foreground shadow-sm" 
+                    ? "bg-primary/10 text-primary shadow-sm" 
                     : "text-muted-foreground hover:text-foreground"
                 )}
                 >
@@ -182,9 +182,9 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
                  <button
                     onClick={() => setShowTrend(!showTrend)}
                     className={cn(
-                        "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
+                        "flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200",
                         showTrend
-                        ? "bg-background text-amber-500 shadow-sm" 
+                        ? "bg-primary/10 text-primary shadow-sm" 
                         : "text-muted-foreground hover:text-foreground"
                     )}
                  >
@@ -200,7 +200,7 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
               <div className="mr-4 text-sm text-muted-foreground hidden md:block">
                   <span className="font-medium text-foreground">{goal.toFixed(1)}h</span> Goal
               </div>
-              <Button variant="outline" size="sm" onClick={() => setCurrentMonth(new Date())}>
+              <Button className="bg-primary/10 text-foreground hover:bg-primary/20 hover:text-primary border-2 border-border" size="sm" onClick={() => setCurrentMonth(new Date())}>
                   Today
               </Button>
               <div className="flex items-center gap-1 ml-2">
@@ -221,11 +221,11 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
             {format(currentMonth, "MMMM yyyy")}
           </h2>
           
-          <div className="grid grid-cols-7 gap-px bg-muted/20 border rounded-lg overflow-hidden shadow-sm">
+          <div className="grid grid-cols-7 gap-px bg-muted/50 border rounded-lg overflow-hidden shadow-sm">
             {weekDays.map((day) => (
               <div
                 key={day}
-                className="bg-muted/50 p-2 text-center text-xs font-medium text-muted-foreground uppercase tracking-widest"
+                className="bg-card p-2 text-center text-xs font-medium text-muted-foreground uppercase tracking-widest"
               >
                 {day}
               </div>
@@ -241,7 +241,7 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
                     <div
                         key={day.toString()}
                         className={cn(
-                            "min-h-[120px] bg-background p-2 transition-colors relative border sm:border-0 flex flex-col items-center justify-between group",
+                            "min-h-[120px] bg-card p-2 transition-colors relative border sm:border-0 flex flex-col items-center justify-between group",
                             !isCurrentMonth && "bg-muted/10 text-muted-foreground opacity-50"
                         )}
                     >
@@ -256,10 +256,10 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
                                 <TooltipProvider>
                                     <Tooltip delayDuration={0}>
                                         <TooltipTrigger>
-                                            <IconAlertCircle className="h-4 w-4 text-amber-500" />
+                                            <IconAlertCircle strokeWidth={2} className="h-5 w-5 text-amber-500" />
                                         </TooltipTrigger>
                                         <TooltipContent>
-                                            <p className="text-xs">Stayed up late</p>
+                                            <p className="text-xs">stayed up late</p>
                                         </TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
@@ -296,7 +296,7 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
       </div>
      </div>
       ) : (
-        <div className="border rounded-lg p-6 bg-background shadow-sm">
+        <div className="border rounded-lg p-6 bg-card shadow-sm">
             <div className="mb-4">
                 <h2 className="font-semibold text-lg">Sleep Activity</h2>
             </div>

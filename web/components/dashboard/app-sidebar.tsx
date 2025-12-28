@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import {
   IconCalendar,
   IconDatabase,
@@ -53,8 +54,8 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
          <div className="flex items-center gap-2 px-2 py-4">
-            <IconMoon className="h-6 w-6" />
-            <span className="font-bold text-lg group-data-[collapsible=icon]:hidden">Sneuz</span>
+            <Image src="/favicon.svg" alt="Logo" width={24} height={24} />
+            <span className="font-bold text-primary text-lg group-data-[collapsible=icon]:hidden">Sneuz</span>
          </div>
       </SidebarHeader>
       <SidebarContent>

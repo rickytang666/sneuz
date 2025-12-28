@@ -195,7 +195,7 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime, show
             {chartData.map((entry, index) => (
               <Cell 
                 key={`cell-${index}`} 
-                fill={entry.duration > 0 ? "hsl(217, 91%, 60%)" : "transparent"}
+                fill={entry.duration > 0 ? "#b14cd3" : "transparent"}
               />
             ))}
           </Bar>
@@ -205,9 +205,9 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime, show
               <Line
                 type="monotone"
                 dataKey="bedtime"
-                stroke="#f59e0b"
+                stroke="#f293cbff"
                 strokeWidth={2}
-                dot={{ r: 3, fill: "#f59e0b", strokeWidth: 0 }}
+                dot={{ r: 3, fill: "#f293cbff", strokeWidth: 0 }}
                 activeDot={{ r: 5 }}
                 connectNulls={true}
                 isAnimationActive={false}
@@ -215,9 +215,9 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime, show
               <Line
                 type="monotone"
                 dataKey="wakeMinutes"
-                stroke="#b546d3ff"
+                stroke="#f293cbff"
                 strokeWidth={2}
-                dot={{ r: 3, fill: "#b546d3ff", strokeWidth: 0 }}
+                dot={{ r: 3, fill: "#f293cbff", strokeWidth: 0 }}
                 activeDot={{ r: 5 }}
                 connectNulls={true}
                 isAnimationActive={false}

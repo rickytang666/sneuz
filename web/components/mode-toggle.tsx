@@ -31,13 +31,13 @@ export function ModeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button className="bg-primary/25 hover:text-primary" variant="outline" size="icon">
           {theme === 'system' ? (
-            <IconDeviceDesktop className="h-[1.2rem] w-[1.2rem] transition-all" />
+            <IconDeviceDesktop strokeWidth={2.5} className="h-[1.2rem] w-[1.2rem] transition-all" />
           ) : theme === 'dark' ? (
-            <IconMoon className="h-[1.2rem] w-[1.2rem] transition-all" />
+            <IconMoon strokeWidth={2.5} className="h-[1.2rem] w-[1.2rem] transition-all" />
           ) : (
-            <IconSun className="h-[1.2rem] w-[1.2rem] transition-all" />
+            <IconSun strokeWidth={2.5} className="h-[1.2rem] w-[1.2rem] transition-all" />
           )}
           <span className="sr-only">Toggle theme</span>
         </Button>
