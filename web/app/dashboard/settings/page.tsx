@@ -43,8 +43,8 @@ export default async function SettingsPage() {
                 </div>
             </div>
 
-            <div className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-                Goal Duration: <span className="font-semibol text-foreground">{duration.toFixed(1)} hours</span>
+            <div className="text-sm text-muted-foreground p-3 rounded-md">
+                Goal Duration: <span className="font-semibold text-primary">{duration.toFixed(1)} hours</span>
             </div>
 
             <div className="pt-2">
