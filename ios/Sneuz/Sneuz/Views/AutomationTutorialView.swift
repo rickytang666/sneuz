@@ -10,9 +10,9 @@ struct AutomationTutorialView: View {
                     
                     // Header
                     VStack(alignment: .center, spacing: 16) {
-                        Image(systemName: "powersleep")
+                        Image(systemName: "bolt.badge.automatic")
                             .font(.system(size: 60))
-                            .foregroundStyle(LinearGradient(colors: [.indigo, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            .foregroundStyle(LinearGradient(colors: [.accentColor, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
                             .padding(.bottom, 8)
                         
                         Text("Automate Your Sleep")
@@ -63,10 +63,10 @@ struct AutomationTutorialView: View {
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.indigo)
+                            .background(Color.accentColor)
                             .foregroundColor(.white)
                             .cornerRadius(16)
-                            .shadow(color: .indigo.opacity(0.4), radius: 8, x: 0, y: 4)
+                            .shadow(color: Color.accentColor.opacity(0.4), radius: 8, x: 0, y: 4)
                         }
                         
                         Button("Maybe Later") {
@@ -100,7 +100,7 @@ struct TutorialStep: View {
         HStack(alignment: .top, spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(Color.indigo.opacity(0.2))
+                    .fill(Color.accentColor.opacity(0.2))
                     .frame(width: 32, height: 32)
                 
                 Text("\(number)")

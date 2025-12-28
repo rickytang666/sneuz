@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct HomeView: View {
     @StateObject private var sessionService = SleepSessionService.shared
@@ -9,6 +10,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 40) {
+                
                 // Status Header
                 VStack(spacing: 10) {
                     Text(sessionService.activeSession != nil ? "Good Night" : "Ready to Sleep?")
@@ -29,19 +31,26 @@ struct HomeView: View {
                 Button(action: toggleSession) {
                     ZStack {
                         Circle()
-                            .fill(sessionService.activeSession != nil ? Color.orange : Color.indigo)
+                            .fill(sessionService.activeSession != nil ? Color(red: 1.0, green: 0.6, blue: 0.7) : Color.accentColor)
                             .frame(width: 200, height: 200)
                             .shadow(radius: 10)
                         
-                        VStack {
-                            Image(systemName: sessionService.activeSession != nil ? "sun.max.fill" : "moon.fill")
-                                .font(.system(size: 50))
-                                .foregroundColor(.white)
-                            
-                            Text(sessionService.activeSession != nil ? "Wake Up" : "Start Sleep")
-                                .font(.title2)
-                                .bold()
-                                .foregroundColor(.white)
+                        if sessionService.isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(2.0)
+                        } else {
+                            VStack {
+                                Image(systemName: sessionService.activeSession != nil ? "sun.max.fill" : "moon.fill")
+                                    .font(.system(size: 50))
+                                    .foregroundColor(.white)
+                                
+                                Text(sessionService.activeSession != nil ? "Wake Up" : "Start Sleep")
+                                    .font(.title2)
+                                    .bold()
+                                    .foregroundColor(.white)
+                            }
+                            .transition(.opacity)
                         }
                     }
                 }
@@ -53,10 +62,6 @@ struct HomeView: View {
                         .font(.caption)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
-                }
-
-                if sessionService.isLoading {
-                    ProgressView()
                 }
                 
                 Spacer()

@@ -37,7 +37,7 @@ struct SignupView: View {
                     Text("Sign Up")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(.accentColor)
+                        .background(Color.accentColor)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
