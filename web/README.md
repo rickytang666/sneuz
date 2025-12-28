@@ -1,6 +1,6 @@
-# sleep tracker web
+# sneuz web portal
 
-manual sleep tracking dashboard.
+manual sleep tracking portal for the app.
 
 ## setup
 

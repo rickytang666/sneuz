@@ -1,11 +1,15 @@
 import { SignupForm } from "@/components/signup-form"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { ModeToggle } from "@/components/mode-toggle"
 import { IconChevronLeft } from "@tabler/icons-react"
 
 export default function SignupPage() {
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 relative">
+      <div className="absolute top-6 right-6">
+        <ModeToggle />
+      </div>
       <div className="absolute top-4 left-4 md:top-8 md:left-8">
         <Button variant="ghost" asChild>
           <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">

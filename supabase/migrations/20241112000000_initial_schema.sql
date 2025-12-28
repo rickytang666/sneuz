@@ -1,4 +1,4 @@
--- Initial schema for Sleep Tracker
+-- Initial schema for the app
 -- Creates profiles, sleep_sessions, and user_settings tables with RLS policies
 
 -- Enable UUID extension
