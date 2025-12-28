@@ -31,7 +31,7 @@ export function ModeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="bg-primary/25 hover:text-primary" variant="outline" size="icon">
+        <Button className="bg-primary/20 border-primary/20 hover:text-primary" variant="outline" size="icon">
           {theme === 'system' ? (
             <IconDeviceDesktop strokeWidth={2.5} className="h-[1.2rem] w-[1.2rem] transition-all" />
           ) : theme === 'dark' ? (
