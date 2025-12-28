@@ -56,12 +56,12 @@ export default function Home() {
           
           <div className="space-y-1">
             <p className="text-xl md:text-2xl text-foreground/90">
-              iOS Sleep tracker that's <span className="relative inline-block font-serif italic text-2xl md:text-3xl text-foreground">
+              iOS Sleep tracker that feels <span className="relative inline-block font-serif italic text-2xl md:text-3xl text-foreground">
                 invisible
               </span>.
             </p>
             <p className="text-xl md:text-2xl text-foreground/90">
-              Wake up. Data's ready.
+              Wake up. Data&apos;s ready.
             </p>
           </div>
 

@@ -6,7 +6,6 @@ import {
   IconCalendar,
   IconDatabase,
   IconSettings,
-  IconMoon,
   IconUser,
 } from "@tabler/icons-react"
 import {
