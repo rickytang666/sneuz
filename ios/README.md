@@ -1,4 +1,4 @@
-# sleep tracker ios
+# sneuz ios
 
 swiftui-based ios application for tracking sleep sessions and viewing statistics.
 

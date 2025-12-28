@@ -54,7 +54,7 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
       <SidebarHeader>
          <div className="flex items-center gap-2 px-2 py-4">
             <IconMoon className="h-6 w-6" />
-            <span className="font-bold text-lg group-data-[collapsible=icon]:hidden">Sleep Tracker</span>
+            <span className="font-bold text-lg group-data-[collapsible=icon]:hidden">Sneuz</span>
          </div>
       </SidebarHeader>
       <SidebarContent>

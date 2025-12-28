@@ -10,7 +10,7 @@ export default function Home() {
       </div>
       <div className="space-y-2">
         <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
-          Sleep Tracker
+          Sneuz
         </h1>
         <p className="text-muted-foreground text-lg">
           Master your sleep schedule. Simple, manual, effective.
