@@ -31,7 +31,7 @@ struct HistoryListView: View {
                         HStack {
                             Image(systemName: "bed.double.fill")
                                 .foregroundColor(.indigo)
-                            Text(session.startTime.formatted(date: .abbreviated, time: .omitted))
+                            Text((session.endTime ?? session.startTime).formatted(date: .abbreviated, time: .omitted))
                                 .font(.headline)
                         }
                         
