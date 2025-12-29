@@ -16,6 +16,8 @@ Sneuz brings it back with Shortcuts automation: track sleep/wake times, view sle
 
 Set it up once, runs automatically.
 
+Watch the demo below:
+
 ## Features
 
 - **Shortcuts automation**: Hooks into Sleep Focus mode - tracking starts/stops automatically
@@ -34,7 +36,7 @@ Set it up once, runs automatically.
 
 Fully built. Can verify and tested out via Xcode & simulator.
 
-May or may not be shipped to App Store.
+It _might_ be shipped on App Store.
 
 ## Dev Setup
 
