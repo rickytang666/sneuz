@@ -16,7 +16,7 @@ Sneuz brings it back with Shortcuts automation: track sleep/wake times, view sle
 
 Set it up once, runs automatically.
 
-Watch the demo below:
+https://github.com/user-attachments/assets/3fc11cd6-3557-4489-a276-d984c3a937e5
 
 ## Features
 
