@@ -283,10 +283,10 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
             )
         })}
       </div>
-      <div className="flex items-center gap-2 text-xs text-muted-foreground px-1">
+      <div className="flex items-center gap-2 text-xs px-1">
         <div className="flex items-center gap-2">
            <div className="h-3 w-3 rounded-sm bg-amber-100/50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800" />
-           <span className="bg-amber-200/50">stayed up late</span>
+           <span className="bg-amber-200/30">stayed up late</span>
         </div>
       </div>
      </div>
