@@ -18,6 +18,8 @@ Set it up once, runs automatically.
 
 https://github.com/user-attachments/assets/3fc11cd6-3557-4489-a276-d984c3a937e5
 
+https://github.com/user-attachments/assets/71894cbb-5b23-4540-b664-8e7bacce0669
+
 ## Features
 
 - **Shortcuts automation**: Hooks into Sleep Focus mode - tracking starts/stops automatically
