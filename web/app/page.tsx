@@ -65,7 +65,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="pt-2 flex items-center justify-center gap-6">
+          <div className="pt-2 flex items-center justify-center gap-3 sm:gap-6">
              <div className="flex flex-col items-start space-y-1 text-sm md:text-base text-foreground/70">
                 <span className="inline-flex items-center">
                   <Image
