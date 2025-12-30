@@ -1,5 +1,7 @@
 "use client"
 
+import * as React from "react"
+
 import {
   ComposedChart,
   Line,
@@ -104,128 +106,140 @@ export function SleepChart({ sessions, days, targetBedtime, targetWakeTime, show
     return `${hrs} h ${mins} m`
   }
 
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth
+    }
+  }, [sessions, days])
+
+  const chartWidth = Math.max(600, days * 50)
+
   return (
-    <div className="h-[400px] w-full mt-4">
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
-          data={chartData}
-          margin={{ top: 10, right: 100, left: 0, bottom: 0 }}
-          barGap={0}
-          barCategoryGap="30%"
-        >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.15} />
-          <XAxis 
-            dataKey="name" 
-            axisLine={false} 
-            tickLine={false}
-            tick={false} 
-          />
-          <YAxis 
-            domain={[paddedMin, paddedMax]} 
-            ticks={ticks}
-            tickFormatter={formatYAxis}
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 10, fill: '#a1a1aa' }}
-            reversed
-            width={45}
-            type="number"
-            allowDataOverflow={true}
-            interval={0}
-          />
-          <Tooltip 
-            cursor={{ fill: 'transparent' }}
-            animationDuration={0}
-            content={({ active, payload }) => {
-              if (active && payload && payload.length) {
-                const data = payload[0].payload
-                if (data.bedtime === null) return null
-                return (
-                  <div className="bg-popover border border-border p-3 rounded-md shadow-md text-xs min-w-[140px]">
-                    <p className="flex justify-center font-semibold mb-2 text-foreground text-sm">{data.fullDate}</p>
-                    <div className="space-y-1">
-                      <div className="flex justify-between gap-4 text-muted-foreground">
-                        <span>Start</span>
-                        <span className="text-foreground font-mono">{data.displayBed}</span>
-                      </div>
-                      <div className="flex justify-between gap-4 text-muted-foreground">
-                        <span>End</span>
-                        <span className="text-foreground font-mono">{data.displayWake}</span>
-                      </div>
-                      <div className="flex justify-center gap-4 font-bold text-primary pt-1 mt-1 border-t">
-                        <span>{formatDuration(data.rawDuration)}</span>
+    <div ref={scrollRef} className="w-full overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+      <div style={{ minWidth: chartWidth, height: 400 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart
+            data={chartData}
+            margin={{ top: 10, right: 100, left: 0, bottom: 0 }}
+            barGap={0}
+            barCategoryGap="20%"
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.15} />
+            <XAxis 
+              dataKey="name" 
+              axisLine={false} 
+              tickLine={false}
+              tick={false} 
+            />
+            <YAxis 
+              domain={[paddedMin, paddedMax]} 
+              ticks={ticks}
+              tickFormatter={formatYAxis}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 10, fill: '#a1a1aa' }}
+              reversed
+              width={45}
+              type="number"
+              allowDataOverflow={true}
+              interval={0}
+            />
+            <Tooltip 
+              cursor={{ fill: 'transparent' }}
+              animationDuration={0}
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const data = payload[0].payload
+                  if (data.bedtime === null) return null
+                  return (
+                    <div className="bg-popover border border-border p-3 rounded-md shadow-md text-xs min-w-[140px]">
+                      <p className="flex justify-center font-semibold mb-2 text-foreground text-sm">{data.fullDate}</p>
+                      <div className="space-y-1">
+                        <div className="flex justify-between gap-4 text-muted-foreground">
+                          <span>Start</span>
+                          <span className="text-foreground font-mono">{data.displayBed}</span>
+                        </div>
+                        <div className="flex justify-between gap-4 text-muted-foreground">
+                          <span>End</span>
+                          <span className="text-foreground font-mono">{data.displayWake}</span>
+                        </div>
+                        <div className="flex justify-center gap-4 font-bold text-primary pt-1 mt-1 border-t">
+                          <span>{formatDuration(data.rawDuration)}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
-              }
-              return null
-            }}
-          />
-          
-          <ReferenceLine 
-            y={targetBedNormalized} 
-            stroke="#22c55e"
-            strokeDasharray="4 4" 
-            opacity={0.8}
-            label={{ position: 'right', value: 'Target Bed', fill: '#22c55e', fontSize: 12, offset: 10, fontWeight: 'bold' }}
-          />
-          <ReferenceLine 
-            y={targetWakeNormalized} 
-            stroke="#22c55e"
-            strokeDasharray="4 4"
-            opacity={0.8}
-            label={{ position: 'right', value: 'Target Wake', fill: '#22c55e', fontSize: 12, offset: 10, fontWeight: 'bold' }}
-          />
+                  )
+                }
+                return null
+              }}
+            />
+            
+            <ReferenceLine 
+              y={targetBedNormalized} 
+              stroke="#22c55e"
+              strokeDasharray="4 4" 
+              opacity={0.8}
+              label={{ position: 'right', value: 'Target Bed', fill: '#22c55e', fontSize: 12, offset: 10, fontWeight: 'bold' }}
+            />
+            <ReferenceLine 
+              y={targetWakeNormalized} 
+              stroke="#22c55e"
+              strokeDasharray="4 4"
+              opacity={0.8}
+              label={{ position: 'right', value: 'Target Wake', fill: '#22c55e', fontSize: 12, offset: 10, fontWeight: 'bold' }}
+            />
 
-          <Bar 
-            dataKey="bedtime" 
-            stackId="sleep" 
-            fill="transparent" 
-            isAnimationActive={false}
-            tooltipType="none"
-          />
-          <Bar 
-            dataKey="duration" 
-            stackId="sleep" 
-            name="Sleep"
-            isAnimationActive={false}
-            radius={[4, 4, 4, 4]}
-          >
-            {chartData.map((entry, index) => (
-              <Cell 
-                key={`cell-${index}`} 
-                fill={entry.duration > 0 ? "#b14cd3" : "transparent"}
-              />
-            ))}
-          </Bar>
+            <Bar 
+              dataKey="bedtime" 
+              stackId="sleep" 
+              fill="transparent" 
+              isAnimationActive={false}
+              tooltipType="none"
+            />
+            <Bar 
+              dataKey="duration" 
+              stackId="sleep" 
+              name="Sleep"
+              isAnimationActive={false}
+              radius={[4, 4, 4, 4]}
+            >
+              {chartData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={entry.duration > 0 ? "#b14cd3" : "transparent"}
+                />
+              ))}
+            </Bar>
 
-          {showTrend && (
-            <>
-              <Line
-                type="monotone"
-                dataKey="bedtime"
-                stroke="#a485e7ff"
-                strokeWidth={2}
-                dot={{ r: 3, fill: "#a485e7ff", strokeWidth: 0 }}
-                activeDot={{ r: 5 }}
-                connectNulls={true}
-                isAnimationActive={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="wakeMinutes"
-                stroke="#a485e7ff"
-                strokeWidth={2}
-                dot={{ r: 3, fill: "#a485e7ff", strokeWidth: 0 }}
-                activeDot={{ r: 5 }}
-                connectNulls={true}
-                isAnimationActive={false}
-              />
-            </>
-          )}
-        </ComposedChart>
-      </ResponsiveContainer>
+            {showTrend && (
+              <>
+                <Line
+                  type="monotone"
+                  dataKey="bedtime"
+                  stroke="#a485e7ff"
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: "#a485e7ff", strokeWidth: 0 }}
+                  activeDot={{ r: 5 }}
+                  connectNulls={true}
+                  isAnimationActive={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="wakeMinutes"
+                  stroke="#a485e7ff"
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: "#a485e7ff", strokeWidth: 0 }}
+                  activeDot={{ r: 5 }}
+                  connectNulls={true}
+                  isAnimationActive={false}
+                />
+              </>
+            )}
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }
