@@ -25,7 +25,8 @@ export default async function SettingsPage() {
             <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                     <Label htmlFor="target_bedtime">Target Bedtime</Label>
-                    <Input 
+                    <Input
+                        className="text-sm sm:text-base" 
                         id="target_bedtime" 
                         name="target_bedtime" 
                         type="time" 
@@ -34,7 +35,8 @@ export default async function SettingsPage() {
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="target_wake_time">Target Wake Time</Label>
-                    <Input 
+                    <Input
+                        className="text-sm sm:text-base" 
                         id="target_wake_time" 
                         name="target_wake_time" 
                         type="time" 
