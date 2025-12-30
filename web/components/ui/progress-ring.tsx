@@ -21,11 +21,11 @@ const ProgressRing: React.FC<ProgressRingProps> = ({
 
   return (
     <motion.div
-      className="relative inline-flex cursor-pointer"
+      className="relative inline-flex cursor-pointer w-full h-full"
       initial="rest"
       whileHover="hover"
     >
-      <svg width={size} height={size}>
+      <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-full">
         {/* background */}
         <circle
           cx={size / 2}
@@ -56,7 +56,7 @@ const ProgressRing: React.FC<ProgressRingProps> = ({
         />
       </svg>
 
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold select-none">
+      <span className="absolute inset-0 flex items-center justify-center text-[9px] md:text-xs font-semibold select-none">
         {progress}%
       </span>
     </motion.div>

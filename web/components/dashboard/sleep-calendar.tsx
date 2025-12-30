@@ -14,7 +14,7 @@ import {
   subMonths,
   parseISO
 } from "date-fns"
-import { IconChevronLeft, IconChevronRight, IconChartBar, IconCalendarMonth, IconAlertCircle, IconTrendingUp } from "@tabler/icons-react"
+import { IconChevronLeft, IconChevronRight, IconChartBar, IconCalendarMonth, IconTrendingUp } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { SleepChart } from "./sleep-chart"
@@ -43,7 +43,7 @@ interface SleepCalendarProps {
 
 function SleepRing({ percentage, color }: { percentage: number, color: string }) {
     return (
-        <div className="group h-12 w-12 hover:cursor-pointer">
+        <div className="group h-9 w-9 md:h-12 md:w-12 hover:cursor-pointer">
              <ProgressRing
                 val={Math.ceil(percentage)}
                 color={color}
@@ -241,29 +241,18 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
                     <div
                         key={day.toString()}
                         className={cn(
-                            "min-h-[120px] bg-card p-2 transition-colors relative border sm:border-0 flex flex-col items-center justify-between group",
-                            !isCurrentMonth && "bg-muted/10 text-muted-foreground opacity-50"
+                            "min-h-[80px] md:min-h-[120px] bg-card p-1 md:p-2 transition-colors relative border sm:border-0 flex flex-col items-center justify-between group",
+                            !isCurrentMonth && "bg-muted/10 text-muted-foreground opacity-50",
+                            isLate && "bg-amber-100/50 dark:bg-amber-900/20"
                         )}
                     >
                         <div className="w-full flex justify-between items-start">
                              <span className={cn(
-                                 "text-xs font-medium h-6 w-6 flex items-center justify-center rounded-full transition-colors",
+                                 "text-[10px] md:text-xs font-medium h-5 w-5 md:h-6 md:w-6 flex items-center justify-center rounded-full transition-colors",
                                  isSameDay(day, new Date()) ? "bg-primary text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
                              )}>
                                  {format(day, "d")}
                              </span>
-                             {isLate && (
-                                <TooltipProvider>
-                                    <Tooltip delayDuration={0}>
-                                        <TooltipTrigger>
-                                            <IconAlertCircle strokeWidth={2} className="h-5 w-5 text-amber-500" />
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p className="text-xs">stayed up late</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                             )}
                         </div>
                      {session && session.duration_minutes ? (
                          <TooltipProvider>
@@ -288,11 +277,17 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
                             </Tooltip>
                          </TooltipProvider>
                     ) : (
-                        <div className="h-12 w-12" /> /* Spacer */
+                        <div className="h-9 w-9 md:h-12 md:w-12" /> /* Spacer */
                     )}
                 </div>
             )
         })}
+      </div>
+      <div className="flex items-center gap-2 text-xs text-muted-foreground px-1">
+        <div className="flex items-center gap-2">
+           <div className="h-3 w-3 rounded-sm bg-amber-100/50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800" />
+           <span className="bg-amber-200/50">stayed up late</span>
+        </div>
       </div>
      </div>
       ) : (
