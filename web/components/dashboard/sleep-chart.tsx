@@ -26,7 +26,7 @@ interface SleepChartProps {
   showTrend?: boolean
 }
 
-export function SleepChart({ sessions, days, targetBedtime, targetWakeTime, showTrend = true }: SleepChartProps) {
+export function SleepChart({ sessions, days, targetBedtime, targetWakeTime, showTrend = false }: SleepChartProps) {
   const now = new Date()
   const startDate = startOfDay(subDays(now, days - 1))
   

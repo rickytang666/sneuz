@@ -56,7 +56,7 @@ export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTim
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [view, setView] = useState<'grid' | 'chart'>('grid')
   const [chartDays, setChartDays] = useState<7 | 30>(7)
-  const [showTrend, setShowTrend] = useState(true)
+  const [showTrend, setShowTrend] = useState(false)
 
   // Calculate goal hours
   const bed = new Date(`2000-01-01T${targetBedtime}`)
