@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import {
   addMonths,
   eachDayOfInterval,
@@ -53,8 +54,24 @@ function SleepRing({ percentage, color }: { percentage: number, color: string })
 }
 
 export function SleepCalendar({ sessions, targetBedtime = '23:00', targetWakeTime = '07:00' }: SleepCalendarProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  
+  const tab = searchParams.get('tab')
+  const view: 'grid' | 'chart' = tab === 'analytics' ? 'chart' : 'grid'
+
+  const setView = (newView: 'grid' | 'chart') => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (newView === 'chart') {
+      params.set('tab', 'analytics')
+    } else {
+      params.set('tab', 'calendar')
+    }
+    router.replace(`${pathname}?${params.toString()}`)
+  }
+
   const [currentMonth, setCurrentMonth] = useState(new Date())
-  const [view, setView] = useState<'grid' | 'chart'>('grid')
   const [chartDays, setChartDays] = useState<7 | 30>(7)
   const [showTrend, setShowTrend] = useState(false)
 
