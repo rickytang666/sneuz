@@ -1,10 +1,10 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
-  })
+  });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,22 +12,22 @@ export async function updateSession(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll()
+          return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          )
+            request.cookies.set(name, value),
+          );
           supabaseResponse = NextResponse.next({
             request,
-          })
+          });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
+            supabaseResponse.cookies.set(name, value, options),
+          );
         },
       },
-    }
-  )
+    },
+  );
 
   // IMPORTANT: You MUST return the supabaseResponse object as it is. If you're
   // creating a new Response object with NextResponse.next() make sure to:
@@ -44,17 +44,36 @@ export async function updateSession(request: NextRequest) {
 
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
+    !request.nextUrl.pathname.startsWith("/login") &&
+    !request.nextUrl.pathname.startsWith("/auth")
   ) {
-    // no user, potentially redirect? 
-    // For now, adhering to instruction to just setup. 
-    // Actual protection logic can be refined in the auth step.
+    // no user, potentially redirect?
+    // for now, adhering to instruction to just setup.
+    // actual protection logic can be refined in the auth step.
   }
 
-  return supabaseResponse
+  // redirect authenticated users to dashboard if they try to access login or signup pages
+  if (
+    user &&
+    (request.nextUrl.pathname.startsWith("/login") ||
+      request.nextUrl.pathname.startsWith("/signup"))
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    const redirectResponse = NextResponse.redirect(url);
+
+    // copy cookies from supabaseResponse (which might have refreshed session) to the redirect response
+    const allCookies = supabaseResponse.cookies.getAll();
+    allCookies.forEach((cookie) =>
+      redirectResponse.cookies.set(cookie),
+    );
+
+    return redirectResponse;
+  }
+
+  return supabaseResponse;
 }
