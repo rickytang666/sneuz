@@ -48,3 +48,6 @@ Thumbs.db
 !README.md
 !supabase/testing.md
 !docs/*.md
+
+# secrets
+secrets/
