@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { signup, signInWithGoogle } from "@/app/auth/actions"
 import { useState, useTransition } from "react"
 import Link from "next/link"
-import { IconBrandGoogle } from "@tabler/icons-react"
+import { IconBrandGoogleFilled } from "@tabler/icons-react"
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [isPending, startTransition] = useTransition()
@@ -105,7 +105,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
           <form action={handleGoogleSignIn}>
             <Button variant="outline" type="submit" className="w-full" disabled={isPending}>
-              <IconBrandGoogle className="mr-2 h-4 w-4" />
+              <IconBrandGoogleFilled className="mr-2 h-4 w-4" />
               Sign up with Google
             </Button>
           </form>

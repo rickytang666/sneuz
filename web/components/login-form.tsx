@@ -16,7 +16,7 @@ import { login, signInWithGoogle } from "@/app/auth/actions"
 import { useSearchParams } from "next/navigation"
 import { useState, useTransition } from "react"
 import Link from "next/link"
-import { IconBrandGoogle } from "@tabler/icons-react"
+import { IconBrandGoogleFilled } from "@tabler/icons-react"
 
 export function LoginForm({
   className,
@@ -105,7 +105,7 @@ export function LoginForm({
 
             <form action={handleGoogleSignIn}>
               <Button variant="outline" type="submit" className="w-full" disabled={isPending}>
-                <IconBrandGoogle className="mr-2 h-4 w-4" />
+                <IconBrandGoogleFilled className="mr-2 h-4 w-4" />
                 Login with Google
               </Button>
             </form>
