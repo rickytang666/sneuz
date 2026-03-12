@@ -12,10 +12,11 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { login } from "@/app/auth/actions"
+import { login, signInWithGoogle } from "@/app/auth/actions"
 import { useSearchParams } from "next/navigation"
 import { useState, useTransition } from "react"
 import Link from "next/link"
+import { IconBrandGoogle } from "@tabler/icons-react"
 
 export function LoginForm({
   className,
@@ -29,10 +30,19 @@ export function LoginForm({
   async function handleSubmit(formData: FormData) {
     setError(null)
     startTransition(async () => {
-      // Append 'next' param to formData if present
-      if (next) formData.append('next', next)
+      if (next) formData.append("next", next)
       
       const result = await login(formData)
+      if (result?.error) {
+        setError(result.error)
+      }
+    })
+  }
+
+  async function handleGoogleSignIn() {
+    setError(null)
+    startTransition(async () => {
+      const result = await signInWithGoogle(new FormData())
       if (result?.error) {
         setError(result.error)
       }
@@ -49,52 +59,64 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={handleSubmit}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </Link>
+          <div className="flex flex-col gap-6">
+            <form action={handleSubmit}>
+              <div className="flex flex-col gap-6">
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="m@example.com"
+                    required
+                  />
                 </div>
-                <Input id="password" name="password" type="password" required />
-              </div>
-              
-              {error && (
-                <div className="text-sm text-red-500 font-medium">
-                  {error}
+                <div className="grid gap-2">
+                  <div className="flex items-center">
+                    <Label htmlFor="password">Password</Label>
+                    <Link
+                      href="#"
+                      className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    >
+                      Forgot your password?
+                    </Link>
+                  </div>
+                  <Input id="password" name="password" type="password" required />
                 </div>
-              )}
+                
+                {error && (
+                  <div className="text-sm text-red-500 font-medium">
+                    {error}
+                  </div>
+                )}
 
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? "Logging in..." : "Login"}
-              </Button>
-              {/* Google Login removed for MVP */}
-              {/* <Button variant="outline" type="button" className="w-full">
-                Login with Google
-              </Button> */}
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? "Logging in..." : "Login"}
+                </Button>
+              </div>
+            </form>
+
+            <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+              <span className="relative z-10 bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
             </div>
-            <div className="mt-4 text-center text-sm">
+
+            <form action={handleGoogleSignIn}>
+              <Button variant="outline" type="submit" className="w-full" disabled={isPending}>
+                <IconBrandGoogle className="mr-2 h-4 w-4" />
+                Login with Google
+              </Button>
+            </form>
+
+            <div className="text-center text-sm">
               Don&apos;t have an account?{" "}
               <Link href="/signup" className="underline underline-offset-4">
                 Sign up
               </Link>
             </div>
-          </form>
+          </div>
         </CardContent>
       </Card>
     </div>

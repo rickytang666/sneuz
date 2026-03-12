@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 
 export async function login(formData: FormData) {
@@ -56,4 +57,26 @@ export async function signout() {
   await supabase.auth.signOut()
   revalidatePath('/', 'layout')
   redirect('/login')
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function signInWithGoogle(_formData: FormData) {
+  const supabase = await createClient()
+  const origin = (await headers()).get('origin')
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${origin}/auth/callback`,
+    },
+  })
+
+  if (error) {
+    console.error('Error signing in with Google:', error.message)
+    return { error: error.message }
+  }
+
+  if (data.url) {
+    redirect(data.url)
+  }
 }
