@@ -47,6 +47,17 @@ struct LoginView: View {
                 .disabled(auth.isLoading)
                 .padding(.horizontal)
                 
+                Button(action: signInWithGoogle) {
+                    Text("Sign In with Google")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue) // Using blue for Google, can be adjusted
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .disabled(auth.isLoading)
+                .padding(.horizontal)
+                
                 Button("Create Account") {
                     showingSignup = true
                 }
@@ -63,6 +74,16 @@ struct LoginView: View {
         Task {
             do {
                 try await auth.signIn(email: email, password: password)
+            } catch {
+                // Error handled in service
+            }
+        }
+    }
+    
+    private func signInWithGoogle() {
+        Task {
+            do {
+                try await auth.signInWithGoogle()
             } catch {
                 // Error handled in service
             }

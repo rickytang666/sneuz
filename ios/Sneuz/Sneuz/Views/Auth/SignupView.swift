@@ -44,6 +44,17 @@ struct SignupView: View {
             }
             .disabled(auth.isLoading)
             .padding(.horizontal)
+            
+            Button(action: signInWithGoogle) {
+                Text("Sign Up with Google")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue) // Using blue for Google, can be adjusted
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            .disabled(auth.isLoading)
+            .padding(.horizontal)
         }
         .padding()
     }
@@ -52,6 +63,16 @@ struct SignupView: View {
         Task {
             do {
                 try await auth.signUp(email: email, password: password)
+            } catch {
+                // Error handled in service
+            }
+        }
+    }
+    
+    private func signInWithGoogle() {
+        Task {
+            do {
+                try await auth.signInWithGoogle()
             } catch {
                 // Error handled in service
             }

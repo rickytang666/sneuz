@@ -80,6 +80,26 @@ class AuthService: ObservableObject {
             throw error
         }
     }
+
+    @MainActor
+    func signInWithGoogle() async throws {
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        do {
+            let session = try await client.auth.signInWithOAuth(
+                provider: .google,
+                redirectTo: URL(string: "io.sneuz.app://callback")
+            )
+            self.session = session
+            self.user = session.user
+            SharedData.shared.isLoggedIn = true
+        } catch {
+            self.errorMessage = error.localizedDescription
+            throw error
+        }
+    }
     
     var isAuthenticated: Bool {
         return session != nil

@@ -72,12 +72,20 @@
 			);
 			target = D47DBD2E2EF7B584005D6449 /* SneuzWidgetExtension */;
 		};
+		D4B9E3C52F60F44300894714 /* Exceptions for "Sneuz" folder in "Sneuz" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D423759D2EF6309F00CB4F9F /* Sneuz */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D42375A02EF6309F00CB4F9F /* Sneuz */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				D4B9E3C52F60F44300894714 /* Exceptions for "Sneuz" folder in "Sneuz" target */,
 				D49F01762F00EE1B00134B48 /* Exceptions for "Sneuz" folder in "SneuzWidgetExtension" target */,
 			);
 			path = Sneuz;
@@ -420,6 +428,7 @@
 				DEVELOPMENT_TEAM = CDR9NLT4PB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sneuz/Info.plist;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Read sleep data to sync with Apple Health.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Save sleep sessions to Apple Health.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -458,6 +467,7 @@
 				DEVELOPMENT_TEAM = CDR9NLT4PB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sneuz/Info.plist;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Read sleep data to sync with Apple Health.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Save sleep sessions to Apple Health.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
