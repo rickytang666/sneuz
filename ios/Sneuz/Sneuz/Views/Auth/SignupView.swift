@@ -46,12 +46,19 @@ struct SignupView: View {
             .padding(.horizontal)
             
             Button(action: signInWithGoogle) {
-                Text("Sign Up with Google")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue) // Using blue for Google, can be adjusted
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                HStack {
+                    Image("google-logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                    Text("Sign Up with Google")
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.white)
+                .foregroundColor(.black)
+                .cornerRadius(10)
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.4)))
             }
             .disabled(auth.isLoading)
             .padding(.horizontal)
