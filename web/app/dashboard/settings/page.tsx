@@ -3,9 +3,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { getUserSettings } from "@/lib/actions/sleep"
 import { updateSettings } from "@/lib/actions/user"
+import { getApiKeys } from "@/lib/actions/api-keys"
+import { ApiKeysManager } from "@/components/dashboard/api-keys-manager"
 
 export default async function SettingsPage() {
-  const settings = await getUserSettings()
+  const [settings, apiKeys] = await Promise.all([getUserSettings(), getApiKeys()])
   
   // Calculate duration for display
   const bed = new Date(`2000-01-01T${settings?.target_bedtime || '23:00'}`)
@@ -53,6 +55,13 @@ export default async function SettingsPage() {
                 <Button type="submit">Save Changes</Button>
             </div>
          </form>
+      </div>
+      <div className="border rounded-md p-6 space-y-4">
+        <h4 className="font-semibold">API Keys</h4>
+        <p className="text-sm text-muted-foreground">
+          Generate keys for external services to access your data via the API.
+        </p>
+        <ApiKeysManager initialKeys={apiKeys} />
       </div>
     </div>
   )
