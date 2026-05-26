@@ -76,6 +76,101 @@ See [this doc](docs/ios-automation.md) for more details. Sleep Focus is weird, a
 
 Zero background tasks. Just two API calls when Focus toggles - minimal battery impact.
 
+## API
+
+The web app exposes a REST API at `/api/v1` for external services (e.g. home servers, automations).
+
+### authentication
+
+All endpoints require an `Authorization` header. Two schemes are supported:
+
+```
+Authorization: Bearer <supabase-jwt>
+Authorization: ApiKey <snz_key>
+```
+
+API keys (`snz_` prefix) are the recommended approach for long-lived external integrations. Generate one in the web app under Settings > API Keys.
+
+### endpoints
+
+#### sessions
+
+| method   | path                   | description         |
+| -------- | ---------------------- | ------------------- |
+| `GET`    | `/api/v1/sessions`     | list sleep sessions |
+| `POST`   | `/api/v1/sessions`     | create a session    |
+| `PATCH`  | `/api/v1/sessions/:id` | update a session    |
+| `DELETE` | `/api/v1/sessions/:id` | delete a session    |
+
+**GET** query params: `limit` (default 50, max 200), `offset`, `from` (ISO date), `to` (ISO date)
+
+**POST / PATCH** body:
+
+```json
+{ "bedtime": "2026-01-01T23:00:00Z", "wake_time": "2026-01-02T07:00:00Z" }
+```
+
+`bedtime` is required on POST. PATCH requires at least one field.
+
+**session object:**
+
+```json
+{
+  "id": "uuid",
+  "bedtime": "2026-01-01T23:00:00Z",
+  "wake_time": "2026-01-02T07:00:00Z",
+  "duration_minutes": 480,
+  "created_at": "2026-01-01T23:00:00Z"
+}
+```
+
+#### profile
+
+| method | path              | description      |
+| ------ | ----------------- | ---------------- |
+| `GET`  | `/api/v1/profile` | get user profile |
+
+```json
+{
+  "id": "uuid",
+  "email": "user@example.com",
+  "full_name": "Jane",
+  "avatar_url": ""
+}
+```
+
+#### settings
+
+| method  | path               | description          |
+| ------- | ------------------ | -------------------- |
+| `GET`   | `/api/v1/settings` | get sleep targets    |
+| `PATCH` | `/api/v1/settings` | update sleep targets |
+
+**PATCH** body (at least one field required):
+
+```json
+{ "target_bedtime": "23:00", "target_wake_time": "07:00" }
+```
+
+#### api keys
+
+| method   | path               | description       |
+| -------- | ------------------ | ----------------- |
+| `GET`    | `/api/v1/keys`     | list api keys     |
+| `POST`   | `/api/v1/keys`     | create an api key |
+| `DELETE` | `/api/v1/keys/:id` | revoke an api key |
+
+**POST** body: `{ "name": "home server" }`
+
+The raw key is only returned once in the POST response. Store it securely.
+
+### example
+
+```bash
+curl https://sneuz.app/api/v1/sessions \
+  -H "Authorization: ApiKey snz_your_key_here"
+```
+
 ## License
 
 MIT
