@@ -30,6 +30,7 @@ ios/**/Config.swift
 
 # supabase
 .supabase/
+supabase/.temp/
 
 # ide
 .vscode/
