@@ -1,50 +1,50 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { signup, signInWithGoogle } from "@/app/auth/actions"
-import { useState, useTransition } from "react"
-import Link from "next/link"
-import { IconBrandGoogleFilled } from "@tabler/icons-react"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { signup, signInWithGoogle } from "@/app/auth/actions";
+import { useState, useTransition } from "react";
+import Link from "next/link";
+import { IconBrandGoogleFilled } from "@tabler/icons-react";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
-  const [isPending, startTransition] = useTransition()
-  const [error, setError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(formData: FormData) {
-    const password = formData.get("password") as string
-    const confirmPassword = formData.get("confirm-password") as string
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirm-password") as string;
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      return
+      setError("Passwords do not match");
+      return;
     }
 
-    setError(null)
+    setError(null);
     startTransition(async () => {
-      const result = await signup(formData)
+      const result = await signup(formData);
       if (result?.error) {
-        setError(result.error)
+        setError(result.error);
       }
-    })
+    });
   }
 
   async function handleGoogleSignIn() {
-    setError(null)
+    setError(null);
     startTransition(async () => {
-      const result = await signInWithGoogle(new FormData())
+      const result = await signInWithGoogle(new FormData());
       if (result?.error) {
-        setError(result.error)
+        setError(result.error);
       }
-    })
+    });
   }
 
   return (
@@ -61,7 +61,13 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" name="name" type="text" placeholder="John Doe" required />
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="John Doe"
+                  required
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -82,13 +88,16 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input id="confirm-password" name="confirm-password" type="password" required />
+                <Input
+                  id="confirm-password"
+                  name="confirm-password"
+                  type="password"
+                  required
+                />
               </div>
 
               {error && (
-                <div className="text-sm text-red-500 font-medium">
-                  {error}
-                </div>
+                <div className="text-sm text-red-500 font-medium">{error}</div>
               )}
 
               <Button type="submit" className="w-full" disabled={isPending}>
@@ -96,7 +105,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               </Button>
             </div>
           </form>
-            
+
           <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
             <span className="relative z-10 bg-background px-2 text-muted-foreground">
               Or continue with
@@ -104,7 +113,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           </div>
 
           <form action={handleGoogleSignIn}>
-            <Button variant="outline" type="submit" className="w-full" disabled={isPending}>
+            <Button
+              variant="outline"
+              type="submit"
+              className="w-full"
+              disabled={isPending}
+            >
               <IconBrandGoogleFilled className="mr-2 h-4 w-4" />
               Sign up with Google
             </Button>
@@ -119,5 +133,5 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

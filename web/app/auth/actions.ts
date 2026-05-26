@@ -1,38 +1,38 @@
-'use server'
+"use server";
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 
 export async function login(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // extract data
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const next = (formData.get('next') as string) || '/dashboard'
-  
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  const next = (formData.get("next") as string) || "/dashboard";
+
   const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
-  })
+  });
 
   if (error) {
-    return { error: error.message }
+    return { error: error.message };
   }
 
-  revalidatePath('/', 'layout')
-  redirect(next)
+  revalidatePath("/", "layout");
+  redirect(next);
 }
 
 export async function signup(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // extract data
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const name = formData.get('name') as string
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  const name = formData.get("name") as string;
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -42,41 +42,41 @@ export async function signup(formData: FormData) {
         full_name: name,
       },
     },
-  })
+  });
 
   if (error) {
-    return { error: error.message }
+    return { error: error.message };
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  revalidatePath("/", "layout");
+  redirect("/dashboard");
 }
 
 export async function signout() {
-  const supabase = await createClient()
-  await supabase.auth.signOut()
-  revalidatePath('/', 'layout')
-  redirect('/login')
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  revalidatePath("/", "layout");
+  redirect("/login");
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function signInWithGoogle(_formData: FormData) {
-  const supabase = await createClient()
-  const origin = (await headers()).get('origin')
+  const supabase = await createClient();
+  const origin = (await headers()).get("origin");
 
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
+    provider: "google",
     options: {
       redirectTo: `${origin}/auth/callback`,
     },
-  })
+  });
 
   if (error) {
-    console.error('Error signing in with Google:', error.message)
-    return { error: error.message }
+    console.error("Error signing in with Google:", error.message);
+    return { error: error.message };
   }
 
   if (data.url) {
-    redirect(data.url)
+    redirect(data.url);
   }
 }

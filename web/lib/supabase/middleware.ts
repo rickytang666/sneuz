@@ -68,9 +68,7 @@ export async function updateSession(request: NextRequest) {
 
     // copy cookies from supabaseResponse (which might have refreshed session) to the redirect response
     const allCookies = supabaseResponse.cookies.getAll();
-    allCookies.forEach((cookie) =>
-      redirectResponse.cookies.set(cookie),
-    );
+    allCookies.forEach((cookie) => redirectResponse.cookies.set(cookie));
 
     return redirectResponse;
   }

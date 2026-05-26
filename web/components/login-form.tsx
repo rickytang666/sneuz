@@ -1,52 +1,52 @@
-"use client"
+"use client";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 // import { Button } from "@/components/ui/button" // Replaced by pending-aware button if simple
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { login, signInWithGoogle } from "@/app/auth/actions"
-import { useSearchParams } from "next/navigation"
-import { useState, useTransition } from "react"
-import Link from "next/link"
-import { IconBrandGoogleFilled } from "@tabler/icons-react"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { login, signInWithGoogle } from "@/app/auth/actions";
+import { useSearchParams } from "next/navigation";
+import { useState, useTransition } from "react";
+import Link from "next/link";
+import { IconBrandGoogleFilled } from "@tabler/icons-react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const searchParams = useSearchParams()
-  const next = searchParams.get('next')
-  const [isPending, startTransition] = useTransition()
-  const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(formData: FormData) {
-    setError(null)
+    setError(null);
     startTransition(async () => {
-      if (next) formData.append("next", next)
-      
-      const result = await login(formData)
+      if (next) formData.append("next", next);
+
+      const result = await login(formData);
       if (result?.error) {
-        setError(result.error)
+        setError(result.error);
       }
-    })
+    });
   }
 
   async function handleGoogleSignIn() {
-    setError(null)
+    setError(null);
     startTransition(async () => {
-      const result = await signInWithGoogle(new FormData())
+      const result = await signInWithGoogle(new FormData());
       if (result?.error) {
-        setError(result.error)
+        setError(result.error);
       }
-    })
+    });
   }
 
   return (
@@ -82,9 +82,14 @@ export function LoginForm({
                       Forgot your password?
                     </Link>
                   </div>
-                  <Input id="password" name="password" type="password" required />
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                  />
                 </div>
-                
+
                 {error && (
                   <div className="text-sm text-red-500 font-medium">
                     {error}
@@ -104,7 +109,12 @@ export function LoginForm({
             </div>
 
             <form action={handleGoogleSignIn}>
-              <Button variant="outline" type="submit" className="w-full" disabled={isPending}>
+              <Button
+                variant="outline"
+                type="submit"
+                className="w-full"
+                disabled={isPending}
+              >
                 <IconBrandGoogleFilled className="mr-2 h-4 w-4" />
                 Login with Google
               </Button>
@@ -120,5 +130,5 @@ export function LoginForm({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

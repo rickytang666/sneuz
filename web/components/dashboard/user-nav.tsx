@@ -16,10 +16,9 @@ import Link from "next/link";
 import { UserProfile } from "@/lib/types";
 
 export function UserNav({ user }: { user: UserProfile | null }) {
-
-  const name = user?.full_name || user?.email || "User"
-  const email = user?.email || ""
-  const initials = name.slice(0, 2).toUpperCase()
+  const name = user?.full_name || user?.email || "User";
+  const email = user?.email || "";
+  const initials = name.slice(0, 2).toUpperCase();
 
   return (
     <DropdownMenu>
