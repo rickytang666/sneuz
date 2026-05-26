@@ -5,7 +5,6 @@ export function mapDbSessionToSleepSession(session: {
   id: string
   start_time: string
   end_time: string | null
-  created_at: string
 }): SleepSession {
   const start = new Date(session.start_time)
   const end = session.end_time ? new Date(session.end_time) : null
@@ -16,7 +15,7 @@ export function mapDbSessionToSleepSession(session: {
     bedtime: session.start_time,
     wake_time: session.end_time,
     duration_minutes,
-    created_at: session.created_at,
+    created_at: session.start_time,
   }
 }
 

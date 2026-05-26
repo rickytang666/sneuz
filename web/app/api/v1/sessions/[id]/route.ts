@@ -30,7 +30,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     .update(payload)
     .eq('id', id)
     .eq('user_id', user.id)
-    .select('id, start_time, end_time, created_at')
+    .select('id, start_time, end_time')
     .single()
 
   if (error) {

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from('sleep_sessions')
-    .select('id, start_time, end_time, created_at')
+    .select('id, start_time, end_time')
     .eq('user_id', user.id)
     .order('start_time', { ascending: false })
     .range(offset, offset + limit - 1)
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
   const { data, error } = await supabase
     .from('sleep_sessions')
     .insert(payload)
-    .select('id, start_time, end_time, created_at')
+    .select('id, start_time, end_time')
     .single()
 
   if (error) {
