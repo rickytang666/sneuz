@@ -1,4 +1,24 @@
 import { parseISO } from "date-fns"
+import { SleepSession } from "@/lib/types"
+
+export function mapDbSessionToSleepSession(session: {
+  id: string
+  start_time: string
+  end_time: string | null
+  created_at: string
+}): SleepSession {
+  const start = new Date(session.start_time)
+  const end = session.end_time ? new Date(session.end_time) : null
+  const duration_minutes = end ? Math.ceil((end.getTime() - start.getTime()) / (1000 * 60)) : null
+
+  return {
+    id: session.id,
+    bedtime: session.start_time,
+    wake_time: session.end_time,
+    duration_minutes,
+    created_at: session.created_at,
+  }
+}
 
 /**
  * Converts a date or ISO string to minutes from start of day (midnight)

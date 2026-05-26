@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { differenceInMinutes } from "date-fns"
+import { mapDbSessionToSleepSession } from "@/lib/utils/sleep-utils"
 
 export async function getSleepSessions() {
   const supabase = await createClient()
@@ -17,25 +18,7 @@ export async function getSleepSessions() {
     return []
   }
 
-  // Map DB columns to UI model
-  return data.map(session => {
-    const start = new Date(session.start_time)
-    const end = session.end_time ? new Date(session.end_time) : null
-    
-    let duration = null
-    if (end) {
-        const diffMs = end.getTime() - start.getTime()
-        duration = Math.ceil(diffMs / (1000 * 60))
-    }
-
-    return {
-        id: session.id,
-        bedtime: session.start_time,
-        wake_time: session.end_time,
-        duration_minutes: duration,
-        created_at: session.created_at
-    }
-  })
+  return data.map(mapDbSessionToSleepSession)
 }
 
 export async function getSleepStats() {
