@@ -167,7 +167,7 @@ The raw key is only returned once in the POST response. Store it securely.
 ### example
 
 ```bash
-curl https://sneuz.app/api/v1/sessions \
+curl https://sneuz.rickytang.dev/api/v1/sessions \
   -H "Authorization: ApiKey snz_your_key_here"
 ```
 
