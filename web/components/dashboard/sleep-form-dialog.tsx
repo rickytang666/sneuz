@@ -26,6 +26,28 @@ interface SleepFormDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+function toLocalDateString(iso: string) {
+  const d = new Date(iso);
+  const offset = d.getTimezoneOffset();
+  return new Date(d.getTime() - offset * 60 * 1000).toISOString().slice(0, 10);
+}
+
+function toLocalTimeString(iso: string) {
+  const d = new Date(iso);
+  const offset = d.getTimezoneOffset();
+  return new Date(d.getTime() - offset * 60 * 1000).toISOString().slice(11, 16);
+}
+
+function defaultBedtimeDate() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+function defaultWakeDate() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export function SleepFormDialog({
   children,
   session,
@@ -35,7 +57,6 @@ export function SleepFormDialog({
   const [isPending, startTransition] = useTransition();
   const [internalOpen, setInternalOpen] = useState(false);
 
-  // If controlled, use props, otherwise use internal state
   const isControlled = open !== undefined;
   const isOpen = isControlled ? open : internalOpen;
   const setIsOpen = isControlled ? onOpenChange : setInternalOpen;
@@ -43,14 +64,22 @@ export function SleepFormDialog({
   const isEditing = !!session;
 
   async function handleSubmit(formData: FormData) {
-    const bedtime = formData.get("bedtime") as string;
-    const wakeTime = formData.get("wake_time") as string;
+    const bedtimeDate = formData.get("bedtime_date") as string;
+    const bedtimeTime = formData.get("bedtime_time") as string;
+    const wakeDate = formData.get("wake_date") as string;
+    const wakeTime = formData.get("wake_time_time") as string;
 
-    if (bedtime) {
-      formData.set("bedtime", new Date(bedtime).toISOString());
+    if (bedtimeDate && bedtimeTime) {
+      formData.set(
+        "bedtime",
+        new Date(`${bedtimeDate}T${bedtimeTime}`).toISOString(),
+      );
     }
-    if (wakeTime) {
-      formData.set("wake_time", new Date(wakeTime).toISOString());
+    if (wakeDate && wakeTime) {
+      formData.set(
+        "wake_time",
+        new Date(`${wakeDate}T${wakeTime}`).toISOString(),
+      );
     }
 
     startTransition(async () => {
@@ -62,20 +91,11 @@ export function SleepFormDialog({
       }
 
       if (result?.error) {
-        // TODO: Show toast error
         console.error(result.error);
       } else {
         if (setIsOpen) setIsOpen(false);
       }
     });
-  }
-
-  function toLocalISOString(dateString: string) {
-    const date = new Date(dateString);
-    const offset = date.getTimezoneOffset();
-    // Adjust the date to local time by subtracting the offset (in minutes)
-    const localDate = new Date(date.getTime() - offset * 60 * 1000);
-    return localDate.toISOString().slice(0, 16);
   }
 
   return (
@@ -94,34 +114,55 @@ export function SleepFormDialog({
         </DialogHeader>
         <form action={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="bedtime" className="text-right">
-                Bedtime
-              </Label>
-              <Input
-                id="bedtime"
-                name="bedtime"
-                type="datetime-local"
-                className="col-span-3"
-                defaultValue={
-                  session?.bedtime ? toLocalISOString(session.bedtime) : ""
-                }
-                required
-              />
+            <div className="grid gap-1.5">
+              <Label>Bedtime</Label>
+              <div className="flex gap-2">
+                <Input
+                  name="bedtime_date"
+                  type="date"
+                  className="flex-1"
+                  defaultValue={
+                    session?.bedtime
+                      ? toLocalDateString(session.bedtime)
+                      : defaultBedtimeDate()
+                  }
+                  required
+                />
+                <Input
+                  name="bedtime_time"
+                  type="time"
+                  className="flex-1"
+                  defaultValue={
+                    session?.bedtime ? toLocalTimeString(session.bedtime) : "23:00"
+                  }
+                  required
+                />
+              </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="wake_time" className="text-right">
-                Wake Time
-              </Label>
-              <Input
-                id="wake_time"
-                name="wake_time"
-                type="datetime-local"
-                className="col-span-3"
-                defaultValue={
-                  session?.wake_time ? toLocalISOString(session.wake_time) : ""
-                }
-              />
+            <div className="grid gap-1.5">
+              <Label>Wake Time</Label>
+              <div className="flex gap-2">
+                <Input
+                  name="wake_date"
+                  type="date"
+                  className="flex-1"
+                  defaultValue={
+                    session?.wake_time
+                      ? toLocalDateString(session.wake_time)
+                      : defaultWakeDate()
+                  }
+                />
+                <Input
+                  name="wake_time_time"
+                  type="time"
+                  className="flex-1"
+                  defaultValue={
+                    session?.wake_time
+                      ? toLocalTimeString(session.wake_time)
+                      : "07:00"
+                  }
+                />
+              </div>
             </div>
           </div>
           <DialogFooter>
