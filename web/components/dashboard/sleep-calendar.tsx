@@ -84,7 +84,9 @@ export function SleepCalendar({
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const monthParam = searchParams.get("month");
+  const initialMonth = monthParam ? parseISO(`${monthParam}-01`) : new Date();
+  const [currentMonth, setCurrentMonth] = useState(initialMonth);
   const [chartDays, setChartDays] = useState<7 | 30>(7);
   const [showTrend, setShowTrend] = useState(false);
 
@@ -94,8 +96,15 @@ export function SleepCalendar({
   if (wake < bed) wake.setDate(wake.getDate() + 1);
   const goal = (wake.getTime() - bed.getTime()) / (1000 * 60 * 60);
 
-  const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-  const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+  const navigateMonth = (date: Date) => {
+    setCurrentMonth(date);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("month", format(date, "yyyy-MM"));
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
+  const nextMonth = () => navigateMonth(addMonths(currentMonth, 1));
+  const prevMonth = () => navigateMonth(subMonths(currentMonth, 1));
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(monthStart);
@@ -235,7 +244,7 @@ export function SleepCalendar({
             <Button
               className="bg-primary/10 text-foreground hover:bg-primary/20 hover:text-primary border-2 border-border"
               size="sm"
-              onClick={() => setCurrentMonth(new Date())}
+              onClick={() => navigateMonth(new Date())}
             >
               Today
             </Button>
