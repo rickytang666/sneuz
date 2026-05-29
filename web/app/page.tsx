@@ -85,7 +85,7 @@ export default function Home() {
               </span>
               <span className="inline-flex items-center">
                 <Image
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Icon_-_Apple_Health.png/1200px-Icon_-_Apple_Health.png?20250228021041"
+                  src="/apple-health.png"
                   alt="Apple Health"
                   width={20}
                   height={20}
