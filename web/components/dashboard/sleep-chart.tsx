@@ -95,6 +95,19 @@ export function SleepChart({
     };
   });
 
+  // compute medians from sessions with data
+  const median = (values: number[]) => {
+    if (values.length === 0) return null;
+    const sorted = [...values].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 === 0
+      ? (sorted[mid - 1] + sorted[mid]) / 2
+      : sorted[mid];
+  };
+  const withData = chartData.filter((d) => d.bedtime !== null);
+  const avgBed = median(withData.map((d) => d.bedtime as number));
+  const avgWake = median(withData.map((d) => d.wakeMinutes as number));
+
   // Include targets in domain
   if (minTime === Infinity) {
     minTime = targetBedNormalized;
@@ -224,6 +237,39 @@ export function SleepChart({
                 fontWeight: "bold",
               }}
             />
+
+            {avgBed !== null && (
+              <ReferenceLine
+                y={avgBed}
+                stroke="#818cf8"
+                strokeDasharray="4 4"
+                opacity={0.8}
+                label={{
+                  position: "right",
+                  value: "Med. Bed",
+                  fill: "#818cf8",
+                  fontSize: 12,
+                  offset: 10,
+                  fontWeight: "bold",
+                }}
+              />
+            )}
+            {avgWake !== null && (
+              <ReferenceLine
+                y={avgWake}
+                stroke="#818cf8"
+                strokeDasharray="4 4"
+                opacity={0.8}
+                label={{
+                  position: "right",
+                  value: "Med. Wake",
+                  fill: "#818cf8",
+                  fontSize: 12,
+                  offset: 10,
+                  fontWeight: "bold",
+                }}
+              />
+            )}
 
             <Bar
               dataKey="bedtime"
