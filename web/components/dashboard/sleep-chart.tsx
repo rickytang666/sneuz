@@ -127,26 +127,12 @@ export function SleepChart({
     return `${hrs} h ${mins} m`;
   };
 
-  const scrollRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
-    }
-  }, [sessions, days]);
-
-  const chartWidth = Math.max(600, days * 50);
-
   return (
-    <div
-      ref={scrollRef}
-      className="w-full overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
-    >
-      <div style={{ minWidth: chartWidth, height: 400 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart
-            data={chartData}
-            margin={{ top: 10, right: 100, left: 0, bottom: 0 }}
+    <div style={{ height: 320 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart
+          data={chartData}
+          margin={{ top: 10, right: 80, left: 0, bottom: 0 }}
             barGap={0}
             barCategoryGap="20%"
           >
@@ -286,8 +272,7 @@ export function SleepChart({
               </>
             )}
           </ComposedChart>
-        </ResponsiveContainer>
-      </div>
+      </ResponsiveContainer>
     </div>
   );
 }
