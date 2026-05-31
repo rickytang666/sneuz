@@ -15,7 +15,7 @@ export default async function DataPage() {
   return (
     <div className="flex flex-col gap-6">
       {/* Stats Overview */}
-      <StatsCards stats={stats} />
+      <StatsCards stats={stats} sessions={sessions} />
 
       {/* Action Header */}
       <div className="flex items-center justify-between">

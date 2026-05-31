@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { differenceInMinutes, subDays } from "date-fns";
-import { mapDbSessionToSleepSession, getMinutesFromMidnight, isLateBedtime } from "@/lib/utils/sleep-utils";
+import { mapDbSessionToSleepSession, isLateBedtime } from "@/lib/utils/sleep-utils";
 
 export async function getSleepSessions() {
   const supabase = await createClient();
@@ -47,37 +47,9 @@ export async function getSleepStats(targetBedtime = "23:00") {
         ? (durations[mid - 1] + durations[mid]) / 2
         : durations[mid];
 
-  // avg bedtime and wake time over last 30 days
-  const normalize = (mins: number) => (mins < 900 ? mins + 1440 : mins);
   const cutoff = subDays(new Date(), 30);
   const recent = data.filter(
     (s) => s.end_time && new Date(s.start_time) >= cutoff,
-  );
-
-  const medianNormalized = (values: number[]) => {
-    if (values.length === 0) return null;
-    const sorted = [...values].sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 === 0
-      ? (sorted[mid - 1] + sorted[mid]) / 2
-      : sorted[mid];
-  };
-
-  const formatAvgTime = (mins: number | null) => {
-    if (mins === null) return null;
-    const total = Math.round(mins) % 1440;
-    const h = Math.floor(total / 60);
-    const m = total % 60;
-    const suffix = h < 12 ? "AM" : "PM";
-    const h12 = h % 12 || 12;
-    return `${h12}:${m.toString().padStart(2, "0")} ${suffix}`;
-  };
-
-  const avgBed = medianNormalized(
-    recent.map((s) => normalize(getMinutesFromMidnight(new Date(s.start_time)))),
-  );
-  const avgWake = medianNormalized(
-    recent.map((s) => normalize(getMinutesFromMidnight(new Date(s.end_time!)))),
   );
 
   const onTarget = recent.filter(
@@ -87,8 +59,6 @@ export async function getSleepStats(targetBedtime = "23:00") {
   return {
     on_target_nights: { count: onTarget, total: recent.length },
     median_hours: Math.round((medianMinutes / 60) * 10) / 10,
-    avg_bedtime: formatAvgTime(avgBed),
-    avg_wake_time: formatAvgTime(avgWake),
   };
 }
 
