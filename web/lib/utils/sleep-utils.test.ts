@@ -5,6 +5,8 @@ import {
   timeStringToMinutes,
   minutesToTimeString,
   isLateBedtime,
+  median,
+  normalizeSleepMinutes,
 } from "./sleep-utils";
 
 describe("mapDbSessionToSleepSession", () => {
@@ -107,5 +109,31 @@ describe("isLateBedtime", () => {
   it("handles cross-midnight target correctly", () => {
     // target 22:00, actual 01:00 next day — 3 hours late
     expect(isLateBedtime("2026-01-02T01:00:00", "22:00", 60)).toBe(true);
+  });
+});
+
+describe("median", () => {
+  it("returns null for empty array", () => {
+    expect(median([])).toBeNull();
+  });
+
+  it("calculates median for odd-length array", () => {
+    expect(median([5, 1, 3])).toBe(3);
+  });
+
+  it("calculates median for even-length array", () => {
+    expect(median([1, 2, 3, 4])).toBe(2.5);
+  });
+});
+
+describe("normalizeSleepMinutes", () => {
+  it("leaves values >= 900 unchanged", () => {
+    expect(normalizeSleepMinutes(900)).toBe(900);
+    expect(normalizeSleepMinutes(1000)).toBe(1000);
+  });
+
+  it("adds 1440 to values < 900", () => {
+    expect(normalizeSleepMinutes(0)).toBe(1440);
+    expect(normalizeSleepMinutes(899)).toBe(2339);
   });
 });
