@@ -19,6 +19,8 @@ import { SleepSession } from "@/lib/types";
 import {
   getMinutesFromMidnight,
   timeStringToMinutes,
+  median,
+  normalizeSleepMinutes,
 } from "@/lib/utils/sleep-utils";
 
 interface SleepChartProps {
@@ -39,13 +41,9 @@ export function SleepChart({
   const now = new Date();
   const startDate = startOfDay(subDays(now, days - 1));
 
-  // Normalize time: values before 15:00 (900 mins) are treated as "next day"
-  const normalize = (minutes: number) =>
-    minutes < 900 ? minutes + 1440 : minutes;
-
   // Calculate target times
-  const targetBedNormalized = normalize(timeStringToMinutes(targetBedtime));
-  const targetWakeNormalized = normalize(timeStringToMinutes(targetWakeTime));
+  const targetBedNormalized = normalizeSleepMinutes(timeStringToMinutes(targetBedtime));
+  const targetWakeNormalized = normalizeSleepMinutes(timeStringToMinutes(targetWakeTime));
 
   let minTime = Infinity;
   let maxTime = -Infinity;
@@ -72,10 +70,10 @@ export function SleepChart({
       };
     }
 
-    const bedLinear = normalize(
+    const bedLinear = normalizeSleepMinutes(
       getMinutesFromMidnight(parseISO(session.bedtime)),
     );
-    const wakeLinear = normalize(
+    const wakeLinear = normalizeSleepMinutes(
       getMinutesFromMidnight(parseISO(session.wake_time!)),
     );
 
@@ -95,15 +93,6 @@ export function SleepChart({
     };
   });
 
-  // compute medians from sessions with data
-  const median = (values: number[]) => {
-    if (values.length === 0) return null;
-    const sorted = [...values].sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 === 0
-      ? (sorted[mid - 1] + sorted[mid]) / 2
-      : sorted[mid];
-  };
   const withData = chartData.filter((d) => d.bedtime !== null);
   const avgBed = median(withData.map((d) => d.bedtime as number));
   const avgWake = median(withData.map((d) => d.wakeMinutes as number));

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { subDays } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getMinutesFromMidnight } from "@/lib/utils/sleep-utils";
+import { getMinutesFromMidnight, median, normalizeSleepMinutes } from "@/lib/utils/sleep-utils";
 import type { SleepSession } from "@/lib/types";
 
 interface StatsCardsProps {
@@ -12,15 +12,6 @@ interface StatsCardsProps {
     median_hours: number;
   };
   sessions: SleepSession[];
-}
-
-function medianOf(values: number[]): number | null {
-  if (values.length === 0) return null;
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0
-    ? (sorted[mid - 1] + sorted[mid]) / 2
-    : sorted[mid];
 }
 
 function formatMinutes(mins: number): string {
@@ -32,9 +23,6 @@ function formatMinutes(mins: number): string {
   return `${h12}:${m.toString().padStart(2, "0")} ${suffix}`;
 }
 
-// normalize cross-midnight times: values before 15:00 (900 min) are "next day"
-const normalize = (mins: number) => (mins < 900 ? mins + 1440 : mins);
-
 export function StatsCards({ stats, sessions }: StatsCardsProps) {
   const { medianBedtime, medianWake } = useMemo(() => {
     const cutoff = subDays(new Date(), 30);
@@ -43,14 +31,14 @@ export function StatsCards({ stats, sessions }: StatsCardsProps) {
     );
 
     const bedMins = recent.map((s) =>
-      normalize(getMinutesFromMidnight(s.bedtime)),
+      normalizeSleepMinutes(getMinutesFromMidnight(s.bedtime)),
     );
     const wakeMins = recent.map((s) =>
-      normalize(getMinutesFromMidnight(s.wake_time!)),
+      normalizeSleepMinutes(getMinutesFromMidnight(s.wake_time!)),
     );
 
-    const mb = medianOf(bedMins);
-    const mw = medianOf(wakeMins);
+    const mb = median(bedMins);
+    const mw = median(wakeMins);
     return {
       medianBedtime: mb !== null ? formatMinutes(mb) : null,
       medianWake: mw !== null ? formatMinutes(mw) : null,
