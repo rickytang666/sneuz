@@ -1,5 +1,10 @@
 "use client";
 
+import { IconPencil, IconTrash } from "@tabler/icons-react";
+import { useTransition } from "react";
+import { SleepFormDialog } from "@/components/dashboard/sleep-form-dialog";
+import { Button } from "@/components/ui/button";
+import { LocalTime } from "@/components/ui/local-time";
 import {
   Table,
   TableBody,
@@ -8,11 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { deleteSleepSession } from "@/lib/actions/sleep";
-import { useTransition } from "react";
-import { IconTrash, IconPencil } from "@tabler/icons-react";
-import { SleepFormDialog } from "@/components/dashboard/sleep-form-dialog";
 
 interface SleepSession {
   id: string;
@@ -54,12 +55,14 @@ export function SleepSessionList({ sessions }: { sessions: SleepSession[] }) {
             sessions.map((session) => (
               <TableRow key={session.id}>
                 <TableCell>
-                  {new Date(session.bedtime).toLocaleString()}
+                  <LocalTime iso={session.bedtime} />
                 </TableCell>
                 <TableCell>
-                  {session.wake_time
-                    ? new Date(session.wake_time).toLocaleString()
-                    : "-"}
+                  {session.wake_time ? (
+                    <LocalTime iso={session.wake_time} />
+                  ) : (
+                    "-"
+                  )}
                 </TableCell>
                 <TableCell>
                   {formatDuration(session.duration_minutes)}

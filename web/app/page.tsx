@@ -1,11 +1,11 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
 import {
   IconArrowNarrowRight,
   IconBrandAppleFilled,
 } from "@tabler/icons-react";
+import Image from "next/image";
+import Link from "next/link";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -121,7 +121,7 @@ export default function Home() {
             asChild
             variant="outline"
             size="lg"
-            className="rounded-full px-8 h-12 text-base font-medium bg-background/50 backdrop-blur-sm border-2 border-primary/40 text-foreground hover:bg-background/80 hover:border-primary transition-all duration-300"
+            className="rounded-full px-8 h-12 text-base font-medium bg-background/50 backdrop-blur-sm border-2 border-primary/40 text-foreground hover:bg-background/80 hover:border-primary transition-colors duration-300"
           >
             <Link href="/signup">Join</Link>
           </Button>

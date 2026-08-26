@@ -1,14 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
 import { subDays } from "date-fns";
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { SleepSession } from "@/lib/types";
 import {
   getMinutesFromMidnight,
   median,
   normalizeSleepMinutes,
 } from "@/lib/utils/sleep-utils";
-import type { SleepSession } from "@/lib/types";
 
 interface StatsCardsProps {
   stats: {
@@ -38,6 +38,7 @@ export function StatsCards({ stats, sessions }: StatsCardsProps) {
       normalizeSleepMinutes(getMinutesFromMidnight(s.bedtime)),
     );
     const wakeMins = recent.map((s) =>
+      // biome-ignore lint/style/noNonNullAssertion: guarded by the wake_time check above
       normalizeSleepMinutes(getMinutesFromMidnight(s.wake_time!)),
     );
 

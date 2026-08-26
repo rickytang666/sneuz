@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { LocalTime } from "@/components/ui/local-time";
 import { createApiKey, deleteApiKey } from "@/lib/actions/api-keys";
 
 interface ApiKey {
@@ -41,8 +42,9 @@ export function ApiKeysManager({ initialKeys }: Props) {
     if ("error" in result && result.error) {
       setError(result.error);
     } else if (result.data) {
-      setKeys((prev) => [{ ...result.data!, last_used_at: null }, ...prev]);
-      setNewKey(result.data.key);
+      const created = result.data;
+      setKeys((prev) => [{ ...created, last_used_at: null }, ...prev]);
+      setNewKey(created.key);
       setName("");
     }
 
@@ -63,10 +65,6 @@ export function ApiKeysManager({ initialKeys }: Props) {
     await navigator.clipboard.writeText(newKey);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }
-
-  function formatDate(iso: string) {
-    return new Date(iso).toLocaleDateString(undefined, { dateStyle: "medium" });
   }
 
   return (
@@ -101,9 +99,13 @@ export function ApiKeysManager({ initialKeys }: Props) {
               <div className="space-y-0.5">
                 <p className="text-sm font-medium">{key.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  Created {formatDate(key.created_at)}
-                  {key.last_used_at &&
-                    ` · Last used ${formatDate(key.last_used_at)}`}
+                  Created <LocalTime iso={key.created_at} mode="date" />
+                  {key.last_used_at && (
+                    <>
+                      {" · Last used "}
+                      <LocalTime iso={key.last_used_at} mode="date" />
+                    </>
+                  )}
                 </p>
               </div>
               <Button

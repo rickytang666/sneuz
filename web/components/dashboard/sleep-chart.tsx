@@ -1,24 +1,24 @@
 "use client";
 
+import { addDays, format, parseISO, startOfDay, subDays } from "date-fns";
 import {
+  Bar,
+  CartesianGrid,
+  Cell,
   ComposedChart,
   Line,
-  Bar,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-  Cell,
 } from "recharts";
-import { format, parseISO, subDays, addDays, startOfDay } from "date-fns";
-import { SleepSession } from "@/lib/types";
+import type { SleepSession } from "@/lib/types";
 import {
   getMinutesFromMidnight,
-  timeStringToMinutes,
   median,
   normalizeSleepMinutes,
+  timeStringToMinutes,
 } from "@/lib/utils/sleep-utils";
 
 interface SleepChartProps {
@@ -28,6 +28,19 @@ interface SleepChartProps {
   targetWakeTime: string;
   showTrend?: boolean;
 }
+
+const formatYAxis = (value: number) => {
+  const normalized = value % 1440;
+  const hrs = Math.floor(normalized / 60);
+  const mins = normalized % 60;
+  return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+};
+
+const formatDuration = (minutes: number) => {
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hrs} h ${mins} m`;
+};
 
 export function SleepChart({
   sessions,
@@ -76,6 +89,7 @@ export function SleepChart({
       getMinutesFromMidnight(parseISO(session.bedtime)),
     );
     const wakeLinear = normalizeSleepMinutes(
+      // biome-ignore lint/style/noNonNullAssertion: guarded by the wake_time check above
       getMinutesFromMidnight(parseISO(session.wake_time!)),
     );
 
@@ -89,6 +103,7 @@ export function SleepChart({
       bedtime: bedLinear,
       duration: wakeLinear - bedLinear,
       displayBed: format(parseISO(session.bedtime), "h:mm a"),
+      // biome-ignore lint/style/noNonNullAssertion: guarded by the wake_time check above
       displayWake: format(parseISO(session.wake_time!), "h:mm a"),
       rawDuration: session.duration_minutes || 0,
       wakeMinutes: wakeLinear,
@@ -117,19 +132,6 @@ export function SleepChart({
   for (let t = paddedMin; t <= paddedMax; t += 60) {
     ticks.push(t);
   }
-
-  const formatYAxis = (value: number) => {
-    const normalized = value % 1440;
-    const hrs = Math.floor(normalized / 60);
-    const mins = normalized % 60;
-    return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
-  };
-
-  const formatDuration = (minutes: number) => {
-    const hrs = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hrs} h ${mins} m`;
-  };
 
   return (
     <div style={{ height: 320 }}>
@@ -276,10 +278,9 @@ export function SleepChart({
             isAnimationActive={false}
             radius={[4, 4, 4, 4]}
           >
-            {chartData.map((entry, index) => (
+            {chartData.map((entry) => (
               <Cell
-                // biome-ignore lint/suspicious/noArrayIndexKey: positional series, index is the stable identity
-                key={`cell-${index}`}
+                key={entry.name}
                 fill={entry.duration > 0 ? "#b14cd3" : "transparent"}
               />
             ))}

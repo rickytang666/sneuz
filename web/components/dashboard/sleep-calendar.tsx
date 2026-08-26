@@ -1,38 +1,50 @@
 "use client";
 
-import { useState } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import {
+  IconCalendarMonth,
+  IconChartBar,
+  IconChevronLeft,
+  IconChevronRight,
+  IconTrendingUp,
+} from "@tabler/icons-react";
 import {
   addMonths,
   eachDayOfInterval,
   endOfMonth,
   endOfWeek,
   format,
-  isSameMonth,
   isSameDay,
+  isSameMonth,
+  parseISO,
   startOfMonth,
   startOfWeek,
   subMonths,
-  parseISO,
 } from "date-fns";
-import {
-  IconChevronLeft,
-  IconChevronRight,
-  IconChartBar,
-  IconCalendarMonth,
-  IconTrendingUp,
-} from "@tabler/icons-react";
+import dynamic from "next/dynamic";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { SleepChart } from "./sleep-chart";
-import { isLateBedtime } from "@/lib/utils/sleep-utils";
+
+// recharts is heavy and only the analytics tab needs it
+const SleepChart = dynamic(
+  () => import("./sleep-chart").then((m) => m.SleepChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[320px] animate-pulse rounded-md bg-muted/40" />
+    ),
+  },
+);
+
+import ProgressRing from "@/components/ui/progress-ring";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import ProgressRing from "@/components/ui/progress-ring";
+import { isLateBedtime } from "@/lib/utils/sleep-utils";
 
 interface SleepSession {
   id: string;
@@ -62,6 +74,28 @@ function SleepRing({
   );
 }
 
+// Weekday headers
+const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+// Continuous color mapping: <= 50% = Red (0), > 50% maps 50..100 to 0..120
+const getPercentageColor = (percentage: number) => {
+  if (percentage <= 50) return `hsl(0, 70%, 45%)`;
+
+  // Clamp at 100
+  const effective = Math.min(percentage, 100);
+  // Map 50..100 to 0..120
+  // (val - 50) / 50 * 120 = (val - 50) * 2.4
+  const hue = (effective - 50) * 2.4;
+  return `hsl(${hue}, 70%, 45%)`;
+};
+
+const formatDuration = (minutes: number | null) => {
+  if (!minutes) return "0h 0m";
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hrs}h ${mins}m`;
+};
+
 export function SleepCalendar({
   sessions,
   targetBedtime = "23:00",
@@ -90,6 +124,10 @@ export function SleepCalendar({
   const [chartDays, setChartDays] = useState<7 | 30>(7);
   const [showTrend, setShowTrend] = useState(false);
 
+  // resolved in the browser so "today" is the user's day, not the server's
+  const [today, setToday] = useState<Date | null>(null);
+  useEffect(() => setToday(new Date()), []);
+
   // Calculate goal hours
   const bed = new Date(`2000-01-01T${targetBedtime}`);
   const wake = new Date(`2000-01-01T${targetWakeTime}`);
@@ -116,9 +154,6 @@ export function SleepCalendar({
     end: endDate,
   });
 
-  // Weekday headers
-  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
   // Helper to find session for a day
   const getSessionForDay = (day: Date) => {
     return sessions.find((session) => {
@@ -128,31 +163,12 @@ export function SleepCalendar({
     });
   };
 
-  // Continuous color mapping: <= 50% = Red (0), > 50% maps 50..100 to 0..120
-  const getPercentageColor = (percentage: number) => {
-    if (percentage <= 50) return `hsl(0, 70%, 45%)`;
-
-    // Clamp at 100
-    const effective = Math.min(percentage, 100);
-    // Map 50..100 to 0..120
-    // (val - 50) / 50 * 120 = (val - 50) * 2.4
-    const hue = (effective - 50) * 2.4;
-    return `hsl(${hue}, 70%, 45%)`;
-  };
-
   const getSleepStats = (minutes: number | null) => {
     if (!minutes) return { percent: 0, color: "hsl(0, 0%, 80%)" }; // Gray for empty
     const hours = minutes / 60;
     const percent = Math.min((hours / goal) * 100, 100);
 
     return { percent, color: getPercentageColor(percent) };
-  };
-
-  const formatDuration = (minutes: number | null) => {
-    if (!minutes) return "0h 0m";
-    const hrs = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hrs}h ${mins}m`;
   };
 
   return (
@@ -315,7 +331,7 @@ export function SleepCalendar({
                     <span
                       className={cn(
                         "text-[10px] md:text-xs font-medium h-5 w-5 md:h-6 md:w-6 flex items-center justify-center rounded-full transition-colors",
-                        isSameDay(day, new Date())
+                        today && isSameDay(day, today)
                           ? "bg-primary text-primary-foreground"
                           : "text-muted-foreground group-hover:text-foreground",
                       )}
@@ -345,6 +361,7 @@ export function SleepCalendar({
                               </span>
                               <span>→</span>
                               <span>
+                                {/* biome-ignore lint/style/noNonNullAssertion: guarded by the wake_time check above */}
                                 {format(parseISO(session.wake_time!), "h:mm a")}
                               </span>
                             </div>

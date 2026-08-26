@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
-import { IconMoon, IconSun, IconDeviceDesktop } from "@tabler/icons-react";
+import { IconDeviceDesktop, IconMoon, IconSun } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
+import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,17 +39,17 @@ export function ModeToggle() {
           {theme === "system" ? (
             <IconDeviceDesktop
               strokeWidth={2.5}
-              className="h-[1.2rem] w-[1.2rem] transition-all"
+              className="h-[1.2rem] w-[1.2rem] transition-colors"
             />
           ) : theme === "dark" ? (
             <IconMoon
               strokeWidth={2.5}
-              className="h-[1.2rem] w-[1.2rem] transition-all"
+              className="h-[1.2rem] w-[1.2rem] transition-colors"
             />
           ) : (
             <IconSun
               strokeWidth={2.5}
-              className="h-[1.2rem] w-[1.2rem] transition-all"
+              className="h-[1.2rem] w-[1.2rem] transition-colors"
             />
           )}
           <span className="sr-only">Toggle theme</span>

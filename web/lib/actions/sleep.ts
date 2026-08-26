@@ -1,11 +1,11 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
 import { differenceInMinutes, subDays } from "date-fns";
+import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
 import {
-  mapDbSessionToSleepSession,
   isLateBedtime,
+  mapDbSessionToSleepSession,
 } from "@/lib/utils/sleep-utils";
 
 export async function getSleepSessions() {
@@ -42,11 +42,15 @@ export async function getSleepStats(targetBedtime = "23:00") {
   }
 
   const durations = data
-    .filter((s) => s.end_time)
-    .map((s) =>
-      differenceInMinutes(new Date(s.end_time!), new Date(s.start_time)),
-    )
-    .filter((d) => d > 0)
+    .reduce<number[]>((acc, s) => {
+      if (!s.end_time) return acc;
+      const minutes = differenceInMinutes(
+        new Date(s.end_time),
+        new Date(s.start_time),
+      );
+      if (minutes > 0) acc.push(minutes);
+      return acc;
+    }, [])
     .sort((a, b) => a - b);
 
   const mid = Math.floor(durations.length / 2);
@@ -105,6 +109,11 @@ export async function createSleepSession(formData: FormData) {
 
 export async function updateSleepSession(id: string, formData: FormData) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Unauthorized" };
 
   const start_time = formData.get("bedtime") as string;
   const end_time = formData.get("wake_time") as string;
@@ -119,7 +128,8 @@ export async function updateSleepSession(id: string, formData: FormData) {
   const { error } = await supabase
     .from("sleep_sessions")
     .update(payload)
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", user.id);
 
   if (error) {
     return { error: error.message };
@@ -130,8 +140,17 @@ export async function updateSleepSession(id: string, formData: FormData) {
 
 export async function deleteSleepSession(id: string) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const { error } = await supabase.from("sleep_sessions").delete().eq("id", id);
+  if (!user) return { error: "Unauthorized" };
+
+  const { error } = await supabase
+    .from("sleep_sessions")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
 
   if (error) {
     return { error: error.message };

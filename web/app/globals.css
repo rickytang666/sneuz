@@ -137,3 +137,17 @@
   opacity: 0.11;
   mix-blend-mode: screen;
 } */
+
+/* wcag 2.3.3: honour the os "reduce motion" setting */
+@media (prefers-reduced-motion: reduce) {
+  /* biome-ignore-start lint/complexity/noImportantStyles: a reduce-motion override has to win over utility and inline styles */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* biome-ignore-end lint/complexity/noImportantStyles: reduce-motion override */
+}
