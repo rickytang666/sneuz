@@ -4,12 +4,15 @@ import { Label } from "@/components/ui/label";
 import { getUserSettings } from "@/lib/actions/sleep";
 import { updateSettings } from "@/lib/actions/user";
 import { getApiKeys } from "@/lib/actions/api-keys";
+import { getIdentities } from "@/lib/actions/identities";
 import { ApiKeysManager } from "@/components/dashboard/api-keys-manager";
+import { ConnectedAccounts } from "@/components/dashboard/connected-accounts";
 
 export default async function SettingsPage() {
-  const [settings, apiKeys] = await Promise.all([
+  const [settings, apiKeys, identities] = await Promise.all([
     getUserSettings(),
     getApiKeys(),
+    getIdentities(),
   ]);
 
   // Calculate duration for display
@@ -64,6 +67,13 @@ export default async function SettingsPage() {
             <Button type="submit">Save Changes</Button>
           </div>
         </form>
+      </div>
+      <div className="border rounded-md p-6 space-y-4">
+        <h4 className="font-semibold">Connected Accounts</h4>
+        <p className="text-sm text-muted-foreground">
+          Sign in to this account with any connected method.
+        </p>
+        <ConnectedAccounts initialIdentities={identities} />
       </div>
       <div className="border rounded-md p-6 space-y-4">
         <h4 className="font-semibold">API Keys</h4>

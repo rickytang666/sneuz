@@ -5,6 +5,12 @@ export interface UserProfile {
   avatar_url: string;
 }
 
+export interface LinkedIdentity {
+  id: string;
+  provider: string;
+  email?: string;
+}
+
 export interface SleepSession {
   id: string;
   bedtime: string;
