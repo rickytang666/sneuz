@@ -1,7 +1,7 @@
 "use client";
 
 import { subDays } from "date-fns";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SleepSession } from "@/lib/types";
 import {
@@ -28,8 +28,14 @@ function formatMinutes(mins: number): string {
 }
 
 export function StatsCards({ stats, sessions }: StatsCardsProps) {
+  // resolved in the browser, the window is relative to "now" and the server
+  // clock and timezone are not the user's
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => setNow(new Date()), []);
+
   const { medianBedtime, medianWake } = useMemo(() => {
-    const cutoff = subDays(new Date(), 30);
+    if (!now) return { medianBedtime: null, medianWake: null };
+    const cutoff = subDays(now, 30);
     const recent = sessions.filter(
       (s) => s.wake_time && new Date(s.bedtime) >= cutoff,
     );
@@ -48,7 +54,7 @@ export function StatsCards({ stats, sessions }: StatsCardsProps) {
       medianBedtime: mb !== null ? formatMinutes(mb) : null,
       medianWake: mw !== null ? formatMinutes(mw) : null,
     };
-  }, [sessions]);
+  }, [sessions, now]);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
