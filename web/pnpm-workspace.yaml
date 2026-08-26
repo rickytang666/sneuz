@@ -1,3 +1,8 @@
 # sharp is next's image optimizer, its install script has to run
 allowBuilds:
   sharp: true
+
+# vitest pins versions with open advisories, both are dev-only and same-major
+overrides:
+  vite: ^8.2.2
+  picomatch: ^4.0.4
