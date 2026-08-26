@@ -4,10 +4,12 @@ manual sleep tracking portal for the app.
 
 ## setup
 
-1. ensure `.env.local` is configured with supabase keys.
-2. run `./run.sh` to install dependencies and start dev server.
+see the dev setup section in the [root README](../README.md). in short: copy
+`.env.example` to `.env`, fill in your supabase credentials, then `pnpm install && pnpm dev`.
 
 ## scripts
 
-- `./run.sh`: install and dev
-- `./validate.sh`: build and lint
+- `pnpm dev`: start the dev server
+- `pnpm validate`: build, lint, test, react-doctor
+- `pnpm lint` / `pnpm lint:fix`: biome check
+- `pnpm test` / `pnpm test:watch`: vitest

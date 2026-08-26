@@ -42,21 +42,26 @@ It _might_ be shipped on App Store.
 
 ## Dev Setup
 
-**Prerequisites**: Xcode, Node.js, Supabase account
+**Prerequisites**: Xcode, Node.js, pnpm, Supabase account
+
+There is no local-only mode. The web app and the iOS app both talk to a real Supabase project, so you need your own before anything runs. Budget ~15 minutes for the backend step.
 
 **Backend**:
 
 - Create Supabase project
 - Run migrations from `supabase/migrations` in order
 - Enable email/password auth
+- Add `http://localhost:3000/**` under Authentication > URL Configuration > Redirect URLs
 
 **Web**:
 
 ```bash
-cp .env.example web/.env  # add your Supabase credentials
+cp web/.env.example web/.env  # add your Supabase credentials
 cd web
-npm install && npm run dev
+pnpm install && pnpm dev
 ```
+
+`pnpm validate` runs build, lint, tests, and react-doctor.
 
 **iOS**:
 
