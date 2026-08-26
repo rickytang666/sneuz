@@ -14,8 +14,9 @@ const advisoryFailures = [];
 for (const { name, cmd, advisory } of steps) {
   console.log(`\n▸ ${name}${advisory ? " (advisory)" : ""}`);
   const [bin, ...args] = cmd;
+  // stdin is closed so a step can never sit waiting on a prompt
   const { status } = spawnSync(bin, args, {
-    stdio: "inherit",
+    stdio: ["ignore", "inherit", "inherit"],
     shell: process.platform === "win32",
   });
 

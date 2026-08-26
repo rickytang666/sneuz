@@ -1,0 +1,3 @@
+# sharp is next's image optimizer, its install script has to run
+allowBuilds:
+  sharp: true

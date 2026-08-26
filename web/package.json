@@ -10,7 +10,7 @@
     "lint:fix": "biome check . --write",
     "test": "vitest run",
     "test:watch": "vitest",
-    "react-doctor": "pnpm dlx react-doctor@latest --verbose -y",
+    "react-doctor": "CI=1 pnpm dlx react-doctor@latest --verbose -y",
     "validate": "node validate.mjs"
   },
   "dependencies": {
@@ -57,5 +57,5 @@
     "typescript": "^5",
     "vitest": "^4.1.7"
   },
-  "packageManager": "pnpm@10.32.1"
+  "packageManager": "pnpm@11.24.0"
 }
