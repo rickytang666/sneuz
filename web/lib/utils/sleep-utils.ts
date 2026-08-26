@@ -1,5 +1,5 @@
 import { parseISO } from "date-fns";
-import { SleepSession } from "@/lib/types";
+import type { SleepSession } from "@/lib/types";
 
 export function mapDbSessionToSleepSession(session: {
   id: string;

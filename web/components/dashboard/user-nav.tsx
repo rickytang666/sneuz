@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { signout } from "@/app/auth/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,9 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signout } from "@/app/auth/actions";
-import Link from "next/link";
-import { UserProfile } from "@/lib/types";
+import type { UserProfile } from "@/lib/types";
 
 export function UserNav({ user }: { user: UserProfile | null }) {
   const name = user?.full_name || user?.email || "User";

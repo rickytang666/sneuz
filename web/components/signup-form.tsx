@@ -1,5 +1,9 @@
 "use client";
 
+import { IconBrandGoogleFilled } from "@tabler/icons-react";
+import Link from "next/link";
+import { useState, useTransition } from "react";
+import { signInWithGoogle, signup } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,10 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signup, signInWithGoogle } from "@/app/auth/actions";
-import { useState, useTransition } from "react";
-import Link from "next/link";
-import { IconBrandGoogleFilled } from "@tabler/icons-react";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [isPending, startTransition] = useTransition();

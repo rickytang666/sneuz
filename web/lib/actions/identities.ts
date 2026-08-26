@@ -1,10 +1,10 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import { LinkedIdentity } from "@/lib/types";
+import { createClient } from "@/lib/supabase/server";
+import type { LinkedIdentity } from "@/lib/types";
 
 export async function getIdentities(): Promise<LinkedIdentity[]> {
   const supabase = await createClient();

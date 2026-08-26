@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { UserProfile } from "@/lib/types";
+import { createClient } from "@/lib/supabase/server";
+import type { UserProfile } from "@/lib/types";
 
 export async function getProfile(): Promise<UserProfile | null> {
   const supabase = await createClient();

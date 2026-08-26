@@ -1,13 +1,13 @@
+import { IconPlus } from "@tabler/icons-react";
 import { SleepFormDialog } from "@/components/dashboard/sleep-form-dialog";
+import { SleepSessionList } from "@/components/dashboard/sleep-session-list";
+import { StatsCards } from "@/components/dashboard/stats-cards";
+import { Button } from "@/components/ui/button";
 import {
   getSleepSessions,
   getSleepStats,
   getUserSettings,
 } from "@/lib/actions/sleep";
-import { StatsCards } from "@/components/dashboard/stats-cards";
-import { SleepSessionList } from "@/components/dashboard/sleep-session-list";
-import { Button } from "@/components/ui/button";
-import { IconPlus } from "@tabler/icons-react";
 
 export default async function DataPage() {
   const [sessions, settings] = await Promise.all([

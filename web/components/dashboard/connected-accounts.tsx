@@ -1,10 +1,10 @@
 "use client";
 
+import { IconBrandGoogleFilled, IconMail } from "@tabler/icons-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { IconBrandGoogleFilled, IconMail } from "@tabler/icons-react";
 import { linkGoogle, unlinkIdentity } from "@/lib/actions/identities";
-import { LinkedIdentity } from "@/lib/types";
+import type { LinkedIdentity } from "@/lib/types";
 
 interface Props {
   initialIdentities: LinkedIdentity[];

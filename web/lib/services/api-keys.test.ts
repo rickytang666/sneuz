@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { listKeys, createKey, deleteKey } from "./api-keys";
+import { describe, expect, it, vi } from "vitest";
+import { createKey, deleteKey, listKeys } from "./api-keys";
 
 function makeClient(overrides: Record<string, unknown> = {}) {
   const chain = {

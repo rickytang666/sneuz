@@ -1,12 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  mapDbSessionToSleepSession,
   getMinutesFromMidnight,
-  timeStringToMinutes,
-  minutesToTimeString,
   isLateBedtime,
+  mapDbSessionToSleepSession,
   median,
+  minutesToTimeString,
   normalizeSleepMinutes,
+  timeStringToMinutes,
 } from "./sleep-utils";
 
 describe("mapDbSessionToSleepSession", () => {

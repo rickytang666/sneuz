@@ -1,12 +1,12 @@
+import { ApiKeysManager } from "@/components/dashboard/api-keys-manager";
+import { ConnectedAccounts } from "@/components/dashboard/connected-accounts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getUserSettings } from "@/lib/actions/sleep";
-import { updateSettings } from "@/lib/actions/user";
 import { getApiKeys } from "@/lib/actions/api-keys";
 import { getIdentities } from "@/lib/actions/identities";
-import { ApiKeysManager } from "@/components/dashboard/api-keys-manager";
-import { ConnectedAccounts } from "@/components/dashboard/connected-accounts";
+import { getUserSettings } from "@/lib/actions/sleep";
+import { updateSettings } from "@/lib/actions/user";
 
 export default async function SettingsPage() {
   const [settings, apiKeys, identities] = await Promise.all([

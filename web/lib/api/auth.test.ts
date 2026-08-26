@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { requireAuthFromHeader } from "./auth";
 
 // mock supabase clients so we don't hit the network
@@ -22,6 +22,7 @@ vi.mock("@supabase/supabase-js", () => ({
         error: null,
       }),
       update: vi.fn().mockReturnThis(),
+      // biome-ignore lint/suspicious/noThenProperty: the supabase query builder is thenable, the mock has to be too
       then: vi.fn(),
     })),
     auth: {
@@ -69,13 +70,13 @@ describe("requireAuthFromHeader", () => {
 
   it("401 response body contains error field", async () => {
     const result = await requireAuthFromHeader(makeRequest());
-    const body = await result.response!.json();
+    const body = await result.response?.json();
     expect(body).toHaveProperty("error");
   });
 
   it("401 response has JSON content-type", async () => {
     const result = await requireAuthFromHeader(makeRequest());
-    expect(result.response!.headers.get("Content-Type")).toBe(
+    expect(result.response?.headers.get("Content-Type")).toBe(
       "application/json",
     );
   });

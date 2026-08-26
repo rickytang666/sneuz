@@ -1,8 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { listKeys, createKey, deleteKey } from "@/lib/services/api-keys";
 import { revalidatePath } from "next/cache";
+import { createKey, deleteKey, listKeys } from "@/lib/services/api-keys";
+import { createClient } from "@/lib/supabase/server";
 
 export async function getApiKeys() {
   const supabase = await createClient();

@@ -1,8 +1,8 @@
-import { SignupForm } from "@/components/signup-form";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
 import { IconChevronLeft } from "@tabler/icons-react";
+import Link from "next/link";
+import { ModeToggle } from "@/components/mode-toggle";
+import { SignupForm } from "@/components/signup-form";
+import { Button } from "@/components/ui/button";
 
 export default function SignupPage() {
   return (

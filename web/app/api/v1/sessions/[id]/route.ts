@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { requireAuthFromHeader } from "@/lib/api/auth";
 import { mapDbSessionToSleepSession } from "@/lib/utils/sleep-utils";
 

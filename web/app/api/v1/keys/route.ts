@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { requireAuthFromHeader } from "@/lib/api/auth";
-import { listKeys, createKey } from "@/lib/services/api-keys";
+import { createKey, listKeys } from "@/lib/services/api-keys";
 
 export async function GET(request: NextRequest) {
   const { user, supabase, response } = await requireAuthFromHeader(request);

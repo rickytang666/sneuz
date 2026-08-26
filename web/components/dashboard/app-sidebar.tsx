@@ -1,13 +1,15 @@
 "use client";
 
-import * as React from "react";
-import Image from "next/image";
 import {
   IconCalendar,
   IconDatabase,
   IconSettings,
   IconUser,
 } from "@tabler/icons-react";
+import Image from "next/image";
+import type * as React from "react";
+import { UserNav } from "@/components/dashboard/user-nav";
+import { ModeToggle } from "@/components/mode-toggle";
 import {
   Sidebar,
   SidebarContent,
@@ -20,9 +22,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { ModeToggle } from "@/components/mode-toggle";
-import { UserNav } from "@/components/dashboard/user-nav";
-import { UserProfile } from "@/lib/types";
+import type { UserProfile } from "@/lib/types";
 
 // Menu items.
 const items = [

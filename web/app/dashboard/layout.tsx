@@ -1,8 +1,8 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/dashboard/app-sidebar";
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { AppSidebar } from "@/components/dashboard/app-sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getProfile } from "@/lib/actions/user";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardLayout({
   children,

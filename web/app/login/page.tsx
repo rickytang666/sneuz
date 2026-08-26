@@ -1,10 +1,10 @@
 "use client";
-import { LoginForm } from "@/components/login-form";
-import { Suspense } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
 import { IconChevronLeft } from "@tabler/icons-react";
+import Link from "next/link";
+import { Suspense } from "react";
+import { LoginForm } from "@/components/login-form";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   return (

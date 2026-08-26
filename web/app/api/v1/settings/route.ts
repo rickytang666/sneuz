@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { requireAuthFromHeader } from "@/lib/api/auth";
 
 const DEFAULT_SETTINGS = { target_bedtime: "23:00", target_wake_time: "07:00" };

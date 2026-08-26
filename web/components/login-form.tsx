@@ -1,6 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { IconBrandGoogleFilled } from "@tabler/icons-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useState, useTransition } from "react";
+import { login, signInWithGoogle } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,11 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { login, signInWithGoogle } from "@/app/auth/actions";
-import { useSearchParams } from "next/navigation";
-import { useState, useTransition } from "react";
-import Link from "next/link";
-import { IconBrandGoogleFilled } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
 
 export function LoginForm({
   className,
