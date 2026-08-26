@@ -1,25 +1,24 @@
 import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
+import {
+  SUPABASE_ANON_KEY,
+  SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_URL,
+} from "@/lib/env";
 import { hashApiKey } from "./keys";
 
 function createServiceClient(): SupabaseClient {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } },
-  );
+  return createClient(SUPABASE_URL(), SUPABASE_SERVICE_ROLE_KEY(), {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
 }
 
 export function createClientFromToken(token: string): SupabaseClient {
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      global: { headers: { Authorization: `Bearer ${token}` } },
-      cookies: { getAll: () => [], setAll: () => {} },
-    },
-  );
+  return createServerClient(SUPABASE_URL(), SUPABASE_ANON_KEY(), {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+    cookies: { getAll: () => [], setAll: () => {} },
+  });
 }
 
 type AuthResult =
