@@ -15,15 +15,15 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
+          cookiesToSet.forEach(({ name, value }) => {
+            request.cookies.set(name, value);
+          });
           supabaseResponse = NextResponse.next({
             request,
           });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
+          cookiesToSet.forEach(({ name, value, options }) => {
+            supabaseResponse.cookies.set(name, value, options);
+          });
         },
       },
     },
@@ -68,7 +68,9 @@ export async function updateSession(request: NextRequest) {
 
     // copy cookies from supabaseResponse (which might have refreshed session) to the redirect response
     const allCookies = supabaseResponse.cookies.getAll();
-    allCookies.forEach((cookie) => redirectResponse.cookies.set(cookie));
+    allCookies.forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
 
     return redirectResponse;
   }

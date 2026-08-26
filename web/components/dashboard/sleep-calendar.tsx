@@ -163,6 +163,7 @@ export function SleepCalendar({
         {/* Main View Toggle */}
         <div className="flex items-center p-1 bg-muted rounded-lg w-fit border border-border/50">
           <button
+            type="button"
             onClick={() => setView("grid")}
             className={cn(
               "flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200",
@@ -175,6 +176,7 @@ export function SleepCalendar({
             Calendar
           </button>
           <button
+            type="button"
             onClick={() => setView("chart")}
             className={cn(
               "flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200",
@@ -192,6 +194,7 @@ export function SleepCalendar({
           <div className="flex items-center gap-2">
             <div className="flex items-center p-1 bg-muted rounded-lg w-fit border border-border/50">
               <button
+                type="button"
                 onClick={() => setChartDays(7)}
                 className={cn(
                   "px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200 min-w-[80px]",
@@ -203,6 +206,7 @@ export function SleepCalendar({
                 7 Days
               </button>
               <button
+                type="button"
                 onClick={() => setChartDays(30)}
                 className={cn(
                   "px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200 min-w-[80px]",
@@ -218,6 +222,7 @@ export function SleepCalendar({
             {/* Trend Toggle */}
             <div className="flex items-center p-1 bg-muted rounded-lg w-fit border border-border/50">
               <button
+                type="button"
                 onClick={() => setShowTrend(!showTrend)}
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200",
@@ -318,7 +323,7 @@ export function SleepCalendar({
                       {format(day, "d")}
                     </span>
                   </div>
-                  {session && session.duration_minutes ? (
+                  {session?.duration_minutes ? (
                     <TooltipProvider>
                       <Tooltip delayDuration={0}>
                         <TooltipTrigger asChild>

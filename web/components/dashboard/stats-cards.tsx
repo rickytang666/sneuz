@@ -3,7 +3,11 @@
 import { useMemo } from "react";
 import { subDays } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getMinutesFromMidnight, median, normalizeSleepMinutes } from "@/lib/utils/sleep-utils";
+import {
+  getMinutesFromMidnight,
+  median,
+  normalizeSleepMinutes,
+} from "@/lib/utils/sleep-utils";
 import type { SleepSession } from "@/lib/types";
 
 interface StatsCardsProps {
@@ -49,7 +53,9 @@ export function StatsCards({ stats, sessions }: StatsCardsProps) {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">On-Target Nights</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            On-Target Nights
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
@@ -80,7 +86,9 @@ export function StatsCards({ stats, sessions }: StatsCardsProps) {
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Median Wake Time</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Median Wake Time
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{medianWake ?? "—"}</div>

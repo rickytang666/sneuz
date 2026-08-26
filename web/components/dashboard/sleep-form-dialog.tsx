@@ -83,12 +83,10 @@ export function SleepFormDialog({
     }
 
     startTransition(async () => {
-      let result;
-      if (isEditing && session) {
-        result = await updateSleepSession(session.id, formData);
-      } else {
-        result = await createSleepSession(formData);
-      }
+      const result =
+        isEditing && session
+          ? await updateSleepSession(session.id, formData)
+          : await createSleepSession(formData);
 
       if (result?.error) {
         console.error(result.error);
@@ -133,7 +131,9 @@ export function SleepFormDialog({
                   type="time"
                   className="flex-1"
                   defaultValue={
-                    session?.bedtime ? toLocalTimeString(session.bedtime) : "23:00"
+                    session?.bedtime
+                      ? toLocalTimeString(session.bedtime)
+                      : "23:00"
                   }
                   required
                 />

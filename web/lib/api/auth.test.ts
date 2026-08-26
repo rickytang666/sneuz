@@ -17,12 +17,10 @@ vi.mock("@supabase/supabase-js", () => ({
     from: vi.fn(() => ({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      single: vi
-        .fn()
-        .mockResolvedValue({
-          data: { id: "key-id", user_id: "user-1" },
-          error: null,
-        }),
+      single: vi.fn().mockResolvedValue({
+        data: { id: "key-id", user_id: "user-1" },
+        error: null,
+      }),
       update: vi.fn().mockReturnThis(),
       then: vi.fn(),
     })),

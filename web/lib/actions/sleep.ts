@@ -3,7 +3,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { differenceInMinutes, subDays } from "date-fns";
-import { mapDbSessionToSleepSession, isLateBedtime } from "@/lib/utils/sleep-utils";
+import {
+  mapDbSessionToSleepSession,
+  isLateBedtime,
+} from "@/lib/utils/sleep-utils";
 
 export async function getSleepSessions() {
   const supabase = await createClient();
@@ -30,12 +33,19 @@ export async function getSleepStats(targetBedtime = "23:00") {
 
   if (error) {
     console.error("Error fetching stats:", error);
-    return { on_target_nights: null, median_hours: 0, avg_bedtime: null, avg_wake_time: null };
+    return {
+      on_target_nights: null,
+      median_hours: 0,
+      avg_bedtime: null,
+      avg_wake_time: null,
+    };
   }
 
   const durations = data
     .filter((s) => s.end_time)
-    .map((s) => differenceInMinutes(new Date(s.end_time!), new Date(s.start_time)))
+    .map((s) =>
+      differenceInMinutes(new Date(s.end_time!), new Date(s.start_time)),
+    )
     .filter((d) => d > 0)
     .sort((a, b) => a - b);
 

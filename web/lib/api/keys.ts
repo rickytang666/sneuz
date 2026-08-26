@@ -1,7 +1,7 @@
-import { createHash, randomBytes } from "crypto";
+import { createHash, randomBytes } from "node:crypto";
 
 export function generateApiKey(): string {
-  return "snz_" + randomBytes(32).toString("hex");
+  return `snz_${randomBytes(32).toString("hex")}`;
 }
 
 export function hashApiKey(raw: string): string {
