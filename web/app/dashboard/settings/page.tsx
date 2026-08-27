@@ -1,5 +1,6 @@
 import { ApiKeysManager } from "@/components/dashboard/api-keys-manager";
 import { ConnectedAccounts } from "@/components/dashboard/connected-accounts";
+import { TimezoneField } from "@/components/dashboard/timezone-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,6 +56,8 @@ export default async function SettingsPage() {
               />
             </div>
           </div>
+
+          <TimezoneField value={settings?.timezone ?? null} />
 
           <div className="text-sm text-muted-foreground p-3 rounded-md">
             Goal Duration:{" "}

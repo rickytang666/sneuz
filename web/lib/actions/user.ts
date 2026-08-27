@@ -66,6 +66,7 @@ export async function updateSettings(formData: FormData) {
 
   const target_bedtime = formData.get("target_bedtime") as string;
   const target_wake_time = formData.get("target_wake_time") as string;
+  const timezone = (formData.get("timezone") as string) || null;
 
   const { error } = await supabase
     .from("user_settings")
@@ -73,6 +74,7 @@ export async function updateSettings(formData: FormData) {
       user_id: user.id,
       target_bedtime,
       target_wake_time,
+      timezone,
       updated_at: new Date().toISOString(),
     })
     .select();
