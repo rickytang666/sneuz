@@ -1,0 +1,19 @@
+name: Setup web
+description: pnpm, node, and a frozen-lockfile install for the web app
+
+runs:
+  using: composite
+  steps:
+    # version comes from the packageManager field in web/package.json
+    - uses: pnpm/action-setup@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24
+        cache: pnpm
+        cache-dependency-path: web/pnpm-lock.yaml
+
+    # fails on lockfile drift rather than silently resolving something else
+    - run: pnpm install --frozen-lockfile
+      shell: bash
+      working-directory: web
