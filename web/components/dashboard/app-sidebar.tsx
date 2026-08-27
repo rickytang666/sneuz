@@ -56,7 +56,14 @@ export function AppSidebar({
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-4">
-          <Image src="/favicon.svg" alt="Logo" width={24} height={24} />
+          <Image
+            src="/favicon.svg"
+            alt="Logo"
+            width={24}
+            height={24}
+            // above the fold, so it is the LCP element on dashboard routes
+            loading="eager"
+          />
           <span className="font-bold text-primary text-lg group-data-[collapsible=icon]:hidden">
             Sneuz
           </span>
