@@ -4,18 +4,25 @@ import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { detectTimeZone } from "@/lib/utils/sleep-utils";
 
-const ZONES =
-  typeof Intl.supportedValuesOf === "function"
-    ? Intl.supportedValuesOf("timeZone")
-    : [];
-
 export function TimezoneField({ value }: { value: string | null }) {
-  const [zone, setZone] = useState(value && value !== "UTC" ? value : "");
+  const saved = value && value !== "UTC" ? value : "";
+  const [zone, setZone] = useState(saved);
 
-  // detected only after mount, the server's zone is not the user's
+  // node and the browser disagree on deprecated aliases (Africa/Asmera vs
+  // Africa/Asmara), so the list is built after mount to keep the first client
+  // render identical to the server's
+  const [zones, setZones] = useState<string[]>([]);
+
   useEffect(() => {
-    if (!value || value === "UTC") setZone(detectTimeZone());
-  }, [value]);
+    setZones(
+      typeof Intl.supportedValuesOf === "function"
+        ? Intl.supportedValuesOf("timeZone")
+        : [],
+    );
+    if (!saved) setZone(detectTimeZone());
+  }, [saved]);
+
+  const options = zones.length ? zones : [zone].filter(Boolean);
 
   return (
     <div className="grid gap-2">
@@ -27,8 +34,10 @@ export function TimezoneField({ value }: { value: string | null }) {
         onChange={(e) => setZone(e.target.value)}
         className="border-input bg-background h-9 rounded-md border px-3 text-sm"
       >
-        {zone && !ZONES.includes(zone) && <option value={zone}>{zone}</option>}
-        {ZONES.map((z) => (
+        {zone && !options.includes(zone) && (
+          <option value={zone}>{zone}</option>
+        )}
+        {options.map((z) => (
           <option key={z} value={z}>
             {z}
           </option>
