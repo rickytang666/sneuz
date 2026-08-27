@@ -13,6 +13,7 @@ export default async function CalendarPage() {
           sessions={sessions}
           targetBedtime={settings?.target_bedtime}
           targetWakeTime={settings?.target_wake_time}
+          timezone={settings?.timezone ?? null}
         />
       </Suspense>
     </div>

@@ -69,6 +69,42 @@ describe("getMinutesFromMidnight", () => {
   });
 });
 
+describe("getMinutesFromMidnight with a timezone", () => {
+  it("reads the hour in the given zone, not the process zone", () => {
+    // 04:30 UTC is 00:30 in Toronto
+    const iso = "2026-08-20T04:30:00Z";
+    expect(getMinutesFromMidnight(iso, "UTC")).toBe(270);
+    expect(getMinutesFromMidnight(iso, "America/Toronto")).toBe(30);
+  });
+
+  it("returns 0 rather than 1440 at midnight", () => {
+    expect(
+      getMinutesFromMidnight("2026-08-20T04:00:00Z", "America/Toronto"),
+    ).toBe(0);
+  });
+});
+
+describe("isLateBedtime across timezones", () => {
+  // the bug behind the calendar tint: same session, opposite verdicts
+  it("scores an 8:30pm Toronto bedtime as on time", () => {
+    expect(
+      isLateBedtime("2026-08-20T00:30:00Z", "23:00", 60, "America/Toronto"),
+    ).toBe(false);
+  });
+
+  it("scores that same instant as late in UTC", () => {
+    expect(isLateBedtime("2026-08-20T00:30:00Z", "23:00", 60, "UTC")).toBe(
+      true,
+    );
+  });
+
+  it("is unaffected by the process zone when a zone is given", () => {
+    const iso = "2026-08-20T11:30:00Z";
+    expect(isLateBedtime(iso, "23:00", 60, "America/Toronto")).toBe(true);
+    expect(isLateBedtime(iso, "23:00", 60, "UTC")).toBe(false);
+  });
+});
+
 describe("timeStringToMinutes", () => {
   it("converts 00:00 to 0", () => {
     expect(timeStringToMinutes("00:00")).toBe(0);

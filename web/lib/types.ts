@@ -22,4 +22,6 @@ export interface SleepSession {
 export interface UserSettings {
   target_bedtime: string;
   target_wake_time: string;
+  // IANA zone. the column defaults to "UTC", which means nobody picked one
+  timezone: string;
 }

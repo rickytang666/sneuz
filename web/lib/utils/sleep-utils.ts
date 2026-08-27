@@ -22,11 +22,34 @@ export function mapDbSessionToSleepSession(session: {
 }
 
 /**
- * Converts a date or ISO string to minutes from start of day (midnight)
+ * Converts a date or ISO string to minutes from start of day (midnight).
+ * Without a timeZone this reads the running process's clock, which is UTC on
+ * the server and the user's zone in the browser, so pass one wherever the
+ * answer has to agree across both.
  */
-export function getMinutesFromMidnight(date: Date | string): number {
+export function getMinutesFromMidnight(
+  date: Date | string,
+  timeZone?: string | null,
+): number {
   const d = typeof date === "string" ? parseISO(date) : date;
-  return d.getHours() * 60 + d.getMinutes();
+
+  if (!timeZone) return d.getHours() * 60 + d.getMinutes();
+
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(d);
+
+  const hour = Number(parts.find((part) => part.type === "hour")?.value);
+  const minute = Number(parts.find((part) => part.type === "minute")?.value);
+  return hour * 60 + minute;
+}
+
+/** the browser's IANA zone, used when the user has not set one */
+export function detectTimeZone(): string {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
 /**
@@ -54,9 +77,10 @@ export function isLateBedtime(
   actual: Date | string,
   target: string,
   graceMinutes: number = 60,
+  timeZone?: string | null,
 ): boolean {
   const actualDate = typeof actual === "string" ? parseISO(actual) : actual;
-  const actualMins = getMinutesFromMidnight(actualDate);
+  const actualMins = getMinutesFromMidnight(actualDate, timeZone);
   const targetMins = timeStringToMinutes(target);
 
   // handle cross-midnight: if target is 22:00 and actual is 01:00

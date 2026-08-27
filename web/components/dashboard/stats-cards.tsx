@@ -3,6 +3,7 @@
 import { subDays } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useResolvedTimeZone } from "@/hooks/use-timezone";
 import type { SleepSession } from "@/lib/types";
 import {
   getMinutesFromMidnight,
@@ -16,6 +17,7 @@ interface StatsCardsProps {
     median_hours: number;
   };
   sessions: SleepSession[];
+  timezone?: string | null;
 }
 
 function formatMinutes(mins: number): string {
@@ -27,7 +29,12 @@ function formatMinutes(mins: number): string {
   return `${h12}:${m.toString().padStart(2, "0")} ${suffix}`;
 }
 
-export function StatsCards({ stats, sessions }: StatsCardsProps) {
+export function StatsCards({
+  stats,
+  sessions,
+  timezone = null,
+}: StatsCardsProps) {
+  const timeZone = useResolvedTimeZone(timezone);
   // resolved in the browser, the window is relative to "now" and the server
   // clock and timezone are not the user's
   const [now, setNow] = useState<Date | null>(null);
@@ -41,11 +48,11 @@ export function StatsCards({ stats, sessions }: StatsCardsProps) {
     );
 
     const bedMins = recent.map((s) =>
-      normalizeSleepMinutes(getMinutesFromMidnight(s.bedtime)),
+      normalizeSleepMinutes(getMinutesFromMidnight(s.bedtime, timeZone)),
     );
     const wakeMins = recent.map((s) =>
       // biome-ignore lint/style/noNonNullAssertion: guarded by the wake_time check above
-      normalizeSleepMinutes(getMinutesFromMidnight(s.wake_time!)),
+      normalizeSleepMinutes(getMinutesFromMidnight(s.wake_time!, timeZone)),
     );
 
     const mb = median(bedMins);
@@ -54,7 +61,7 @@ export function StatsCards({ stats, sessions }: StatsCardsProps) {
       medianBedtime: mb !== null ? formatMinutes(mb) : null,
       medianWake: mw !== null ? formatMinutes(mw) : null,
     };
-  }, [sessions, now]);
+  }, [sessions, now, timeZone]);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

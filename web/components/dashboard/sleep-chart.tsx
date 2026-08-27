@@ -27,6 +27,7 @@ interface SleepChartProps {
   targetBedtime: string;
   targetWakeTime: string;
   showTrend?: boolean;
+  timezone?: string | null;
 }
 
 const formatYAxis = (value: number) => {
@@ -48,6 +49,7 @@ export function SleepChart({
   targetBedtime,
   targetWakeTime,
   showTrend = false,
+  timezone = null,
 }: SleepChartProps) {
   const now = new Date();
   const startDate = startOfDay(subDays(now, days - 1));
@@ -86,11 +88,11 @@ export function SleepChart({
     }
 
     const bedLinear = normalizeSleepMinutes(
-      getMinutesFromMidnight(parseISO(session.bedtime)),
+      getMinutesFromMidnight(parseISO(session.bedtime), timezone),
     );
     const wakeLinear = normalizeSleepMinutes(
       // biome-ignore lint/style/noNonNullAssertion: guarded by the wake_time check above
-      getMinutesFromMidnight(parseISO(session.wake_time!)),
+      getMinutesFromMidnight(parseISO(session.wake_time!), timezone),
     );
 
     // Update domain

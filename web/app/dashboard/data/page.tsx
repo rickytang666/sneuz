@@ -14,12 +14,19 @@ export default async function DataPage() {
     getSleepSessions(),
     getUserSettings(),
   ]);
-  const stats = await getSleepStats(settings?.target_bedtime);
+  const stats = await getSleepStats(
+    settings?.target_bedtime,
+    settings?.timezone,
+  );
 
   return (
     <div className="flex flex-col gap-6">
       {/* Stats Overview */}
-      <StatsCards stats={stats} sessions={sessions} />
+      <StatsCards
+        stats={stats}
+        sessions={sessions}
+        timezone={settings?.timezone ?? null}
+      />
 
       {/* Action Header */}
       <div className="flex items-center justify-between">

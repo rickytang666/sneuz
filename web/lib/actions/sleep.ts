@@ -24,7 +24,13 @@ export async function getSleepSessions() {
   return data.map(mapDbSessionToSleepSession);
 }
 
-export async function getSleepStats(targetBedtime = "23:00") {
+export async function getSleepStats(
+  targetBedtime = "23:00",
+  timeZone: string | null = null,
+) {
+  // "UTC" is the column default, not a choice, and there is no browser to fall
+  // back to here. scoring in it would repeat the bug this change is fixing.
+  const zone = timeZone && timeZone !== "UTC" ? timeZone : null;
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -67,7 +73,7 @@ export async function getSleepStats(targetBedtime = "23:00") {
   );
 
   const onTarget = recent.filter(
-    (s) => !isLateBedtime(new Date(s.start_time), targetBedtime, 15),
+    (s) => !isLateBedtime(new Date(s.start_time), targetBedtime, 15, zone),
   ).length;
 
   return {
@@ -169,13 +175,14 @@ export async function getUserSettings() {
   const defaultSettings = {
     target_bedtime: "23:00",
     target_wake_time: "07:00",
+    timezone: "UTC",
   };
 
   if (!user) return defaultSettings;
 
   const { data, error } = await supabase
     .from("user_settings")
-    .select("target_bedtime, target_wake_time")
+    .select("target_bedtime, target_wake_time, timezone")
     .eq("user_id", user.id)
     .single();
 

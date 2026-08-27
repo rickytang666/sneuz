@@ -44,6 +44,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useResolvedTimeZone } from "@/hooks/use-timezone";
 import { isLateBedtime } from "@/lib/utils/sleep-utils";
 
 interface SleepSession {
@@ -58,6 +59,7 @@ interface SleepCalendarProps {
   sessions: SleepSession[];
   targetBedtime?: string;
   targetWakeTime?: string;
+  timezone?: string | null;
 }
 
 function SleepRing({
@@ -100,7 +102,9 @@ export function SleepCalendar({
   sessions,
   targetBedtime = "23:00",
   targetWakeTime = "07:00",
+  timezone = null,
 }: SleepCalendarProps) {
+  const timeZone = useResolvedTimeZone(timezone);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -313,9 +317,12 @@ export function SleepCalendar({
               const { percent, color } = getSleepStats(
                 session?.duration_minutes || null,
               );
-              const isLate = session
-                ? isLateBedtime(session.bedtime, targetBedtime)
-                : false;
+              // untinted until a zone is known, guessing here would use the
+              // server's zone and repaint on hydration
+              const isLate =
+                session && timeZone
+                  ? isLateBedtime(session.bedtime, targetBedtime, 60, timeZone)
+                  : false;
 
               return (
                 <div
@@ -394,6 +401,7 @@ export function SleepCalendar({
             targetBedtime={targetBedtime}
             targetWakeTime={targetWakeTime}
             showTrend={showTrend}
+            timezone={timeZone}
           />
         </div>
       )}
