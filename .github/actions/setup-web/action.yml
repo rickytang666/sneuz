@@ -4,8 +4,11 @@ description: pnpm, node, and a frozen-lockfile install for the web app
 runs:
   using: composite
   steps:
-    # version comes from the packageManager field in web/package.json
+    # working-directory below applies to run steps only, so this action needs
+    # the path to web/package.json spelled out to find the packageManager pin
     - uses: pnpm/action-setup@v4
+      with:
+        package_json_file: web/package.json
 
     - uses: actions/setup-node@v4
       with:
