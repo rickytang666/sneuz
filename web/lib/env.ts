@@ -15,3 +15,7 @@ export const SUPABASE_ANON_KEY = () =>
   requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
 export const SUPABASE_SERVICE_ROLE_KEY = () =>
   requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+
+export const DATABASE_URL = () => requireEnv("DATABASE_URL");
+export const GOOGLE_CLIENT_ID = () => requireEnv("GOOGLE_CLIENT_ID");
+export const GOOGLE_CLIENT_SECRET = () => requireEnv("GOOGLE_CLIENT_SECRET");
