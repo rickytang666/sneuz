@@ -1,43 +1,39 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { dbErrorMessage } from "@/lib/db/errors";
 import { createKey, deleteKey, listKeys } from "@/lib/services/api-keys";
-import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/session";
 
 export async function getApiKeys() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return [];
 
-  const { data } = await listKeys(supabase, user.id);
-  return data;
+  return listKeys(user.id);
 }
 
 export async function createApiKey(name: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { error: "Unauthorized" };
 
-  const { data, error } = await createKey(supabase, user.id, name);
-  if (error) return { error: error.message };
-
-  revalidatePath("/dashboard/settings");
-  return { data };
+  try {
+    const data = await createKey(user.id, name);
+    revalidatePath("/dashboard/settings");
+    return { data };
+  } catch (error) {
+    return { error: dbErrorMessage(error) };
+  }
 }
 
 export async function deleteApiKey(id: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { error: "Unauthorized" };
 
-  const { error } = await deleteKey(supabase, user.id, id);
-  if (error) return { error: error.message };
+  try {
+    await deleteKey(user.id, id);
+  } catch (error) {
+    return { error: dbErrorMessage(error) };
+  }
 
   revalidatePath("/dashboard/settings");
   return {};

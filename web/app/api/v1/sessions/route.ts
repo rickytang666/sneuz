@@ -1,9 +1,20 @@
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAuthFromHeader } from "@/lib/api/auth";
+import { getDb } from "@/lib/db";
+import { dbErrorMessage } from "@/lib/db/errors";
+import { sleepSessions } from "@/lib/db/schema";
+import { toDbSession } from "@/lib/db/sessions";
 import { mapDbSessionToSleepSession } from "@/lib/utils/sleep-utils";
 
+const sessionColumns = {
+  id: sleepSessions.id,
+  startTime: sleepSessions.startTime,
+  endTime: sleepSessions.endTime,
+};
+
 export async function GET(request: NextRequest) {
-  const { user, supabase, response } = await requireAuthFromHeader(request);
+  const { user, response } = await requireAuthFromHeader(request);
   if (response) return response;
 
   const { searchParams } = request.nextUrl;
@@ -12,27 +23,31 @@ export async function GET(request: NextRequest) {
   const from = searchParams.get("from");
   const to = searchParams.get("to");
 
-  let query = supabase
-    .from("sleep_sessions")
-    .select("id, start_time, end_time")
-    .eq("user_id", user.id)
-    .order("start_time", { ascending: false })
-    .range(offset, offset + limit - 1);
+  try {
+    const rows = await getDb()
+      .select(sessionColumns)
+      .from(sleepSessions)
+      .where(
+        and(
+          eq(sleepSessions.userId, user.id),
+          from ? gte(sleepSessions.startTime, new Date(from)) : undefined,
+          to ? lte(sleepSessions.startTime, new Date(to)) : undefined,
+        ),
+      )
+      .orderBy(desc(sleepSessions.startTime))
+      .limit(limit)
+      .offset(offset);
 
-  if (from) query = query.gte("start_time", from);
-  if (to) query = query.lte("start_time", to);
-
-  const { data, error } = await query;
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({
+      data: rows.map((row) => mapDbSessionToSleepSession(toDbSession(row))),
+    });
+  } catch (error) {
+    return NextResponse.json({ error: dbErrorMessage(error) }, { status: 500 });
   }
-
-  return NextResponse.json({ data: data.map(mapDbSessionToSleepSession) });
 }
 
 export async function POST(request: NextRequest) {
-  const { user, supabase, response } = await requireAuthFromHeader(request);
+  const { user, response } = await requireAuthFromHeader(request);
   if (response) return response;
 
   let body: { bedtime?: string; wake_time?: string };
@@ -46,26 +61,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "bedtime is required" }, { status: 400 });
   }
 
-  const payload: Record<string, string> = {
-    user_id: user.id,
-    start_time: new Date(body.bedtime).toISOString(),
-  };
-  if (body.wake_time) {
-    payload.end_time = new Date(body.wake_time).toISOString();
+  try {
+    const [row] = await getDb()
+      .insert(sleepSessions)
+      .values({
+        userId: user.id,
+        startTime: new Date(body.bedtime),
+        endTime: body.wake_time ? new Date(body.wake_time) : null,
+      })
+      .returning(sessionColumns);
+
+    return NextResponse.json(
+      { data: mapDbSessionToSleepSession(toDbSession(row)) },
+      { status: 201 },
+    );
+  } catch (error) {
+    return NextResponse.json({ error: dbErrorMessage(error) }, { status: 500 });
   }
-
-  const { data, error } = await supabase
-    .from("sleep_sessions")
-    .insert(payload)
-    .select("id, start_time, end_time")
-    .single();
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  return NextResponse.json(
-    { data: mapDbSessionToSleepSession(data) },
-    { status: 201 },
-  );
 }

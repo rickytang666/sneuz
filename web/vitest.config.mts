@@ -12,11 +12,12 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: true,
-    // the supabase clients are mocked, these just have to be present
+    // the database is mocked, these just have to be present
     env: {
-      NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321",
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
-      SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+      DATABASE_URL: "postgresql://test:test@localhost:5432/test",
+      BETTER_AUTH_SECRET: "test-secret-at-least-32-characters-long",
+      GOOGLE_CLIENT_ID: "test-client-id",
+      GOOGLE_CLIENT_SECRET: "test-client-secret",
     },
   },
 });

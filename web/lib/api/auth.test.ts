@@ -1,44 +1,45 @@
-import { describe, expect, it, vi } from "vitest";
-import { requireAuthFromHeader } from "./auth";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { hashApiKey } from "./keys";
 
-// mock supabase clients so we don't hit the network
-vi.mock("@supabase/ssr", () => ({
-  createServerClient: vi.fn(() => ({
-    auth: {
-      getUser: vi
-        .fn()
-        .mockResolvedValue({ data: { user: { id: "user-1" } }, error: null }),
-    },
-  })),
+const db = vi.hoisted(() => ({
+  rows: [] as unknown[],
+  where: [] as unknown[],
 }));
 
-vi.mock("@supabase/supabase-js", () => ({
-  createClient: vi.fn(() => ({
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({
-        data: { id: "key-id", user_id: "user-1" },
-        error: null,
-      }),
-      update: vi.fn().mockReturnThis(),
-      // biome-ignore lint/suspicious/noThenProperty: the supabase query builder is thenable, the mock has to be too
-      then: vi.fn(),
-    })),
-    auth: {
-      admin: {
-        getUserById: vi
-          .fn()
-          .mockResolvedValue({ data: { user: { id: "user-1" } }, error: null }),
+// a thenable stand-in for drizzle's query builder, every chained call returns itself
+vi.mock("@/lib/db", () => {
+  const builder: Record<string, unknown> = new Proxy(
+    {},
+    {
+      get(_, prop: string) {
+        if (prop === "then") {
+          return (resolve: (value: unknown) => void) => resolve(db.rows);
+        }
+        return (...args: unknown[]) => {
+          if (prop === "where") db.where.push(args[0]);
+          return builder;
+        };
       },
     },
-  })),
-}));
+  );
+  return { getDb: () => builder };
+});
+
+const afterSpy = vi.hoisted(() => vi.fn());
+vi.mock("next/server", () => ({ after: afterSpy }));
+
+const { requireAuthFromHeader } = await import("./auth");
 
 function makeRequest(authHeader?: string): Request {
   const headers: HeadersInit = authHeader ? { Authorization: authHeader } : {};
   return new Request("http://localhost/api/v1/sessions", { headers });
 }
+
+beforeEach(() => {
+  db.rows = [];
+  db.where = [];
+  afterSpy.mockClear();
+});
 
 describe("requireAuthFromHeader", () => {
   it("returns 401 when Authorization header is missing", async () => {
@@ -52,32 +53,56 @@ describe("requireAuthFromHeader", () => {
     expect(result.response?.status).toBe(401);
   });
 
-  it("routes Bearer token to jwt auth", async () => {
-    const result = await requireAuthFromHeader(
-      makeRequest("Bearer fake-jwt-token"),
-    );
-    expect(result.response).toBeNull();
-    expect(result.user?.id).toBe("user-1");
+  it("rejects Bearer tokens now that only api keys are supported", async () => {
+    const result = await requireAuthFromHeader(makeRequest("Bearer jwt"));
+    expect(result.response?.status).toBe(401);
   });
 
-  it("routes ApiKey to api key auth", async () => {
+  it("returns the key owner for a known ApiKey", async () => {
+    db.rows = [
+      {
+        keyId: "key-id",
+        id: "user-1",
+        email: "a@example.com",
+        name: "a",
+        image: null,
+      },
+    ];
     const result = await requireAuthFromHeader(
       makeRequest("ApiKey snz_abc123"),
     );
     expect(result.response).toBeNull();
-    expect(result.user?.id).toBe("user-1");
+    expect(result.user).toEqual({
+      id: "user-1",
+      email: "a@example.com",
+      name: "a",
+      image: null,
+    });
+    expect(afterSpy).toHaveBeenCalledOnce();
   });
 
-  it("401 response body contains error field", async () => {
-    const result = await requireAuthFromHeader(makeRequest());
-    const body = await result.response?.json();
-    expect(body).toHaveProperty("error");
+  it("returns 401 for an unknown ApiKey", async () => {
+    const result = await requireAuthFromHeader(makeRequest("ApiKey snz_nope"));
+    expect(result.response?.status).toBe(401);
+    expect(afterSpy).not.toHaveBeenCalled();
   });
 
-  it("401 response has JSON content-type", async () => {
+  it("looks the key up by its hash, never the raw key", async () => {
+    await requireAuthFromHeader(makeRequest("ApiKey snz_abc123"));
+    const serialized = JSON.stringify(db.where[0], (_, value) =>
+      typeof value === "object" && value?.constructor?.name === "PgTable"
+        ? undefined
+        : value,
+    );
+    expect(serialized).toContain(hashApiKey("snz_abc123"));
+    expect(serialized).not.toContain("snz_abc123");
+  });
+
+  it("401 response is JSON with an error field", async () => {
     const result = await requireAuthFromHeader(makeRequest());
     expect(result.response?.headers.get("Content-Type")).toBe(
       "application/json",
     );
+    expect(await result.response?.json()).toHaveProperty("error");
   });
 });

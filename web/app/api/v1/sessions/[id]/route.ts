@@ -1,11 +1,19 @@
+import { and, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAuthFromHeader } from "@/lib/api/auth";
+import { getDb } from "@/lib/db";
+import { dbErrorMessage } from "@/lib/db/errors";
+import { sleepSessions } from "@/lib/db/schema";
+import { toDbSession } from "@/lib/db/sessions";
 import { mapDbSessionToSleepSession } from "@/lib/utils/sleep-utils";
 
 type Params = { params: Promise<{ id: string }> };
 
+const ownedBy = (id: string, userId: string) =>
+  and(eq(sleepSessions.id, id), eq(sleepSessions.userId, userId));
+
 export async function PATCH(request: NextRequest, { params }: Params) {
-  const { user, supabase, response } = await requireAuthFromHeader(request);
+  const { user, response } = await requireAuthFromHeader(request);
   if (response) return response;
 
   const { id } = await params;
@@ -24,47 +32,49 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     );
   }
 
-  const payload: Record<string, string> = {};
-  if (body.bedtime) payload.start_time = new Date(body.bedtime).toISOString();
-  if (body.wake_time) payload.end_time = new Date(body.wake_time).toISOString();
+  try {
+    const [row] = await getDb()
+      .update(sleepSessions)
+      .set({
+        ...(body.bedtime ? { startTime: new Date(body.bedtime) } : {}),
+        ...(body.wake_time ? { endTime: new Date(body.wake_time) } : {}),
+      })
+      .where(ownedBy(id, user.id))
+      .returning({
+        id: sleepSessions.id,
+        startTime: sleepSessions.startTime,
+        endTime: sleepSessions.endTime,
+      });
 
-  const { data, error } = await supabase
-    .from("sleep_sessions")
-    .update(payload)
-    .eq("id", id)
-    .eq("user_id", user.id)
-    .select("id, start_time, end_time")
-    .single();
+    if (!row) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({
+      data: mapDbSessionToSleepSession(toDbSession(row)),
+    });
+  } catch (error) {
+    return NextResponse.json({ error: dbErrorMessage(error) }, { status: 500 });
   }
-
-  if (!data) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
-  return NextResponse.json({ data: mapDbSessionToSleepSession(data) });
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
-  const { supabase, user, response } = await requireAuthFromHeader(request);
+  const { user, response } = await requireAuthFromHeader(request);
   if (response) return response;
 
   const { id } = await params;
 
-  const { error, count } = await supabase
-    .from("sleep_sessions")
-    .delete({ count: "exact" })
-    .eq("id", id)
-    .eq("user_id", user.id);
+  try {
+    const rows = await getDb()
+      .delete(sleepSessions)
+      .where(ownedBy(id, user.id))
+      .returning({ id: sleepSessions.id });
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  if (count === 0) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (rows.length === 0) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+  } catch (error) {
+    return NextResponse.json({ error: dbErrorMessage(error) }, { status: 500 });
   }
 
   return new Response(null, { status: 204 });
