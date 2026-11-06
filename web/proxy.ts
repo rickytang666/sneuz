@@ -1,7 +1,12 @@
-import type { NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function proxy(request: NextRequest) {
+  // better auth routes must not wait on supabase, which retries for ~27s when it is down
+  const { pathname } = request.nextUrl;
+  if (pathname.startsWith("/api/auth") || pathname.startsWith("/spike")) {
+    return NextResponse.next();
+  }
   return await updateSession(request);
 }
 
