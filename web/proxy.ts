@@ -1,24 +1,18 @@
+import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+import { getAuth } from "@/lib/auth";
 
+// validates the session rather than trusting the cookie, a stale cookie would bounce between /login and /dashboard
 export async function proxy(request: NextRequest) {
-  // better auth routes must not wait on supabase, which retries for ~27s when it is down
-  const { pathname } = request.nextUrl;
-  if (pathname.startsWith("/api/auth") || pathname.startsWith("/spike")) {
-    return NextResponse.next();
+  const requestHeaders = await headers();
+  const session = await getAuth().api.getSession({ headers: requestHeaders });
+  if (session) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-  return await updateSession(request);
+  return NextResponse.next();
 }
 
+// signed-in users skip the login and signup pages, the dashboard layout guards everything else
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/login", "/signup"],
 };

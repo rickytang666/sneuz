@@ -3,61 +3,65 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getAuth } from "@/lib/auth";
+import { getUser } from "@/lib/session";
 import type { LinkedIdentity } from "@/lib/types";
 
+// better auth calls the email and password account "credential", the ui calls it "email"
+const toUiProvider = (providerId: string) =>
+  providerId === "credential" ? "email" : providerId;
+
+async function listAccounts() {
+  return getAuth().api.listUserAccounts({ headers: await headers() });
+}
+
 export async function getIdentities(): Promise<LinkedIdentity[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUserIdentities();
+  const user = await getUser();
+  if (!user) return [];
 
-  if (error || !data) return [];
-
-  return data.identities.map((identity) => ({
-    id: identity.identity_id,
-    provider: identity.provider,
-    email: identity.identity_data?.email as string | undefined,
+  const accounts = await listAccounts();
+  return accounts.map((account) => ({
+    id: account.id,
+    provider: toUiProvider(account.providerId),
+    // accounts must share the user's verified email to link, so it is the same address
+    email: user.email,
   }));
 }
 
 export async function linkGoogle() {
-  const supabase = await createClient();
-  const origin = (await headers()).get("origin");
-
-  const { data, error } = await supabase.auth.linkIdentity({
-    provider: "google",
-    options: {
-      redirectTo: `${origin}/auth/callback?next=/dashboard/settings`,
-    },
-  });
-
-  if (error) {
-    console.error("Error linking Google:", error.message);
-    return { error: error.message };
+  let url: string | undefined;
+  try {
+    ({ url } = await getAuth().api.linkSocialAccount({
+      body: { provider: "google", callbackURL: "/dashboard/settings" },
+      headers: await headers(),
+    }));
+  } catch (error) {
+    console.error("error linking google:", error);
+    return { error: error instanceof Error ? error.message : "Link failed" };
   }
 
-  if (data.url) {
-    redirect(data.url);
-  }
+  redirect(url);
 }
 
 export async function unlinkIdentity(identityId: string) {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUserIdentities();
-
-  if (error || !data) {
-    return { error: error?.message ?? "Could not load identities" };
-  }
+  const accounts = await listAccounts();
 
   // never leave the account without a way to sign in
-  if (data.identities.length <= 1) {
+  if (accounts.length <= 1) {
     return { error: "You can't disconnect your only sign-in method." };
   }
 
-  const identity = data.identities.find((i) => i.identity_id === identityId);
-  if (!identity) return { error: "Identity not found" };
+  const account = accounts.find((a) => a.id === identityId);
+  if (!account) return { error: "Identity not found" };
 
-  const { error: unlinkError } = await supabase.auth.unlinkIdentity(identity);
-  if (unlinkError) return { error: unlinkError.message };
+  try {
+    await getAuth().api.unlinkAccount({
+      body: { accountId: account.id },
+      headers: await headers(),
+    });
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Unlink failed" };
+  }
 
   revalidatePath("/dashboard/settings");
   return {};

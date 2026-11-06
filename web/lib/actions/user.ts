@@ -1,86 +1,62 @@
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { headers } from "next/headers";
+import { getAuth } from "@/lib/auth";
+import { getDb } from "@/lib/db";
+import { dbErrorMessage } from "@/lib/db/errors";
+import { userSettings } from "@/lib/db/schema";
+import { getUser } from "@/lib/session";
 import type { UserProfile } from "@/lib/types";
 
 export async function getProfile(): Promise<UserProfile | null> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = await getUser();
   if (!user) return null;
-
-  // Fetch from 'profiles' table
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name") // Removed avatar_url (column missing)
-    .eq("id", user.id)
-    .maybeSingle();
 
   return {
     id: user.id,
     email: user.email,
-    full_name: profile?.full_name ?? user.user_metadata?.full_name ?? "",
-    avatar_url: user.user_metadata?.avatar_url ?? "",
+    full_name: user.name,
+    avatar_url: user.image ?? "",
   };
 }
 
 export async function updateProfile(formData: FormData) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = await getUser();
   if (!user) return { error: "Unauthorized" };
 
   const full_name = formData.get("full_name") as string;
 
-  // 1. Update profiles table
-  const { error: profileError } = await supabase.from("profiles").upsert({
-    id: user.id,
-    full_name,
-    updated_at: new Date().toISOString(),
-  });
-
-  if (profileError) {
-    console.error("Profile update error:", profileError);
-    return { error: profileError.message };
+  try {
+    await getAuth().api.updateUser({
+      body: { name: full_name },
+      headers: await headers(),
+    });
+  } catch (error) {
+    console.error("profile update error:", error);
+    return { error: error instanceof Error ? error.message : "Update failed" };
   }
-
-  // 2. Sync with Auth Metadata (Optional but good for consistency)
-  await supabase.auth.updateUser({
-    data: { full_name },
-  });
 
   revalidatePath("/dashboard/profile");
   revalidatePath("/dashboard", "layout");
 }
 
 export async function updateSettings(formData: FormData) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = await getUser();
   if (!user) return { error: "Unauthorized" };
 
-  const target_bedtime = formData.get("target_bedtime") as string;
-  const target_wake_time = formData.get("target_wake_time") as string;
-  const timezone = (formData.get("timezone") as string) || null;
+  const targetBedtime = formData.get("target_bedtime") as string;
+  const targetWakeTime = formData.get("target_wake_time") as string;
+  // an empty zone keeps whatever is stored, the column is not null
+  const timezone = (formData.get("timezone") as string) || undefined;
 
-  const { error } = await supabase
-    .from("user_settings")
-    .upsert({
-      user_id: user.id,
-      target_bedtime,
-      target_wake_time,
-      timezone,
-      updated_at: new Date().toISOString(),
-    })
-    .select();
+  const values = { targetBedtime, targetWakeTime, timezone };
 
-  if (error) {
-    return { error: error.message };
+  try {
+    await getDb()
+      .insert(userSettings)
+      .values({ userId: user.id, ...values })
+      .onConflictDoUpdate({ target: userSettings.userId, set: values });
+  } catch (error) {
+    return { error: dbErrorMessage(error) };
   }
 
   revalidatePath("/dashboard/settings");

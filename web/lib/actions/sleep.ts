@@ -1,27 +1,33 @@
 "use server";
 
 import { differenceInMinutes, subDays } from "date-fns";
+import { and, desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { getDb } from "@/lib/db";
+import { dbErrorMessage } from "@/lib/db/errors";
+import { sleepSessions, userSettings } from "@/lib/db/schema";
+import { toDbSession } from "@/lib/db/sessions";
+import { getUser } from "@/lib/session";
 import {
   isLateBedtime,
   mapDbSessionToSleepSession,
 } from "@/lib/utils/sleep-utils";
 
 export async function getSleepSessions() {
-  const supabase = await createClient();
+  const user = await getUser();
+  if (!user) return [];
 
-  const { data, error } = await supabase
-    .from("sleep_sessions")
-    .select("*")
-    .order("start_time", { ascending: false });
+  const rows = await getDb()
+    .select({
+      id: sleepSessions.id,
+      startTime: sleepSessions.startTime,
+      endTime: sleepSessions.endTime,
+    })
+    .from(sleepSessions)
+    .where(eq(sleepSessions.userId, user.id))
+    .orderBy(desc(sleepSessions.startTime));
 
-  if (error) {
-    console.error("Error fetching sleep sessions:", error);
-    return [];
-  }
-
-  return data.map(mapDbSessionToSleepSession);
+  return rows.map((row) => mapDbSessionToSleepSession(toDbSession(row)));
 }
 
 export async function getSleepStats(
@@ -31,14 +37,8 @@ export async function getSleepStats(
   // "UTC" is the column default, not a choice, and there is no browser to fall
   // back to here. scoring in it would repeat the bug this change is fixing.
   const zone = timeZone && timeZone !== "UTC" ? timeZone : null;
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("sleep_sessions")
-    .select("start_time, end_time");
-
-  if (error) {
-    console.error("Error fetching stats:", error);
+  const user = await getUser();
+  if (!user) {
     return {
       on_target_nights: null,
       median_hours: 0,
@@ -46,6 +46,17 @@ export async function getSleepStats(
       avg_wake_time: null,
     };
   }
+
+  const data = (
+    await getDb()
+      .select({
+        id: sleepSessions.id,
+        startTime: sleepSessions.startTime,
+        endTime: sleepSessions.endTime,
+      })
+      .from(sleepSessions)
+      .where(eq(sleepSessions.userId, user.id))
+  ).map(toDbSession);
 
   const durations = data
     .reduce<number[]>((acc, s) => {
@@ -83,93 +94,66 @@ export async function getSleepStats(
 }
 
 export async function createSleepSession(formData: FormData) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  const user = await getUser();
+  if (!user) return { error: "Unauthorized" };
 
   const start_time = formData.get("bedtime") as string;
   const end_time = formData.get("wake_time") as string; // Can be empty string
 
-  const payload: Record<string, string> = {
-    user_id: user.id,
-    start_time: new Date(start_time).toISOString(),
-  };
-  if (end_time) {
-    payload.end_time = new Date(end_time).toISOString();
-  }
-
-  const { error } = await supabase.from("sleep_sessions").insert(payload);
-
-  if (error) {
-    return { error: error.message };
+  try {
+    await getDb()
+      .insert(sleepSessions)
+      .values({
+        userId: user.id,
+        startTime: new Date(start_time),
+        endTime: end_time ? new Date(end_time) : null,
+      });
+  } catch (error) {
+    return { error: dbErrorMessage(error) };
   }
 
   revalidatePath("/dashboard/data");
 }
 
 export async function updateSleepSession(id: string, formData: FormData) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = await getUser();
   if (!user) return { error: "Unauthorized" };
 
   const start_time = formData.get("bedtime") as string;
   const end_time = formData.get("wake_time") as string;
 
-  const payload: Record<string, string> = {
-    start_time: new Date(start_time).toISOString(),
-  };
-  if (end_time) {
-    payload.end_time = new Date(end_time).toISOString();
-  }
-
-  const { error } = await supabase
-    .from("sleep_sessions")
-    .update(payload)
-    .eq("id", id)
-    .eq("user_id", user.id);
-
-  if (error) {
-    return { error: error.message };
+  try {
+    await getDb()
+      .update(sleepSessions)
+      .set({
+        startTime: new Date(start_time),
+        ...(end_time ? { endTime: new Date(end_time) } : {}),
+      })
+      .where(and(eq(sleepSessions.id, id), eq(sleepSessions.userId, user.id)));
+  } catch (error) {
+    return { error: dbErrorMessage(error) };
   }
 
   revalidatePath("/dashboard/data");
 }
 
 export async function deleteSleepSession(id: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = await getUser();
   if (!user) return { error: "Unauthorized" };
 
-  const { error } = await supabase
-    .from("sleep_sessions")
-    .delete()
-    .eq("id", id)
-    .eq("user_id", user.id);
-
-  if (error) {
-    return { error: error.message };
+  try {
+    await getDb()
+      .delete(sleepSessions)
+      .where(and(eq(sleepSessions.id, id), eq(sleepSessions.userId, user.id)));
+  } catch (error) {
+    return { error: dbErrorMessage(error) };
   }
 
   revalidatePath("/dashboard/data");
 }
 
 export async function getUserSettings() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   // Default: Bedtime 11pm, Wake 7am
   const defaultSettings = {
@@ -180,15 +164,15 @@ export async function getUserSettings() {
 
   if (!user) return defaultSettings;
 
-  const { data, error } = await supabase
-    .from("user_settings")
-    .select("target_bedtime, target_wake_time, timezone")
-    .eq("user_id", user.id)
-    .single();
+  const [data] = await getDb()
+    .select({
+      target_bedtime: userSettings.targetBedtime,
+      target_wake_time: userSettings.targetWakeTime,
+      timezone: userSettings.timezone,
+    })
+    .from(userSettings)
+    .where(eq(userSettings.userId, user.id))
+    .limit(1);
 
-  if (error || !data) {
-    return defaultSettings;
-  }
-
-  return data;
+  return data ?? defaultSettings;
 }

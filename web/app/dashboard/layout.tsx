@@ -1,24 +1,14 @@
-import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getProfile } from "@/lib/actions/user";
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/session";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  if (error || !user) {
-    redirect("/login?next=/dashboard");
-  }
-
+  await requireUser();
   const profile = await getProfile();
 
   return (
