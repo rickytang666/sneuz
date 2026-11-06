@@ -8,6 +8,20 @@
       "when": 1794002678934,
       "tag": "0000_auth_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794004946311,
+      "tag": "0001_app_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794004956669,
+      "tag": "0002_updated_at_triggers",
+      "breakpoints": true
     }
   ]
 }
