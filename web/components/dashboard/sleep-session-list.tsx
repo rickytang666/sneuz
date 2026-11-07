@@ -69,13 +69,18 @@ export function SleepSessionList({ sessions }: { sessions: SleepSession[] }) {
                 </TableCell>
                 <TableCell className="text-right flex justify-end gap-2">
                   <SleepFormDialog session={session}>
-                    <Button variant="ghost" size="icon">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Edit session"
+                    >
                       <IconPencil className="h-4 w-4" />
                     </Button>
                   </SleepFormDialog>
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label="Delete session"
                     disabled={isPending}
                     onClick={() => {
                       startTransition(async () => {

@@ -12,13 +12,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+const subscribe = () => () => {};
+
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  // the theme is only known in the browser; false during ssr and hydration, true after
+  const mounted = React.useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
 
   if (!mounted) {
     return (
