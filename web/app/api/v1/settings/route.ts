@@ -30,13 +30,17 @@ export async function GET(request: NextRequest) {
   const { user, response } = await requireAuthFromHeader(request);
   if (response) return response;
 
-  const [data] = await getDb()
-    .select(settingsColumns)
-    .from(userSettings)
-    .where(eq(userSettings.userId, user.id))
-    .limit(1);
+  try {
+    const [data] = await getDb()
+      .select(settingsColumns)
+      .from(userSettings)
+      .where(eq(userSettings.userId, user.id))
+      .limit(1);
 
-  return NextResponse.json({ data: data ?? DEFAULT_SETTINGS });
+    return NextResponse.json({ data: data ?? DEFAULT_SETTINGS });
+  } catch (error) {
+    return NextResponse.json({ error: dbErrorMessage(error) }, { status: 500 });
+  }
 }
 
 export async function PATCH(request: NextRequest) {

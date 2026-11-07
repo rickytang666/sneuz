@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { after } from "next/server";
 import { getDb } from "@/lib/db";
+import { dbErrorMessage } from "@/lib/db/errors";
 import { apiKeys, user as users } from "@/lib/db/schema";
 import { hashApiKey } from "./keys";
 
@@ -15,6 +16,14 @@ type AuthResult =
   | { user: ApiUser; response: null }
   | { user: null; response: Response };
 
+const serverError = (message: string): AuthResult => ({
+  user: null,
+  response: new Response(JSON.stringify({ error: message }), {
+    status: 500,
+    headers: { "Content-Type": "application/json" },
+  }),
+});
+
 const unauthorized = (): AuthResult => ({
   user: null,
   response: new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -24,18 +33,23 @@ const unauthorized = (): AuthResult => ({
 });
 
 async function authFromApiKey(key: string): Promise<AuthResult> {
-  const [row] = await getDb()
-    .select({
-      keyId: apiKeys.id,
-      id: users.id,
-      email: users.email,
-      name: users.name,
-      image: users.image,
-    })
-    .from(apiKeys)
-    .innerJoin(users, eq(users.id, apiKeys.userId))
-    .where(eq(apiKeys.keyHash, hashApiKey(key)))
-    .limit(1);
+  let row: (ApiUser & { keyId: string }) | undefined;
+  try {
+    [row] = await getDb()
+      .select({
+        keyId: apiKeys.id,
+        id: users.id,
+        email: users.email,
+        name: users.name,
+        image: users.image,
+      })
+      .from(apiKeys)
+      .innerJoin(users, eq(users.id, apiKeys.userId))
+      .where(eq(apiKeys.keyHash, hashApiKey(key)))
+      .limit(1);
+  } catch (error) {
+    return serverError(dbErrorMessage(error));
+  }
 
   if (!row) return unauthorized();
 
