@@ -278,6 +278,7 @@ export function SleepCalendar({
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
+                aria-label="Previous month"
                 onClick={prevMonth}
               >
                 <IconChevronLeft className="h-4 w-4" />
@@ -286,6 +287,7 @@ export function SleepCalendar({
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
+                aria-label="Next month"
                 onClick={nextMonth}
               >
                 <IconChevronRight className="h-4 w-4" />

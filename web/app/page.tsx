@@ -1,7 +1,4 @@
-import {
-  IconArrowNarrowRight,
-  IconBrandAppleFilled,
-} from "@tabler/icons-react";
+import { IconArrowNarrowRight, IconTerminal2 } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -60,7 +57,7 @@ export default function Home() {
 
           <div className="space-y-1">
             <p className="text-xl md:text-2xl text-foreground/90">
-              iOS Sleep tracker that feels{" "}
+              Sleep tracker that feels{" "}
               <span className="relative inline-block font-serif italic text-2xl md:text-3xl text-foreground">
                 invisible
               </span>
@@ -84,17 +81,10 @@ export default function Home() {
                 Shortcuts
               </span>
               <span className="inline-flex items-center">
-                <Image
-                  src="/apple-health.png"
-                  alt="Apple Health"
-                  width={20}
-                  height={20}
-                  className="mr-1"
-                />
-                Apple Health Export
+                <span className="text-[20px] mr-1">🌐</span> Web Dashboard
               </span>
               <span className="inline-flex items-center">
-                <span className="text-[20px] mr-1">🌐</span> Web Dashboard
+                <IconTerminal2 className="h-5 w-5 mr-1" /> REST API
               </span>
             </div>
 
@@ -126,11 +116,6 @@ export default function Home() {
             <Link href="/signup">Join</Link>
           </Button>
         </div>
-
-        <p className="flex items-center mt-5 text-lg text-muted-foreground font-medium tracking-wider">
-          <IconBrandAppleFilled className="inline mr-1" />
-          iOS App: Coming Soon
-        </p>
       </div>
     </div>
   );
