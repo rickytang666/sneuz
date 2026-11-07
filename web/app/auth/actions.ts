@@ -56,7 +56,11 @@ export async function signInWithGoogle(_formData: FormData) {
   let url: string | undefined;
   try {
     ({ url } = await getAuth().api.signInSocial({
-      body: { provider: "google", callbackURL: "/dashboard" },
+      body: {
+        provider: "google",
+        callbackURL: "/dashboard",
+        errorCallbackURL: "/login?error=google_sign_in_failed",
+      },
       headers: await headers(),
     }));
   } catch (error) {

@@ -8,16 +8,16 @@ import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "@/lib/env";
 
 function createAuth() {
   return betterAuth({
-    // previews have no fixed url, vercel exposes the stable branch alias instead
+    // previews have no fixed url, so they use the stable branch alias; production must set BETTER_AUTH_URL
     baseURL:
       process.env.BETTER_AUTH_URL ??
-      (process.env.VERCEL_BRANCH_URL
+      (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_BRANCH_URL
         ? `https://${process.env.VERCEL_BRANCH_URL}`
         : undefined),
     database: drizzleAdapter(getDb(), { provider: "pg", schema }),
     emailAndPassword: { enabled: true },
     account: {
-      // google sign-in attaches to an existing email account with the same verified address
+      // google sign-in attaches to an existing account only if that account's email is verified
       accountLinking: { enabled: true, trustedProviders: ["google"] },
     },
     databaseHooks: {

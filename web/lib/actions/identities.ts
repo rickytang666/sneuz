@@ -32,7 +32,11 @@ export async function linkGoogle() {
   let url: string | undefined;
   try {
     ({ url } = await getAuth().api.linkSocialAccount({
-      body: { provider: "google", callbackURL: "/dashboard/settings" },
+      body: {
+        provider: "google",
+        callbackURL: "/dashboard/settings",
+        errorCallbackURL: "/dashboard/settings?error=google_link_failed",
+      },
       headers: await headers(),
     }));
   } catch (error) {
