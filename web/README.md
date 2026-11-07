@@ -5,7 +5,8 @@ manual sleep tracking portal for the app.
 ## setup
 
 see the dev setup section in the [root README](../README.md). in short: copy
-`.env.example` to `.env`, fill in your supabase credentials, then `pnpm install && pnpm dev`.
+`.env.example` to `.env`, fill in the neon and google values, then `pnpm install`,
+`pnpm exec drizzle-kit migrate` and `pnpm dev`.
 
 ## scripts
 

@@ -26,47 +26,41 @@ https://github.com/user-attachments/assets/71894cbb-5b23-4540-b664-8e7bacce0669
 - **Home screen widget**: Glanceable status and quick actions without opening the app
 - **Web calendar view**: Visualize sleep patterns on a proper calendar
 - **Apple Health export**: One-click sync to Apple Health
-- **Cross-platform sync**: iOS and web stay in sync via Supabase
 
 ## Tech Stack
 
 - **iOS**: Swift, SwiftUI, WidgetKit, HealthKit, App Intents
-- **Web**: Next.js, Tailwind, Supabase SSR
-- **Backend**: Supabase (Postgres + Auth + RLS)
+- **Web**: Next.js, Tailwind, Better Auth, Drizzle ORM
+- **Database**: Neon (Postgres)
 
 ## iOS App Status
 
 Fully built. Can verify and tested out via Xcode & simulator.
 
-It _might_ be shipped on App Store.
+It _might_ be shipped on App Store. It still talks to the old Supabase backend, so it no longer syncs with the web app until it is ported to `/api/v1`.
 
 ## Dev Setup
 
-**Prerequisites**: Xcode, Node.js, pnpm, Supabase account
-
-There is no local-only mode. The web app and the iOS app both talk to a real Supabase project, so you need your own before anything runs. Budget ~15 minutes for the backend step.
-
-**Backend**:
-
-- Create Supabase project
-- Run migrations from `supabase/migrations` in order
-- Enable email/password auth
-- Add `http://localhost:3000/**` under Authentication > URL Configuration > Redirect URLs
+**Prerequisites**: Node.js, pnpm, a Neon project (free plan), a Google OAuth web client. Xcode for iOS.
 
 **Web**:
 
 ```bash
-cp web/.env.example web/.env  # add your Supabase credentials
+cp web/.env.example web/.env  # fill in DATABASE_URL, BETTER_AUTH_SECRET and the Google client
 cd web
-pnpm install && pnpm dev
+pnpm install
+pnpm exec drizzle-kit migrate  # creates the tables in your Neon database
+pnpm dev
 ```
+
+Add `http://localhost:3000/api/auth/callback/google` as an authorized redirect URI on the Google client.
 
 `pnpm validate` runs build, lint, tests, and react-doctor.
 
 **iOS**:
 
 1. Open `ios/Sneuz.xcodeproj`
-2. Update `Config.swift` with Supabase URL + anon key
+2. Update `Config.swift` with a Supabase URL + anon key (the iOS app has not moved off Supabase yet, schema in `supabase/migrations`)
 3. Set App Group to `group.io.sneuz.shared` in Signing & Capabilities
 4. Run on simulator or install on physical device (need to plug in using cable)
 5. Enjoy
@@ -87,14 +81,13 @@ The web app exposes a REST API at `/api/v1` for external services (e.g. home ser
 
 ### authentication
 
-All endpoints require an `Authorization` header. Two schemes are supported:
+All endpoints require an API key in the `Authorization` header:
 
 ```
-Authorization: Bearer <supabase-jwt>
 Authorization: ApiKey <snz_key>
 ```
 
-API keys (`snz_` prefix) are the recommended approach for long-lived external integrations. Generate one in the web app under Settings > API Keys.
+Generate one in the web app under Settings > API Keys.
 
 ### endpoints
 
