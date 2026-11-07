@@ -1,5 +1,9 @@
+import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAuthFromHeader } from "@/lib/api/auth";
+import { getDb } from "@/lib/db";
+import { dbErrorMessage } from "@/lib/db/errors";
+import { userSettings } from "@/lib/db/schema";
 
 function isValidTimeZone(tz: string): boolean {
   try {
@@ -10,6 +14,12 @@ function isValidTimeZone(tz: string): boolean {
   }
 }
 
+const settingsColumns = {
+  target_bedtime: userSettings.targetBedtime,
+  target_wake_time: userSettings.targetWakeTime,
+  timezone: userSettings.timezone,
+};
+
 const DEFAULT_SETTINGS = {
   target_bedtime: "23:00",
   target_wake_time: "07:00",
@@ -17,24 +27,24 @@ const DEFAULT_SETTINGS = {
 };
 
 export async function GET(request: NextRequest) {
-  const { user, supabase, response } = await requireAuthFromHeader(request);
+  const { user, response } = await requireAuthFromHeader(request);
   if (response) return response;
 
-  const { data, error } = await supabase
-    .from("user_settings")
-    .select("target_bedtime, target_wake_time, timezone")
-    .eq("user_id", user.id)
-    .single();
+  try {
+    const [data] = await getDb()
+      .select(settingsColumns)
+      .from(userSettings)
+      .where(eq(userSettings.userId, user.id))
+      .limit(1);
 
-  if (error || !data) {
-    return NextResponse.json({ data: DEFAULT_SETTINGS });
+    return NextResponse.json({ data: data ?? DEFAULT_SETTINGS });
+  } catch (error) {
+    return NextResponse.json({ error: dbErrorMessage(error) }, { status: 500 });
   }
-
-  return NextResponse.json({ data });
 }
 
 export async function PATCH(request: NextRequest) {
-  const { user, supabase, response } = await requireAuthFromHeader(request);
+  const { user, response } = await requireAuthFromHeader(request);
   if (response) return response;
 
   let body: {
@@ -65,20 +75,21 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const payload: Record<string, string> = { user_id: user.id };
-  if (body.target_bedtime) payload.target_bedtime = body.target_bedtime;
-  if (body.target_wake_time) payload.target_wake_time = body.target_wake_time;
-  if (body.timezone) payload.timezone = body.timezone;
+  const changes = {
+    ...(body.target_bedtime ? { targetBedtime: body.target_bedtime } : {}),
+    ...(body.target_wake_time ? { targetWakeTime: body.target_wake_time } : {}),
+    ...(body.timezone ? { timezone: body.timezone } : {}),
+  };
 
-  const { data, error } = await supabase
-    .from("user_settings")
-    .upsert(payload)
-    .select("target_bedtime, target_wake_time, timezone")
-    .single();
+  try {
+    const [data] = await getDb()
+      .insert(userSettings)
+      .values({ userId: user.id, ...changes })
+      .onConflictDoUpdate({ target: userSettings.userId, set: changes })
+      .returning(settingsColumns);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ data });
+  } catch (error) {
+    return NextResponse.json({ error: dbErrorMessage(error) }, { status: 500 });
   }
-
-  return NextResponse.json({ data });
 }

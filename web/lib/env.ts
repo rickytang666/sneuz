@@ -1,5 +1,4 @@
-// fails loudly and by name, a missing supabase variable used to surface as an
-// opaque "URL and Key are required" error from the client constructor
+// fails loudly and by name instead of as an opaque error deep inside a client
 export function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
@@ -10,8 +9,6 @@ export function requireEnv(name: string): string {
   return value;
 }
 
-export const SUPABASE_URL = () => requireEnv("NEXT_PUBLIC_SUPABASE_URL");
-export const SUPABASE_ANON_KEY = () =>
-  requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
-export const SUPABASE_SERVICE_ROLE_KEY = () =>
-  requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+export const DATABASE_URL = () => requireEnv("DATABASE_URL");
+export const GOOGLE_CLIENT_ID = () => requireEnv("GOOGLE_CLIENT_ID");
+export const GOOGLE_CLIENT_SECRET = () => requireEnv("GOOGLE_CLIENT_SECRET");

@@ -1,5 +1,6 @@
-# sharp is next's image optimizer, its install script has to run
+# sharp is next's image optimizer, its install script has to run; esbuild ships prebuilt binaries via optional deps
 allowBuilds:
+  esbuild: false
   sharp: true
 
 # vitest pins versions with open advisories, both are dev-only and same-major

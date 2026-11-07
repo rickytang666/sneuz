@@ -1,44 +1,53 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { and, desc, eq } from "drizzle-orm";
 import { generateApiKey, hashApiKey } from "@/lib/api/keys";
+import { getDb } from "@/lib/db";
+import { apiKeys } from "@/lib/db/schema";
 
-export async function listKeys(supabase: SupabaseClient, userId: string) {
-  const { data, error } = await supabase
-    .from("api_keys")
-    .select("id, name, created_at, last_used_at")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+export async function listKeys(userId: string) {
+  const rows = await getDb()
+    .select({
+      id: apiKeys.id,
+      name: apiKeys.name,
+      createdAt: apiKeys.createdAt,
+      lastUsedAt: apiKeys.lastUsedAt,
+    })
+    .from(apiKeys)
+    .where(eq(apiKeys.userId, userId))
+    .orderBy(desc(apiKeys.createdAt));
 
-  return { data: data ?? [], error };
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    created_at: row.createdAt.toISOString(),
+    last_used_at: row.lastUsedAt?.toISOString() ?? null,
+  }));
 }
 
-export async function createKey(
-  supabase: SupabaseClient,
-  userId: string,
-  name: string,
-) {
+export async function createKey(userId: string, name: string) {
   const rawKey = generateApiKey();
-  const keyHash = hashApiKey(rawKey);
 
-  const { data, error } = await supabase
-    .from("api_keys")
-    .insert({ user_id: userId, name: name.trim(), key_hash: keyHash })
-    .select("id, name, created_at")
-    .single();
+  const [row] = await getDb()
+    .insert(apiKeys)
+    .values({ userId, name: name.trim(), keyHash: hashApiKey(rawKey) })
+    .returning({
+      id: apiKeys.id,
+      name: apiKeys.name,
+      createdAt: apiKeys.createdAt,
+    });
 
-  if (error) return { data: null, error };
-  return { data: { ...data, key: rawKey }, error: null };
+  return {
+    id: row.id,
+    name: row.name,
+    created_at: row.createdAt.toISOString(),
+    key: rawKey,
+  };
 }
 
-export async function deleteKey(
-  supabase: SupabaseClient,
-  userId: string,
-  id: string,
-) {
-  const { error, count } = await supabase
-    .from("api_keys")
-    .delete({ count: "exact" })
-    .eq("id", id)
-    .eq("user_id", userId);
-
-  return { error, count };
+// returns how many keys were deleted, 0 when the id is not this user's
+export async function deleteKey(userId: string, id: string) {
+  const rows = await getDb()
+    .delete(apiKeys)
+    .where(and(eq(apiKeys.id, id), eq(apiKeys.userId, userId)))
+    .returning({ id: apiKeys.id });
+  return rows.length;
 }

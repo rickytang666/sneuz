@@ -24,7 +24,12 @@ export function LoginForm({
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+  // set by the google sign-in error callback
+  const [error, setError] = useState<string | null>(
+    searchParams.get("error")
+      ? "Google sign-in failed. Please try again."
+      : null,
+  );
 
   async function handleSubmit(formData: FormData) {
     setError(null);
