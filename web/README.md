@@ -1,16 +1,16 @@
-# sneuz web portal
+# Sneuz web portal
 
-manual sleep tracking portal for the app.
+Manual sleep tracking portal for the app.
 
-## setup
+## Setup
 
-see the dev setup section in the [root README](../README.md). in short: copy
-`.env.example` to `.env`, fill in the neon and google values, then `pnpm install`,
+See the dev setup section in the [root README](../README.md). In short: copy
+`.env.example` to `.env`, fill in the Neon and Google values, then `pnpm install`,
 `pnpm exec drizzle-kit migrate` and `pnpm dev`.
 
-## scripts
+## Scripts
 
-- `pnpm dev`: start the dev server
-- `pnpm validate`: build, lint, test, react-doctor
-- `pnpm lint` / `pnpm lint:fix`: biome check
-- `pnpm test` / `pnpm test:watch`: vitest
+- `pnpm dev`: Start the dev server
+- `pnpm validate`: Build, lint, test, react-doctor
+- `pnpm lint` / `pnpm lint:fix`: Biome check
+- `pnpm test` / `pnpm test:watch`: Vitest

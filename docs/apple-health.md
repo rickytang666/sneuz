@@ -1,14 +1,14 @@
-# apple health integration issues & solutions
+# Apple Health integration issues & solutions
 
-## deduplication (upsert)
+## Deduplication (upsert)
 
-- on export, we check if a sample with the same uuid already exists
-- if yes, we delete the old one and save the new one (overwrite)
-- this prevents duplication if you export multiple times
+- On export, we check if a sample with the same UUID already exists
+- If yes, we delete the old one and save the new one (overwrite)
+- This prevents duplication if you export multiple times
 
-## conflict resolution with other apps
+## Conflict resolution with other apps
 
-- apple health takes the UNION of overlapping sessions
-- e.g. if you have watch data + our app data for the same night, it won't double count duration
-- we do not delete data from other apps (hostile)
-- users can prioritize data sources in apple health settings
+- Apple Health takes the UNION of overlapping sessions
+- E.g. if you have watch data + our app data for the same night, it won't double count duration
+- We do not delete data from other apps (hostile)
+- Users can prioritize data sources in Apple Health settings

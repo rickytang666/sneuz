@@ -1,19 +1,19 @@
-# ios automation findings
+# iOS automation findings
 
-## sleep focus oddities
+## Sleep Focus oddities
 
-sleep focus is special because it is tightly coupled with apple health and the sleep schedule.
+Sleep Focus is special because it is tightly coupled with Apple Health and the sleep schedule.
 
-- **"waking up" trigger**: this is misleading. it ONLY triggers when your sleep schedule alarm rings or you dismiss the "good morning" screen.
-- **manual toggle**: simply turning off sleep focus in control center does **NOT** fire the "waking up" automation.
-- **implication**: sleep focus is ideal if you have apple sleep schedule set up already in apple health, and you strictly follow your apple sleep alarm. it is **disappointing** for manual on/off toggling via control center.
+- **"Waking up" trigger**: This is misleading. It ONLY triggers when your sleep schedule alarm rings or you dismiss the "Good morning" screen.
+- **Manual toggle**: Simply turning off Sleep Focus in Control Center does **NOT** fire the "Waking up" automation.
+- **Implication**: Sleep Focus is ideal if you have Apple sleep schedule set up already in Apple Health, and you strictly follow your Apple sleep alarm. It is **disappointing** for manual on/off toggling via Control Center.
 
-## standard focus modes (personal, do not disturb, custom etc)
+## Standard focus modes (Personal, Do Not Disturb, custom etc)
 
-unlike sleep focus, these provide reliable "when turning on" and "when turning off" triggers.
+Unlike Sleep Focus, these provide reliable "When turning on" and "When turning off" triggers.
 
-- **recommendation**: if you want manual control (e.g. napping, irregular hours), create a custom "sleep tracking" focus mode instead of using apple's default sleep focus.
+- **Recommendation**: If you want manual control (e.g. napping, irregular hours), create a custom "Sleep tracking" focus mode instead of using Apple's default Sleep Focus.
 
-- toggling them on fires the "turning on" automation.
-- toggling them off fires the "turning off" automation immediately.
-- they are reliable for manual start/stop tracking if you prefer manual control over apple's sleep schedule integration.
+- Toggling them on fires the "Turning on" automation.
+- Toggling them off fires the "Turning off" automation immediately.
+- They are reliable for manual start/stop tracking if you prefer manual control over Apple's sleep schedule integration.

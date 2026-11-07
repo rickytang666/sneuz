@@ -27,19 +27,19 @@ https://github.com/user-attachments/assets/71894cbb-5b23-4540-b664-8e7bacce0669
 - **Web calendar view**: Visualize sleep patterns on a proper calendar
 - **Apple Health export**: One-click sync to Apple Health
 
-## Tech Stack
+## Tech stack
 
 - **iOS**: Swift, SwiftUI, WidgetKit, HealthKit, App Intents
 - **Web**: Next.js, Tailwind, Better Auth, Drizzle ORM
 - **Database**: Neon (Postgres)
 
-## iOS App Status
+## iOS app status
 
 Fully built. Can verify and tested out via Xcode & simulator.
 
 It _might_ be shipped on App Store. It still talks to the old Supabase backend, so it no longer syncs with the web app until it is ported to `/api/v1`.
 
-## Dev Setup
+## Dev setup
 
 **Prerequisites**: Node.js, pnpm, a Neon project (free plan), a Google OAuth web client. Xcode for iOS.
 
@@ -79,7 +79,7 @@ Zero background tasks. Just two API calls when Focus toggles - minimal battery i
 
 The web app exposes a REST API at `/api/v1` for external services (e.g. home servers, automations).
 
-### authentication
+### Authentication
 
 All endpoints require an API key in the `Authorization` header:
 
@@ -89,16 +89,16 @@ Authorization: ApiKey <snz_key>
 
 Generate one in the web app under Settings > API Keys.
 
-### endpoints
+### Endpoints
 
-#### sessions
+#### Sessions
 
-| method   | path                   | description         |
+| Method   | Path                   | Description         |
 | -------- | ---------------------- | ------------------- |
-| `GET`    | `/api/v1/sessions`     | list sleep sessions |
-| `POST`   | `/api/v1/sessions`     | create a session    |
-| `PATCH`  | `/api/v1/sessions/:id` | update a session    |
-| `DELETE` | `/api/v1/sessions/:id` | delete a session    |
+| `GET`    | `/api/v1/sessions`     | List sleep sessions |
+| `POST`   | `/api/v1/sessions`     | Create a session    |
+| `PATCH`  | `/api/v1/sessions/:id` | Update a session    |
+| `DELETE` | `/api/v1/sessions/:id` | Delete a session    |
 
 **GET** query params: `limit` (default 50, max 200), `offset`, `from` (ISO date), `to` (ISO date)
 
@@ -110,7 +110,7 @@ Generate one in the web app under Settings > API Keys.
 
 `bedtime` is required on POST. PATCH requires at least one field.
 
-**session object:**
+**Session object:**
 
 ```json
 {
@@ -122,11 +122,11 @@ Generate one in the web app under Settings > API Keys.
 }
 ```
 
-#### profile
+#### Profile
 
-| method | path              | description      |
+| Method | Path              | Description      |
 | ------ | ----------------- | ---------------- |
-| `GET`  | `/api/v1/profile` | get user profile |
+| `GET`  | `/api/v1/profile` | Get user profile |
 
 ```json
 {
@@ -137,12 +137,12 @@ Generate one in the web app under Settings > API Keys.
 }
 ```
 
-#### settings
+#### Settings
 
-| method  | path               | description          |
+| Method  | Path               | Description          |
 | ------- | ------------------ | -------------------- |
-| `GET`   | `/api/v1/settings` | get sleep targets    |
-| `PATCH` | `/api/v1/settings` | update sleep targets |
+| `GET`   | `/api/v1/settings` | Get sleep targets    |
+| `PATCH` | `/api/v1/settings` | Update sleep targets |
 
 **PATCH** body (at least one field required):
 
@@ -150,19 +150,19 @@ Generate one in the web app under Settings > API Keys.
 { "target_bedtime": "23:00", "target_wake_time": "07:00" }
 ```
 
-#### api keys
+#### API keys
 
-| method   | path               | description       |
+| Method   | Path               | Description       |
 | -------- | ------------------ | ----------------- |
-| `GET`    | `/api/v1/keys`     | list api keys     |
-| `POST`   | `/api/v1/keys`     | create an api key |
-| `DELETE` | `/api/v1/keys/:id` | revoke an api key |
+| `GET`    | `/api/v1/keys`     | List API keys     |
+| `POST`   | `/api/v1/keys`     | Create an API key |
+| `DELETE` | `/api/v1/keys/:id` | Revoke an API key |
 
 **POST** body: `{ "name": "home server" }`
 
 The raw key is only returned once in the POST response. Store it securely.
 
-### example
+### Example
 
 ```bash
 curl https://sneuz.rickytang.dev/api/v1/sessions \

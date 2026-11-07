@@ -1,34 +1,34 @@
-# sleep chart logic
+# Sleep chart logic
 
-## date attribution
+## Date attribution
 
-- sessions attributed to **wake-up day**, not bedtime day
-- example: sleep from dec 23 11pm → dec 24 9am appears on dec 24
+- Sessions attributed to **wake-up day**, not bedtime day
+- Example: sleep from Dec 23 11pm → Dec 24 9am appears on Dec 24
 
-## time normalization
+## Time normalization
 
-- hours as decimal values (23.5 = 11:30 PM)
-- overnight times use 24+ notation (1 AM = 25.0, 2 AM = 26.0)
-- threshold: times before 3 PM get +24
-- formula: `value < 15.0 ? value + 24.0 : value`
+- Hours as decimal values (23.5 = 11:30 PM)
+- Overnight times use 24+ notation (1 AM = 25.0, 2 AM = 26.0)
+- Threshold: times before 3 PM get +24
+- Formula: `value < 15.0 ? value + 24.0 : value`
 
-## y-axis inversion
+## Y-axis inversion
 
-- bedtime at top, wake-up at bottom
-- midpoint mirroring: `2 * midpoint - value`
-- labels inverted back to show actual times
+- Bedtime at top, wake-up at bottom
+- Midpoint mirroring: `2 * midpoint - value`
+- Labels inverted back to show actual times
 
-## domain calculation
+## Domain calculation
 
-1. collect all sleep times + targets
-2. find min/max
-3. add 1-hour padding
-4. return `(floor(min - 1), ceil(max + 1))`
+1. Collect all sleep times + targets
+2. Find min/max
+3. Add 1-hour padding
+4. Return `(floor(min - 1), ceil(max + 1))`
 
-## data preparation
+## Data preparation
 
-for each day:
+For each day:
 
-1. find session where wake-up matches this day
-2. normalize bedtime and wake time to decimal hours
-3. create empty placeholder if no session
+1. Find session where wake-up matches this day
+2. Normalize bedtime and wake time to decimal hours
+3. Create empty placeholder if no session

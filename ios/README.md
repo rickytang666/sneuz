@@ -1,23 +1,23 @@
-# sneuz ios
+# Sneuz iOS
 
-swiftui-based ios application for tracking sleep sessions and viewing statistics.
+SwiftUI-based iOS application for tracking sleep sessions and viewing statistics.
 
-## features
+## Features
 
-- active sleep tracking with start/stop
-- manual session entry and history management
-- statistical charts with 7/30 day views
-- profile and sleep goal settings
+- Active sleep tracking with start/stop
+- Manual session entry and history management
+- Statistical charts with 7/30 day views
+- Profile and sleep goal settings
 
-## setup and running
+## Setup and running
 
-1. open `ios/Sneuz/Sneuz.xcodeproj` in xcode
-2. select a simulator or real device
-3. press `cmd + r` to run
+1. Open `ios/Sneuz/Sneuz.xcodeproj` in Xcode
+2. Select a simulator or real device
+3. Press `cmd + r` to run
 
-## requirements
+## Requirements
 
-- ios 17.0+
-- xcode 15.0+
-- swift 5.9+
-- supabase backend configuration
+- iOS 17.0+
+- Xcode 15.0+
+- Swift 5.9+
+- Supabase backend configuration
