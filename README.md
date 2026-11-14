@@ -100,7 +100,7 @@ Generate one in the web app under Settings > API Keys.
 | `PATCH`  | `/api/v1/sessions/:id` | Update a session    |
 | `DELETE` | `/api/v1/sessions/:id` | Delete a session    |
 
-**GET** query params: `limit` (default 50, max 200), `offset`, `from` (ISO date), `to` (ISO date)
+**GET** query params: `limit` (default 50, max 1000), `offset`, `from` (ISO date), `to` (ISO date)
 
 **POST / PATCH** body:
 

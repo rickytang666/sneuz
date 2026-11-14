@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   if (response) return response;
 
   const { searchParams } = request.nextUrl;
-  const limit = Math.min(Number(searchParams.get("limit") ?? 50), 200);
+  const limit = Math.min(Number(searchParams.get("limit") ?? 50), 1000);
   const offset = Number(searchParams.get("offset") ?? 0);
   const from = searchParams.get("from");
   const to = searchParams.get("to");
