@@ -23,7 +23,9 @@ export const sleepSessions = pgTable(
     startTime: timestamp("start_time", { withTimezone: true }).notNull(),
     // null while the session is still in progress
     endTime: timestamp("end_time", { withTimezone: true }),
-    source: text("source", { enum: ["manual", "widget", "shortcut"] })
+    source: text("source", {
+      enum: ["manual", "widget", "shortcut", "google_health"],
+    })
       .notNull()
       .default("manual"),
     // the handle_sleep_session_updated_at trigger overwrites this on every write
@@ -35,7 +37,7 @@ export const sleepSessions = pgTable(
     check("valid_end_time", sql`${table.endTime} >= ${table.startTime}`),
     check(
       "valid_source",
-      sql`${table.source} in ('manual', 'widget', 'shortcut')`,
+      sql`${table.source} in ('manual', 'widget', 'shortcut', 'google_health')`,
     ),
     uniqueIndex("one_active_session_per_user")
       .on(table.userId)
