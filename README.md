@@ -49,7 +49,7 @@ It _might_ be shipped on App Store. It still talks to the old Supabase backend, 
 cp web/.env.example web/.env  # fill in DATABASE_URL, BETTER_AUTH_SECRET and the Google client
 cd web
 pnpm install
-pnpm exec drizzle-kit migrate  # creates the tables in your Neon database
+pnpm db:migrate  # creates the tables in your Neon database
 pnpm dev
 ```
 

@@ -10,6 +10,8 @@
     "lint:fix": "biome check . --write",
     "test": "vitest run",
     "test:watch": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "react-doctor": "CI=1 pnpm dlx react-doctor@latest --verbose -y",
     "validate": "node validate.mjs"
   },
