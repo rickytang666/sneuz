@@ -1,4 +1,5 @@
-import type { sleepSessions } from "./schema";
+import { eq } from "drizzle-orm";
+import { sleepSessions } from "./schema";
 
 type SessionRow = Pick<
   typeof sleepSessions.$inferSelect,
@@ -12,4 +13,9 @@ export function toDbSession(row: SessionRow) {
     start_time: row.startTime.toISOString(),
     end_time: row.endTime?.toISOString() ?? null,
   };
+}
+
+// no row level security, so every sleep session query must include this
+export function forUser(userId: string) {
+  return eq(sleepSessions.userId, userId);
 }

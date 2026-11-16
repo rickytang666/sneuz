@@ -16,7 +16,22 @@ vi.mock("@/lib/api/auth", () => ({
   requireAuthFromHeader: async () => ({ user: { id: USER }, response: null }),
 }));
 vi.mock("@/lib/session", () => ({ getUser: async () => ({ id: USER }) }));
-vi.mock("@/lib/auth", () => ({ getAuth: () => ({}) }));
+vi.mock("@/lib/auth", () => ({
+  getAuth: () => ({
+    api: { getAccessToken: async () => ({ accessToken: "token" }) },
+  }),
+}));
+vi.mock("next/headers", () => ({ headers: async () => new Headers() }));
+vi.mock("@/lib/google-health", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/google-health")>()),
+  listSleepNights: async () => [
+    {
+      id: "users/x/dataTypes/sleep/dataPoints/1",
+      start: "2026-11-01T23:00:00.000Z",
+      end: "2026-11-02T07:00:00.000Z",
+    },
+  ],
+}));
 vi.mock("next/cache", () => ({ revalidatePath: () => {} }));
 
 const sessionsRoute = await import("@/app/api/v1/sessions/route");
@@ -25,6 +40,8 @@ const settingsRoute = await import("@/app/api/v1/settings/route");
 const apiKeys = await import("@/lib/services/api-keys");
 const sleepActions = await import("@/lib/actions/sleep");
 const userActions = await import("@/lib/actions/user");
+const googleHealth = await import("@/lib/actions/google-health");
+const { GOOGLE_HEALTH_SLEEP_SCOPE } = await import("@/lib/google-health");
 
 const request = (method = "GET", body?: unknown) =>
   new NextRequest("http://localhost/api/v1/x", {
@@ -147,5 +164,50 @@ describe("dashboard actions scope to the signed-in user", () => {
     settings.set("target_wake_time", "07:00");
     await userActions.updateSettings(settings);
     expectInsertOwnedByUser();
+  });
+});
+
+describe("google health actions scope to the signed-in user", () => {
+  // one row serves both the google account lookup and the overlap query
+  const row = {
+    id: OTHER_ROW,
+    scope: `openid email ${GOOGLE_HEALTH_SLEEP_SCOPE}`,
+    refreshTokenExpiresAt: null,
+    startTime: new Date("2026-11-01T22:00:00Z"),
+    endTime: new Date("2026-11-02T06:00:00Z"),
+  };
+
+  it("getGoogleHealthStatus", async () => {
+    mock.state.result = [row];
+    expect(await googleHealth.getGoogleHealthStatus()).toEqual({
+      connected: true,
+      tokenExpiresAt: null,
+    });
+    expectEveryWhereScopedToUser();
+  });
+
+  it("previewGoogleHealthImport", async () => {
+    mock.state.result = [row];
+    const { candidates } = await googleHealth.previewGoogleHealthImport(
+      "2026-11-01",
+      "2026-11-02",
+    );
+    expect(candidates?.[0].conflicts.map((c) => c.id)).toEqual([OTHER_ROW]);
+    expect(mock.whereParams()).toHaveLength(2);
+    expectEveryWhereScopedToUser();
+  });
+
+  it("saveGoogleHealthImport replaces only the user's sessions", async () => {
+    await googleHealth.saveGoogleHealthImport([
+      {
+        start: "2026-11-01T23:00:00Z",
+        end: "2026-11-02T07:00:00Z",
+        replace: [OTHER_ROW],
+      },
+    ]);
+    expectEveryWhereScopedToUser();
+    expect(mock.whereParams()[0]).toContain(OTHER_ROW);
+    const [[rows]] = mock.calls("values") as [[{ userId: string }[]]];
+    expect(rows.map((r) => r.userId)).toEqual([USER]);
   });
 });

@@ -15,6 +15,10 @@ export function createDbMock() {
         if (method === "then") {
           return (resolve: (value: unknown) => void) => resolve(state.result);
         }
+        // the transaction callback gets the same recording builder as its tx
+        if (method === "transaction") {
+          return (callback: (tx: unknown) => unknown) => callback(builder);
+        }
         return (...args: unknown[]) => {
           state.calls.push({ method, args });
           return builder;
