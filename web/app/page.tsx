@@ -117,6 +117,20 @@ export default function Home() {
           </Button>
         </div>
       </div>
+
+      <footer className="absolute bottom-6 inset-x-0 flex justify-center gap-6 text-sm text-muted-foreground">
+        <Link href="/privacy" className="hover:text-foreground">
+          Privacy
+        </Link>
+        <a
+          href="https://github.com/rickytang666/sneuz"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-foreground"
+        >
+          GitHub
+        </a>
+      </footer>
     </div>
   );
 }
