@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { findConflicts, listSleepNights, sleepFilter } from "./google-health";
+import {
+  connectErrorMessage,
+  dropNewlyConflicting,
+  findConflicts,
+  listSleepNights,
+  sleepFilter,
+  validateRange,
+} from "./google-health";
 
 const night = {
   id: "n1",
@@ -100,5 +107,51 @@ describe("listSleepNights", () => {
     await expect(
       listSleepNights("t", "2026-07-01", "2026-07-03", fetchImpl),
     ).rejects.toMatchObject({ status: 403 });
+  });
+});
+
+describe("validateRange", () => {
+  it("accepts a range of exactly 90 days", () => {
+    expect(validateRange("2026-07-01", "2026-09-28")).toBeNull();
+  });
+
+  it("rejects a range over 90 days", () => {
+    expect(validateRange("2026-07-01", "2026-09-29")).toMatch(/90 days/);
+  });
+
+  it("rejects reversed ranges and impossible dates", () => {
+    expect(validateRange("2026-07-02", "2026-07-01")).not.toBeNull();
+    expect(validateRange("2026-13-45", "2026-13-46")).not.toBeNull();
+    expect(validateRange("2026-02-30", "2026-03-01")).not.toBeNull();
+  });
+});
+
+describe("connectErrorMessage", () => {
+  it("explains a mismatched google account", () => {
+    expect(connectErrorMessage("email_does_not_match")).toMatch(/Sneuz email/);
+  });
+
+  it("falls back to a generic message", () => {
+    expect(connectErrorMessage(undefined)).toMatch(/failed/);
+  });
+});
+
+describe("dropNewlyConflicting", () => {
+  const selection = { ...night, replace: [] as string[] };
+  const overlapping = {
+    id: "a",
+    start: "2026-07-02T06:00:00Z",
+    end: "2026-07-02T08:00:00Z",
+  };
+
+  it("drops a night that now overlaps a session it doesn't replace", () => {
+    expect(dropNewlyConflicting([selection], [overlapping])).toEqual([]);
+  });
+
+  it("keeps a night whose only overlap is one it replaces", () => {
+    const replacing = { ...selection, replace: ["a"] };
+    expect(dropNewlyConflicting([replacing], [overlapping])).toEqual([
+      replacing,
+    ]);
   });
 });

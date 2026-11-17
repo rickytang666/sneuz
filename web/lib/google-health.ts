@@ -111,3 +111,62 @@ export function findConflicts(
     return { ...night, conflicts };
   });
 }
+
+// google serves 25 nights per request, so a long range means many sequential calls in one server action
+export const MAX_RANGE_DAYS = 90;
+
+function parseDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return null;
+  // rejects dates like 2026-02-30 that Date silently rolls over
+  return date.toISOString().slice(0, 10) === value ? date : null;
+}
+
+export function validateRange(fromDate: string, toDate: string) {
+  const from = parseDate(fromDate);
+  const to = parseDate(toDate);
+  if (!from || !to || from > to) return "Pick a valid date range.";
+  const days = (to.getTime() - from.getTime()) / 86_400_000 + 1;
+  if (days > MAX_RANGE_DAYS) {
+    return `Pick ${MAX_RANGE_DAYS} days or fewer at a time.`;
+  }
+  return null;
+}
+
+// better auth appends its own error code to the error callback url
+export function connectErrorMessage(code: string | undefined) {
+  switch (code) {
+    case "access_denied":
+      return "Google Health wasn't connected because access was declined.";
+    case "email_does_not_match":
+      return "Connect with the Google account that uses your Sneuz email.";
+    case "account_already_linked_to_different_user":
+      return "That Google account is linked to a different Sneuz account.";
+    default:
+      return "Connecting Google Health failed. Try again.";
+  }
+}
+
+export interface ImportSelection {
+  start: string;
+  end: string;
+  // ids of the user's existing sessions this night replaces
+  replace: string[];
+}
+
+// a night is saved only if every session it overlaps now is one the user chose to replace
+export function dropNewlyConflicting(
+  selections: ImportSelection[],
+  existing: ExistingSession[],
+  now = new Date(),
+) {
+  const candidates = findConflicts(
+    selections.map((s, i) => ({ id: String(i), start: s.start, end: s.end })),
+    existing,
+    now,
+  );
+  return selections.filter((selection, i) =>
+    candidates[i].conflicts.every((c) => selection.replace.includes(c.id)),
+  );
+}
