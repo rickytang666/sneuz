@@ -10,16 +10,20 @@ import { dbErrorMessage } from "@/lib/db/errors";
 import { account, sleepSessions } from "@/lib/db/schema";
 import { forUser } from "@/lib/db/sessions";
 import {
+  dropNewlyConflicting,
   findConflicts,
   GOOGLE_HEALTH_SLEEP_SCOPE,
   GoogleHealthError,
   type ImportCandidate,
+  type ImportSelection,
   listSleepNights,
+  validateRange,
 } from "@/lib/google-health";
 import { getUser } from "@/lib/session";
 
-const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// a 90 day range holds far fewer nights than this
+const MAX_SELECTIONS = 500;
 
 async function findGoogleAccount(userId: string) {
   const [row] = await getDb()
@@ -66,7 +70,7 @@ export async function connectGoogleHealth() {
         // google returns a refresh token only for offline access on a fresh consent
         additionalParams: { access_type: "offline", prompt: "consent" },
         callbackURL: "/dashboard/data",
-        errorCallbackURL: "/dashboard/data?error=google_health_connect_failed",
+        errorCallbackURL: "/dashboard/data?import=connect_failed",
       },
       headers: await headers(),
     }));
@@ -78,43 +82,17 @@ export async function connectGoogleHealth() {
   redirect(url);
 }
 
-export async function previewGoogleHealthImport(
-  fromDate: string,
-  toDate: string,
-): Promise<{ candidates?: ImportCandidate[]; error?: string }> {
-  const user = await getUser();
-  if (!user) return { error: "Unauthorized" };
-  if (!DATE.test(fromDate) || !DATE.test(toDate) || fromDate > toDate) {
-    return { error: "Pick a valid date range." };
-  }
-
-  const google = await findGoogleAccount(user.id);
-  if (!google || !hasSleepScope(google.scope)) {
-    return { error: "Connect Google Health first." };
-  }
-
-  let nights: Awaited<ReturnType<typeof listSleepNights>>;
-  try {
-    const { accessToken } = await getAuth().api.getAccessToken({
-      body: { accountId: google.id },
-      headers: await headers(),
-    });
-    if (!accessToken) throw new GoogleHealthError("no access token", 401);
-    nights = await listSleepNights(accessToken, fromDate, toDate);
-  } catch (error) {
-    console.error("error reading google health:", error);
-    if (error instanceof GoogleHealthError && error.status === 403) {
-      return { error: "Google Health denied access to sleep data." };
-    }
-    return {
-      error: "Couldn't read Google Health. Try connecting again.",
-    };
-  }
-  if (nights.length === 0) return { candidates: [] };
-
-  const windowStart = new Date(nights[0].start);
+// sessions of the user's that overlap the span of the given nights
+async function overlappingSessions(
+  db: Pick<ReturnType<typeof getDb>, "select">,
+  userId: string,
+  nights: { start: string; end: string }[],
+) {
+  const windowStart = new Date(
+    Math.min(...nights.map((n) => Date.parse(n.start))),
+  );
   const windowEnd = new Date(Math.max(...nights.map((n) => Date.parse(n.end))));
-  const existing = await getDb()
+  const rows = await db
     .select({
       id: sleepSessions.id,
       startTime: sleepSessions.startTime,
@@ -123,7 +101,7 @@ export async function previewGoogleHealthImport(
     .from(sleepSessions)
     .where(
       and(
-        forUser(user.id),
+        forUser(userId),
         lt(sleepSessions.startTime, windowEnd),
         or(
           isNull(sleepSessions.endTime),
@@ -131,59 +109,100 @@ export async function previewGoogleHealthImport(
         ),
       ),
     );
-
-  return {
-    candidates: findConflicts(
-      nights,
-      existing.map((row) => ({
-        id: row.id,
-        start: row.startTime.toISOString(),
-        end: row.endTime?.toISOString() ?? null,
-      })),
-    ),
-  };
+  return rows.map((row) => ({
+    id: row.id,
+    start: row.startTime.toISOString(),
+    end: row.endTime?.toISOString() ?? null,
+  }));
 }
 
-export interface ImportSelection {
-  start: string;
-  end: string;
-  // ids of the user's existing sessions this night replaces
-  replace: string[];
+export async function previewGoogleHealthImport(
+  fromDate: string,
+  toDate: string,
+): Promise<{
+  candidates?: ImportCandidate[];
+  error?: string;
+  // the stored google access no longer works, so the user must connect again
+  reconnect?: boolean;
+}> {
+  const user = await getUser();
+  if (!user) return { error: "Unauthorized" };
+  const rangeError = validateRange(fromDate, toDate);
+  if (rangeError) return { error: rangeError };
+
+  const google = await findGoogleAccount(user.id);
+  if (!google || !hasSleepScope(google.scope)) {
+    return { error: "Connect Google Health first.", reconnect: true };
+  }
+
+  let nights: Awaited<ReturnType<typeof listSleepNights>>;
+  try {
+    // throws when the refresh token was revoked or expired
+    const { accessToken } = await getAuth().api.getAccessToken({
+      body: { accountId: google.id },
+      headers: await headers(),
+    });
+    if (!accessToken) throw new GoogleHealthError("no access token", 401);
+    nights = await listSleepNights(accessToken, fromDate, toDate);
+  } catch (error) {
+    console.error("error reading google health:", error);
+    const apiFailure =
+      error instanceof GoogleHealthError &&
+      error.status !== 401 &&
+      error.status !== 403;
+    return apiFailure
+      ? { error: "Google Health couldn't be read. Try again later." }
+      : {
+          error: "Google Health access stopped working. Connect again.",
+          reconnect: true,
+        };
+  }
+  if (nights.length === 0) return { candidates: [] };
+
+  const existing = await overlappingSessions(getDb(), user.id, nights);
+  return { candidates: findConflicts(nights, existing) };
 }
 
 export async function saveGoogleHealthImport(
   selections: ImportSelection[],
-): Promise<{ imported?: number; error?: string }> {
+): Promise<{ imported?: number; skipped?: number; error?: string }> {
   const user = await getUser();
   if (!user) return { error: "Unauthorized" };
 
-  const nights = selections.map((s) => ({
-    start: new Date(s.start),
-    end: new Date(s.end),
-  }));
-  const replaceIds = [...new Set(selections.flatMap((s) => s.replace))];
   const valid =
-    nights.every(
-      ({ start, end }) =>
-        !Number.isNaN(start.getTime()) &&
-        !Number.isNaN(end.getTime()) &&
-        end >= start,
-    ) && replaceIds.every((id) => UUID.test(id));
+    selections.length <= MAX_SELECTIONS &&
+    selections.every(({ start, end, replace }) => {
+      const startMs = Date.parse(start);
+      const endMs = Date.parse(end);
+      return (
+        !Number.isNaN(startMs) &&
+        !Number.isNaN(endMs) &&
+        endMs >= startMs &&
+        replace.every((id) => UUID.test(id))
+      );
+    });
   if (!valid) return { error: "Invalid import data." };
-  if (nights.length === 0) return { imported: 0 };
+  if (selections.length === 0) return { imported: 0, skipped: 0 };
 
+  let saved: ImportSelection[] = [];
   try {
     await getDb().transaction(async (tx) => {
+      // the preview can be stale: another tab or a widget may have added a session since
+      const existing = await overlappingSessions(tx, user.id, selections);
+      saved = dropNewlyConflicting(selections, existing);
+      if (saved.length === 0) return;
+
+      const replaceIds = [...new Set(saved.flatMap((s) => s.replace))];
       if (replaceIds.length > 0) {
         await tx
           .delete(sleepSessions)
           .where(and(forUser(user.id), inArray(sleepSessions.id, replaceIds)));
       }
       await tx.insert(sleepSessions).values(
-        nights.map(({ start, end }) => ({
+        saved.map(({ start, end }) => ({
           userId: user.id,
-          startTime: start,
-          endTime: end,
+          startTime: new Date(start),
+          endTime: new Date(end),
           source: "google_health" as const,
         })),
       );
@@ -193,5 +212,5 @@ export async function saveGoogleHealthImport(
   }
 
   revalidatePath("/dashboard/data");
-  return { imported: nights.length };
+  return { imported: saved.length, skipped: selections.length - saved.length };
 }

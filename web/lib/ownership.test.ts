@@ -206,7 +206,9 @@ describe("google health actions scope to the signed-in user", () => {
       },
     ]);
     expectEveryWhereScopedToUser();
-    expect(mock.whereParams()[0]).toContain(OTHER_ROW);
+    expect(mock.whereParams().some((bound) => bound.includes(OTHER_ROW))).toBe(
+      true,
+    );
     const [[rows]] = mock.calls("values") as [[{ userId: string }[]]];
     expect(rows.map((r) => r.userId)).toEqual([USER]);
   });
