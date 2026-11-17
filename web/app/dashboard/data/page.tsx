@@ -10,13 +10,21 @@ import {
   getSleepStats,
   getUserSettings,
 } from "@/lib/actions/sleep";
+import { connectErrorMessage } from "@/lib/google-health";
+
+// next turns a repeated query key into an array
+const first = (value?: string | string[]) =>
+  Array.isArray(value) ? value[0] : value;
 
 export default async function DataPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{
+    import?: string | string[];
+    error?: string | string[];
+  }>;
 }) {
-  const [sessions, settings, googleHealth, { error }] = await Promise.all([
+  const [sessions, settings, googleHealth, query] = await Promise.all([
     getSleepSessions(),
     getUserSettings(),
     getGoogleHealthStatus(),
@@ -43,7 +51,11 @@ export default async function DataPage({
           <GoogleHealthImportDialog
             connected={googleHealth.connected}
             tokenExpiresAt={googleHealth.tokenExpiresAt}
-            initialConnectError={error === "google_health_connect_failed"}
+            initialConnectError={
+              first(query.import) === "connect_failed"
+                ? connectErrorMessage(first(query.error))
+                : null
+            }
           >
             <Button variant="outline">
               <IconDownload className="mr-2 h-4 w-4" />

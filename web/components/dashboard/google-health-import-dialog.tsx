@@ -25,7 +25,8 @@ interface GoogleHealthImportDialogProps {
   children: React.ReactNode;
   connected: boolean;
   tokenExpiresAt: string | null;
-  initialConnectError: boolean;
+  // set when the page was reached from a failed google connect
+  initialConnectError: string | null;
 }
 
 type Choice = "skip" | "replace";
@@ -39,11 +40,11 @@ export function GoogleHealthImportDialog({
   tokenExpiresAt,
   initialConnectError,
 }: GoogleHealthImportDialogProps) {
-  const [open, setOpen] = useState(initialConnectError);
+  const [open, setOpen] = useState(initialConnectError !== null);
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(
-    initialConnectError ? "Connecting Google Health failed. Try again." : null,
-  );
+  const [error, setError] = useState<string | null>(initialConnectError);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [needsReconnect, setNeedsReconnect] = useState(false);
   const [fromDate, setFromDate] = useState(() =>
     toDateInput(subDays(new Date(), 7)),
   );
@@ -57,6 +58,7 @@ export function GoogleHealthImportDialog({
       setCandidates(null);
       setChoices({});
       setError(null);
+      setNotice(null);
     }
   }
 
@@ -70,10 +72,12 @@ export function GoogleHealthImportDialog({
 
   function handlePreview() {
     setError(null);
+    setNotice(null);
     startTransition(async () => {
       const result = await previewGoogleHealthImport(fromDate, toDate);
       if (result.error) {
         setError(result.error);
+        setNeedsReconnect(result.reconnect ?? false);
         return;
       }
       setCandidates(result.candidates ?? []);
@@ -101,7 +105,15 @@ export function GoogleHealthImportDialog({
         setError(result.error);
         return;
       }
-      handleOpenChange(false);
+      const imported = result.imported ?? 0;
+      setNotice(
+        `Imported ${imported} ${imported === 1 ? "night" : "nights"}.` +
+          (result.skipped
+            ? ` Skipped ${result.skipped} that now overlap a session.`
+            : ""),
+      );
+      setCandidates(null);
+      setChoices({});
     });
   }
 
@@ -116,7 +128,7 @@ export function GoogleHealthImportDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {!connected ? (
+        {!connected || needsReconnect ? (
           <div className="grid gap-4 py-2">
             <p className="text-sm text-muted-foreground">
               Connect once to import nights from your Fitbit. Google will warn
@@ -185,7 +197,11 @@ export function GoogleHealthImportDialog({
                         <span className="text-xs text-muted-foreground">
                           Overlaps{" "}
                           {night.conflicts
-                            .map((session) => formatTime(session.start))
+                            .map((session) =>
+                              session.end
+                                ? formatTime(session.start)
+                                : `your in-progress session from ${formatTime(session.start)}`,
+                            )
                             .join(", ")}
                         </span>
                       )}
@@ -232,6 +248,7 @@ export function GoogleHealthImportDialog({
         )}
 
         {error && <p className="text-sm text-destructive">{error}</p>}
+        {notice && <p className="text-sm text-muted-foreground">{notice}</p>}
       </DialogContent>
     </Dialog>
   );
