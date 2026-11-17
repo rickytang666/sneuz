@@ -17,6 +17,8 @@ function createAuth() {
     database: drizzleAdapter(getDb(), { provider: "pg", schema }),
     emailAndPassword: { enabled: true },
     account: {
+      // the google refresh token grants ongoing health data access; tokens stored before this stay readable as plaintext
+      encryptOAuthTokens: true,
       // google sign-in attaches to an existing account only if that account's email is verified
       accountLinking: { enabled: true, trustedProviders: ["google"] },
     },

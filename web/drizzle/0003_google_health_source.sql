@@ -1,0 +1,2 @@
+ALTER TABLE "sleep_sessions" DROP CONSTRAINT "valid_source";--> statement-breakpoint
+ALTER TABLE "sleep_sessions" ADD CONSTRAINT "valid_source" CHECK ("sleep_sessions"."source" in ('manual', 'widget', 'shortcut', 'google_health'));
