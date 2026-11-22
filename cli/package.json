@@ -1,0 +1,30 @@
+{
+  "name": "sneuz-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "sneuz": "./dist/sneuz.js"
+  },
+  "scripts": {
+    "dev": "node build.mjs && node dist/sneuz.js --demo",
+    "build": "rm -rf dist && node build.mjs && chmod +x dist/sneuz.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "test": "TZ=America/Toronto vitest run"
+  },
+  "dependencies": {
+    "commander": "^15.1.0",
+    "ink": "^7.1.1",
+    "react": "19.2.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.10",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.12"
+  }
+}
