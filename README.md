@@ -58,6 +58,8 @@ Add `http://localhost:3000/api/auth/callback/google` as an authorized redirect U
 
 `pnpm validate` runs build, lint, tests, and react-doctor.
 
+There's no reset email. To set a new password, run `node --env-file=.env scripts/reset-password.mjs` from `web/`.
+
 **CLI**: see [cli/README.md](cli/README.md).
 
 **iOS**:
