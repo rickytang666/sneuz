@@ -25,6 +25,7 @@ https://github.com/user-attachments/assets/71894cbb-5b23-4540-b664-8e7bacce0669
 - **Shortcuts automation**: Hooks into Sleep Focus mode - tracking starts/stops automatically
 - **Home screen widget**: Glanceable status and quick actions without opening the app
 - **Web calendar view**: Visualize sleep patterns on a proper calendar
+- **CLI**: A keyboard-first terminal calendar for backfilling and fixing nights, see [cli/README.md](cli/README.md)
 - **Apple Health export**: One-click sync to Apple Health
 
 ## Tech stack
@@ -56,6 +57,8 @@ pnpm dev
 Add `http://localhost:3000/api/auth/callback/google` as an authorized redirect URI on the Google client.
 
 `pnpm validate` runs build, lint, tests, and react-doctor.
+
+**CLI**: see [cli/README.md](cli/README.md).
 
 **iOS**:
 
