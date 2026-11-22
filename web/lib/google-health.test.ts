@@ -101,6 +101,39 @@ describe("listSleepNights", () => {
     expect(new URL(urls[1]).searchParams.get("pageToken")).toBe("next");
   });
 
+  it("skips naps but keeps nights with or without metadata", async () => {
+    const point = (
+      name: string,
+      start: string,
+      end: string,
+      nap?: boolean,
+    ) => ({
+      name,
+      sleep: {
+        interval: { startTime: start, endTime: end },
+        ...(nap === undefined ? {} : { metadata: { nap, mainSleep: !nap } }),
+      },
+    });
+    const page = {
+      dataPoints: [
+        point("night", "2026-07-01T23:00:00Z", "2026-07-02T07:00:00Z", false),
+        point("nap", "2026-07-02T13:00:00Z", "2026-07-02T14:00:00Z", true),
+        point("unprocessed", "2026-07-02T23:00:00Z", "2026-07-03T07:00:00Z"),
+      ],
+    };
+    const fetchImpl = (async () =>
+      new Response(JSON.stringify(page))) as unknown as typeof fetch;
+
+    const nights = await listSleepNights(
+      "t",
+      "2026-07-01",
+      "2026-07-03",
+      fetchImpl,
+    );
+
+    expect(nights.map((n) => n.id)).toEqual(["night", "unprocessed"]);
+  });
+
   it("throws with the status when google rejects the call", async () => {
     const fetchImpl = (async () =>
       new Response("denied", { status: 403 })) as unknown as typeof fetch;

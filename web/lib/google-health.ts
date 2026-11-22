@@ -16,7 +16,10 @@ export interface GoogleHealthNight {
 
 interface SleepDataPoint {
   name: string;
-  sleep?: { interval?: { startTime?: string; endTime?: string } };
+  sleep?: {
+    interval?: { startTime?: string; endTime?: string };
+    metadata?: { nap?: boolean };
+  };
 }
 
 interface ListResponse {
@@ -71,6 +74,8 @@ export async function listSleepNights(
     for (const point of body.dataPoints ?? []) {
       const interval = point.sleep?.interval;
       if (!interval?.startTime || !interval.endTime) continue;
+      // sneuz tracks the main night only; points without metadata still count as nights
+      if (point.sleep?.metadata?.nap === true) continue;
       nights.push({
         id: point.name,
         start: new Date(interval.startTime).toISOString(),
